@@ -23,6 +23,11 @@ use MCNUser\Authentication\Exception as AuthenticationException;
 class AuthenticationController extends AbstractActionController
 {
     /**
+     * @var \MCNUser\Authentication\AuthenticationService
+     */
+    protected $service;
+
+    /**
      * Constructor
      *
      * @param \MCNUser\Authentication\AuthenticationService $service
@@ -35,6 +40,8 @@ class AuthenticationController extends AbstractActionController
     /**
      * Authentication action
      *
+     * @throws \MCNUser\Authentication\Exception\DomainException
+     *
      * @return \Zend\Http\Response
      */
     public function authenticateAction()
@@ -42,48 +49,41 @@ class AuthenticationController extends AbstractActionController
         $plugin = $this->params('plugin', 'standard');
         $return = $this->params('return', null);
 
-        try {
+        $result = $this->service->authenticate($this->getRequest(), $plugin);
 
-            $result = $this->service->authenticate($this->getRequest(), $plugin);
+        if ($result->getCode() == Result::SUCCESS) {
 
-            if ($result->getCode() == Result::SUCCESS) {
+            if ($this->service->getOptions()->isEnableRedirection() && $return) {
 
-                if ($this->service->getOptions()->isEnableRedirection() && $return) {
-
-                    return $this->redirect()->toUrl($return);
-                }
-
-                $route = $this->service->getOptions()->getSuccessfulLoginRoute();
-
-
-                if (! $route) {
-
-                    throw new AuthenticationException\DomainException('No successful login route has been specified');
-                }
-
-                return $this->redirect()->toRoute($route);
-
-            } else {
-
-                $this->flashMessenger()->addErrorMessage($result->getMessage());
+                return $this->redirect()->toUrl($return);
             }
 
-        } catch (AuthenticationException\DomainException $e) {
+            $route = $this->service->getOptions()->getSuccessfulLoginRoute();
 
-            // todo: add logging
+            if (! $route) {
 
-            // return with a invalid page
-            return $this->getResponse()->setStatusCode(500);
+                throw new AuthenticationException\InvalidArgumentException('No successful login route has been specified');
+            }
+
+            return $this->redirect()->toRoute($route);
+
+        } else {
+
+            $this->flashMessenger()->addErrorMessage($result->getMessage());
         }
     }
 
     public function logoutAction()
     {
+        $route = $this->service->getOptions()->getLogoutRoute();
 
-    }
+        if (! $route) {
 
-    public function changePasswordAction()
-    {
+            throw new AuthenticationException\InvalidArgumentException('No logout route has been specified.');
+        }
 
+        $this->service->clearIdentity();
+
+        return $this->redirect()->toRoute($route);
     }
 }

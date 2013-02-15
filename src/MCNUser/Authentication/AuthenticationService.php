@@ -78,6 +78,7 @@ class AuthenticationService implements EventsCapableInterface
         if ($this->evm === null) {
 
             $this->evm = new EventManager();
+            $this->evm->setEventClass('MCNUser\Authentication\AuthEvent');
         }
 
         return $this->evm;
@@ -95,8 +96,6 @@ class AuthenticationService implements EventsCapableInterface
 
     /**
      * Authenticate a request
-     *
-     *
      *
      * @see \MCNUser\Authentication\AuthEvent for available events to hook into
      *
@@ -121,13 +120,17 @@ class AuthenticationService implements EventsCapableInterface
          */
         $plugin = $this->getPluginManager()->get($plugin);
 
-        $this->getEventManager()->trigger(AuthEvent::EVENT_PRE_AUTH, compact('plugin', 'request'));
+        $this->getEventManager()->trigger(AuthEvent::EVENT_PRE_AUTH, null, compact('plugin', 'request'));
 
         $result = $plugin->authenticate($request, $this->service);
 
         if ($result->getCode() == Result::SUCCESS) {
 
-            $response = $this->getEventManager()->trigger(AuthEvent::EVENT_AUTH_SUCCESS, $result->getIdentity());
+            $response = $this->getEventManager()->trigger(
+                AuthEvent::EVENT_AUTH_SUCCESS,
+                $result->getIdentity(),
+                compact('plugin', 'request')
+            );
 
             if (! $response->stopped()) {
 
@@ -141,10 +144,10 @@ class AuthenticationService implements EventsCapableInterface
 
         } else {
 
-            $this->getEventManager()->trigger(AuthEvent::EVENT_AUTH_FAILURE);
+            $this->getEventManager()->trigger(AuthEvent::EVENT_AUTH_FAILURE, $result, compact('plugin', 'request'));
         }
 
-        $this->getEventManager()->trigger(AuthEvent::EVENT_POST_AUTH);
+        $this->getEventManager()->trigger(AuthEvent::EVENT_POST_AUTH, $result, compact('plugin', 'request'));
 
         return $result;
     }
@@ -163,5 +166,13 @@ class AuthenticationService implements EventsCapableInterface
     public function hasIdentity()
     {
         return !$this->storage->isEmpty();
+    }
+
+    /**
+     * Remove the current identity
+     */
+    public function clearIdentity()
+    {
+        $this->storage->clear();
     }
 }

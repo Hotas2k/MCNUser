@@ -10,9 +10,11 @@ namespace MCNUserTest\Controller;
 
 use MCNUser\Authentication\Result;
 use MCNUser\Controller\AuthenticationController;
-use MCNUserTest\Authentication\TestAsset\UserService;
+use MCNUser\Entity\User;
 use MCNUserTest\Bootstrap;
-use Zend\Http\Request;
+use MCNUserTest\TestAsset\Authentication\Plugin\Successful;
+use MCNUserTest\TestAsset\UserService;
+use Zend\Http\PhpEnvironment\Request;
 use Zend\Http\Response;
 use Zend\Mvc\MvcEvent;
 use Zend\Mvc\Router\Http\Literal;
@@ -36,6 +38,8 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
         $serviceManager->setService('mcn.service.user', new UserService);
 
         $this->authService = $serviceManager->get('mcn.service.user.authentication');
+        $this->authService->getPluginManager()->setService('success', new Successful());
+
         $this->controller = new AuthenticationController($this->authService);
         $this->request    = new Request();
         $this->routeMatch = new RouteMatch(array('controller' => 'mcn.authentication'));
@@ -47,28 +51,22 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
         $router = HttpRouter::factory($routerConfig);
         $router->addRoute('home', new Literal('/'), array('controller' => 'index'));
 
-
-
         $this->event->setRouter($router);
         $this->event->setRouteMatch($this->routeMatch);
         $this->controller->setEvent($this->event);
         $this->controller->setServiceLocator($serviceManager);
     }
 
+    /**
+     * @expectedException MCNUser\Authentication\Exception\InvalidArgumentException
+     */
     public function testAuthenticationThrowExceptionOnNoSuccessfulLoginRoute()
     {
         $this->routeMatch->setParam('action', 'authenticate');
-
-        $this->request->setPost(
-            new Parameters(array(
-                'identity' => 'hello@world.com',
-                'credential' => 'password'
-            ))
-        );
+        $this->routeMatch->setParam('plugin', 'success');
 
         $options = $this->authService->getOptions();
         $options->setSuccessfulLoginRoute(null);
-
 
         $response = $this->controller->dispatch($this->request);
 
@@ -76,33 +74,23 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(500, $response->getStatusCode());
     }
 
+    /**
+     * @expectedException MCNUser\Authentication\Exception\DomainException
+     */
     public function testStatusCode500ForIllegalPlugin()
     {
         $this->routeMatch->setParam('action', 'authenticate');
         $this->routeMatch->setParam('plugin', 'a plugin that does not exist');
 
         $this->controller->dispatch($this->request);
-
-        $response = $this->controller->getResponse();
-
-        $this->assertEquals(500, $response->getStatusCode());
     }
 
     public function testSuccessfulLoginRedirect()
     {
         $this->routeMatch->setParam('action', 'authenticate');
+        $this->routeMatch->setParam('plugin', 'success');
 
-        $this->request->setPost(
-            new Parameters(array(
-                'identity' => 'hello@world.com',
-                'credential' => 'password'
-            ))
-        );
-
-
-        // set the successful login route
-        $options = $this->authService->getOptions();
-        $options->setSuccessfulLoginRoute('home');
+        $this->authService->getOptions()->setSuccessfulLoginRoute('home');
 
         $result   = $this->controller->dispatch($this->request);
         $response = $this->controller->getResponse();
@@ -115,13 +103,9 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
     {
         $this->routeMatch->setParam('action', 'authenticate');
         $this->routeMatch->setParam('return', '/hello/world');
+        $this->routeMatch->setParam('plugin', 'success');
 
-        $this->request->setPost(
-            new Parameters(array(
-                'identity' => 'hello@world.com',
-                'credential' => 'password'
-            ))
-        );
+        $this->authService->getOptions()->setEnableRedirection(true);
 
         $result = $this->controller->dispatch($this->request);
 
@@ -158,5 +142,33 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(
             in_array(Result::MSG_INVALID_CREDENTIAL, $this->controller->flashMessenger()->getCurrentErrorMessages())
         );
+    }
+
+    /**
+     * @expectedException MCNUser\Authentication\Exception\InvalidArgumentException
+     */
+    public function testLogoutThrowExceptionOnNoRoute()
+    {
+        $this->routeMatch->setParam('action', 'logout');
+        $this->controller->dispatch($this->request);
+    }
+
+    public function testSuccessfulLogoutAction()
+    {
+        $this->routeMatch->setParam('action', 'authenticate');
+        $this->routeMatch->setParam('plugin', 'success');
+        $this->controller->dispatch($this->request);
+
+        $this->authService->getOptions()->setLogoutRoute('home');
+
+        $this->assertTrue($this->authService->hasIdentity());
+
+        $this->routeMatch->setParam('action', 'logout');
+
+        $response = $this->controller->dispatch($this->request);
+
+        $this->assertTrue(!$this->authService->hasIdentity());
+        $this->assertEquals('/', $response->getHeaders()->get('location')->getUri());
+        $this->assertEquals(302, $response->getStatusCode());
     }
 }

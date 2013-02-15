@@ -6,7 +6,7 @@
  * @copyright PMG Media Group AB
  */
 
-namespace MCNUserTest\Authentication\TestAsset;
+namespace MCNUserTest\TestAsset;
 
 use Doctrine\Common\Collections\Criteria;
 use MCNUser\Entity\User;
@@ -40,7 +40,7 @@ class UserService implements UserInterface
      */
     public function getById($id, array $relations = array())
     {
-        // TODO: Implement getById() method.
+        return $this->getOneBy('id', $id);
     }
 
     /**
@@ -53,7 +53,7 @@ class UserService implements UserInterface
      */
     public function getByEmail($email, array $relations = array())
     {
-        // TODO: Implement getByEmail() method.
+        return $this->getOneBy('email', $email);
     }
 
     /**
@@ -63,7 +63,7 @@ class UserService implements UserInterface
      */
     public function getByUsername($username, array $relations = array())
     {
-        // TODO: Implement getByUsername() method.
+        return $this->getOneBy('username', $username);
     }
 
     /**
@@ -106,5 +106,29 @@ class UserService implements UserInterface
         }
 
         return null;
+    }
+
+    /**
+     * Save the user
+     *
+     * @param \MCNUser\Entity\User $user
+     *
+     * @return void
+     */
+    public function save(User $user)
+    {
+        // TODO: Implement save() method.
+    }
+
+    /**
+     * Remove a user
+     *
+     * @param \MCNUser\Entity\User $user
+     *
+     * @return void
+     */
+    public function remove(User $user)
+    {
+        // TODO: Implement remove() method.
     }
 }

@@ -10,9 +10,8 @@ namespace MCNUserTest\Authentication\Plugin;
 
 use MCNUser\Authentication\Plugin\Standard;
 use MCNUser\Authentication\Result;
-use MCNUser\Entity\User;
 use MCNUser\Options\Authentication\Plugin\Standard as StandardOptions;
-use MCNUserTest\Authentication\TestAsset\UserService;
+use MCNUserTest\TestAsset\UserService;
 use Zend\Http\Request;
 use Zend\Stdlib\Parameters;
 

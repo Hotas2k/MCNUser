@@ -8,6 +8,10 @@
 
 namespace MCNUser;
 
+use Zend\Mvc\MvcEvent;
+use Zend\ServiceManager\ServiceLocatorInterface;
+
+
 /**
  * Class Module
  *
@@ -40,14 +44,17 @@ class Module
     public function getServiceConfig()
     {
         return array(
-            'invokables' => array(
-
-                'mcn.service.user' => 'MCNUser\Service\User'
-            ),
-
             'factories' => array(
 
-                'mcn.service.user.authentication' => 'MCNUser\Factory\AuthenticationServiceFactory'
+                'mcn.listener.user.authentication.update-login' => function(ServiceLocatorInterface $sm) {
+
+                    return new Listener\Authentication\LastLogin($sm->get('mcn.service.user'));
+                },
+
+                'mcn.service.user' => function(ServiceLocatorInterface $sm) {
+
+                    return new Service\User($sm->get('doctrine.entitymanager.ormdefault'));
+                }
             )
         );
     }

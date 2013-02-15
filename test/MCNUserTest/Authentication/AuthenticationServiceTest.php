@@ -13,6 +13,7 @@ use MCNUser\Authentication\AuthenticationService;
 use MCNUser\Authentication\Result;
 use MCNUser\Factory\AuthenticationServiceFactory;
 use MCNUserTest\Bootstrap;
+use MCNUserTest\TestAsset\UserService;
 use PHPUnit_Framework_TestCase;
 use Zend\EventManager\Event;
 use Zend\Http\Request;
@@ -24,7 +25,7 @@ class AuthenticationServiceTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->userService = new TestAsset\UserService;
+        $this->userService = new UserService;
     }
 
 

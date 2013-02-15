@@ -8,7 +8,14 @@
 
 namespace MCNUser\Repository;
 
-interface UserInterface
-{
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Persistence\ObjectRepository;
 
+/**
+ * Class UserInterface
+ * @package MCNUser\Repository
+ */
+interface UserInterface extends ObjectRepository
+{
+    public function matching(Criteria $criteria);
 }

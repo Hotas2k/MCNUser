@@ -42,16 +42,6 @@ class Standard extends AbstractPluginOptions
     protected $credential_treatment = 'sha1';
 
     /**
-     * plugin name alias
-     *
-     * @return string
-     */
-    public function getAlias()
-    {
-        return 'standard';
-    }
-
-    /**
      * Class name of representing plugin
      *
      * @return string

@@ -26,7 +26,10 @@ class AuthenticationServiceFactory implements FactoryInterface
      *
      * @param \Zend\ServiceManager\ServiceLocatorInterface $sl
      *
-     * @throws Exception\LogicException on invalid configuration
+     * @throws Exception\InvalidArgumentException When an unknown name/alias for the user service is provided
+     * @throws Exception\RuntimeException         If no configuration has been specified.
+     * @throws Exception\LogicException           When the instance of the user service does not
+     *                                            implement the specified class
      *
      * @return \MCNUser\Authentication\AuthenticationService|mixed
      */
@@ -78,6 +81,18 @@ class AuthenticationServiceFactory implements FactoryInterface
             $pluginManager->setService($alias, $plugin);
         }
 
-        return new AuthenticationService($userService, $options, $pluginManager);
+        $service = new AuthenticationService($userService, $options, $pluginManager);
+
+        foreach ($options->getListeners() as $listener) {
+
+            if (is_string($listener)) {
+
+                $listener = $sl->get($listener);
+            }
+
+            $service->getEventManager()->attach($listener);
+        }
+
+        return $service;
     }
 }

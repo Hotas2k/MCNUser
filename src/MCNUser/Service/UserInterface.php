@@ -9,6 +9,7 @@
 namespace MCNUser\Service;
 
 use Doctrine\Common\Collections\Criteria;
+use MCNUser\Entity\User;
 
 /**
  * Class UserServiceInterface
@@ -23,7 +24,7 @@ interface UserInterface
      * @param mixed  $value
      * @param array  $relations
      *
-     * @return \MCNUser\Entity\User|null
+     * @return \MCNUser\Entity\AbstractUser|null
      */
     public function getOneBy($property, $value, array $relations = array());
 
@@ -33,7 +34,7 @@ interface UserInterface
      * @param integer $id
      * @param array   $relations
      *
-     * @return \MCNUser\Entity\User|null
+     * @return \MCNUser\Entity\AbstractUser|null
      */
     public function getById($id, array $relations = array());
 
@@ -43,16 +44,27 @@ interface UserInterface
      * @param string $email
      * @param array  $relations
      *
-     * @return \MCNUser\Entity\User|null
+     * @return \MCNUser\Entity\AbstractUser|null
      */
     public function getByEmail($email, array $relations = array());
 
     /**
-     * @param string $username
-     * @param array  $relations
-     * @return \MCNUser\Entity\User|null
+     * Save the user
+     *
+     * @param \MCNUser\Entity\User $user
+     *
+     * @return void
      */
-    public function getByUsername($username, array $relations = array());
+    public function save(User $user);
+
+    /**
+     * Remove a user
+     *
+     * @param \MCNUser\Entity\User $user
+     *
+     * @return void
+     */
+    public function remove(User $user);
 
     /**
      * @param \Doctrine\Common\Collections\Criteria $criteria

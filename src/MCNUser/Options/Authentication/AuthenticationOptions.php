@@ -24,7 +24,7 @@ class AuthenticationOptions extends AbstractOptions
      *
      * @var bool
      */
-    protected $enable_redirection = false;
+    protected $enable_redirection = true;
 
     /**
      * The route to redirect the user to on a successful login
@@ -32,6 +32,13 @@ class AuthenticationOptions extends AbstractOptions
      * @var string|null
      */
     protected $successful_login_route = null;
+
+    /**
+     * Get the route to redirect to after the users logs out
+     *
+     * @var string|null
+     */
+    protected $logout_route = null;
 
     /**
      * @var string
@@ -42,6 +49,11 @@ class AuthenticationOptions extends AbstractOptions
      * @var array
      */
     protected $plugins = array();
+
+    /**
+     * @var array
+     */
+    protected $listeners = array();
 
     /**
      * @return string
@@ -141,5 +153,57 @@ class AuthenticationOptions extends AbstractOptions
     public function setSuccessfulLoginRoute($successful_login_route)
     {
         $this->successful_login_route = $successful_login_route;
+    }
+
+    /**
+     * @return array
+     */
+    public function getListeners()
+    {
+        return $this->listeners;
+    }
+
+    /**
+     * @param array $listeners
+     * @return $this
+     */
+    public function setListeners(array $listeners)
+    {
+        foreach ($listeners as $listener) {
+
+            $this->addListener($listener);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $listener
+     * @return $this
+     */
+    public function addListener($listener)
+    {
+        if (! in_array($listener, $this->listeners)) {
+
+            $this->listeners[] = $listener;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getLogoutRoute()
+    {
+        return $this->logout_route;
+    }
+
+    /**
+     * @param null|string $logout_route
+     */
+    public function setLogoutRoute($logout_route)
+    {
+        $this->logout_route = $logout_route;
     }
 }

@@ -8,7 +8,10 @@
 
 namespace MCNUser\Service;
 
+use MCNUser\Entity\User as UserEntity;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Persistence\ObjectManager;
+use MCNUser\Entity\User as User0;
 
 /**
  * Class User
@@ -17,59 +20,26 @@ use Doctrine\Common\Collections\Criteria;
 class User implements UserInterface
 {
     /**
-     * Get a user by their ID
-     *
-     * @param integer $id
-     * @param array   $relations
-     *
-     * @return \MCNUser\Entity\User|null
+     * @var \Doctrine\Common\Persistence\ObjectManager
      */
-    public function getById($id, array $relations = array())
-    {
+    protected $objectManager;
 
+    /**
+     * @param \Doctrine\Common\Persistence\ObjectManager $manager
+     */
+    public function __construct(ObjectManager $manager)
+    {
+        $this->objectManager = $manager;
     }
 
     /**
-     * Get a user by their email
+     * Get the user repository
      *
-     * @param string $email
-     * @param array  $relations
-     *
-     * @return \MCNUser\Entity\User|null
+     * @return \MCNUser\Repository\UserInterface
      */
-    public function getByEmail($email, array $relations = array())
+    protected function getRepository()
     {
-        // TODO: Implement getByEmail() method.
-    }
-
-    /**
-     * @param string $username
-     * @param array  $relations
-     * @return \MCNUser\Entity\User|null
-     */
-    public function getByUsername($username, array $relations = array())
-    {
-        // TODO: Implement getByUsername() method.
-    }
-
-    /**
-     * @param \Doctrine\Common\Collections\Criteria $criteria
-     *
-     * @return array|\Zend\Paginator\Paginator
-     */
-    public function search(Criteria $criteria)
-    {
-        // TODO: Implement search() method.
-    }
-
-    /**
-     * @param \Doctrine\Common\Collections\Criteria $criteria
-     *
-     * @return array|\Zend\Paginator\Paginator
-     */
-    public function fetchAll(Criteria $criteria)
-    {
-        // TODO: Implement fetchAll() method.
+        return $this->objectManager->getRepository('MCNUser\Entity\User');
     }
 
     /**
@@ -83,6 +53,84 @@ class User implements UserInterface
      */
     public function getOneBy($property, $value, array $relations = array())
     {
-        // TODO: Implement getOneBy() method.
+        return $this->getRepository()->findOneBy(array(
+            $property => $value
+        ));
+    }
+
+    /**
+     * Get a user by their ID
+     *
+     * @param integer $id
+     * @param array   $relations
+     *
+     * @return \MCNUser\Entity\User|null
+     */
+    public function getById($id, array $relations = array())
+    {
+        return $this->getOneBy('id', $id, $relations);
+    }
+
+    /**
+     * Get a user by their email
+     *
+     * @param string $email
+     * @param array  $relations
+     *
+     * @return \MCNUser\Entity\User|null
+     */
+    public function getByEmail($email, array $relations = array())
+    {
+        return $this->getOneBy('email', $email, $relations);
+    }
+
+    /**
+     * @param \Doctrine\Common\Collections\Criteria $criteria
+     *
+     * @return array|\Zend\Paginator\Paginator
+     */
+    public function search(Criteria $criteria)
+    {
+
+    }
+
+    /**
+     * @param \Doctrine\Common\Collections\Criteria $criteria
+     *
+     * @return array|\Zend\Paginator\Paginator
+     */
+    public function fetchAll(Criteria $criteria)
+    {
+        return $this->getRepository()->matching($criteria);
+    }
+
+    /**
+     * Save the user
+     *
+     * @param \MCNUser\Entity\User $user
+     *
+     * @return void
+     */
+    public function save(UserEntity $user)
+    {
+        if (! $this->objectManager->contains($user)) {
+
+            $this->objectManager->persist($user);
+        }
+
+        $this->objectManager->flush($user);
+    }
+
+    /**
+     * Remove a user
+     *
+     * @param \MCNUser\Entity\User $user
+     *
+     * @return void
+     */
+    public function remove(UserEntity $user)
+    {
+        $this->objectManager->remove($user);
+        $this->objectManager->flush($user);
     }
 }
