@@ -115,6 +115,7 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
     public function testErrorMessageOnUnsuccessfulLogin()
     {
         $this->routeMatch->setParam('action', 'authenticate');
+        $this->authService->getOptions()->setFailedLoginRoute('home');
 
         $this->request->setPost(
             new Parameters(array(

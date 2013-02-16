@@ -10,39 +10,44 @@ use MCNUser\Options\Authentication\Plugin;
 
 return array(
     'MCNUser' => array(
-        // Routes
-        'logout_route'           => 'home',
-        'successful_login_route' => 'user/profile',
 
-        // If a param by the name of "redirect" exists
-        // and is not empty a user will be redirected to that page
-        'enable_redirection' => true,
+        'authentication' => array(
 
-        // service locator key for the class to use
-        'user_service_sl_key' => 'mcn.service.user',
+            // Routes
+            'logout_route'           => 'home',
+            'failed_login_route'     => 'home',
+            'successful_login_route' => 'user/profile',
 
-        // list of plugins
-        'plugins' => array(
-            new Plugin\Standard(array(
+            // If a param by the name of "redirect" exists
+            // and is not empty a user will be redirected to that page
+            'enable_redirection' => true,
 
-                'http_identity_field' => 'identity',
-                'http_credential_field' => 'credential',
+            // service locator key for the class to use
+            'user_service_sl_key' => 'mcn.service.user',
 
-                'entity_identity_property'   => 'email',
-                'entity_credential_property' => 'password',
+            // list of plugins
+            'plugins' => array(
+                new Plugin\Standard(array(
 
-                // Credential treatment is applied on the user supplied password
-                // before comparing it with the password stored in the backend
-                'credential_treatment' => function($password) {
+                    'http_identity_field' => 'identity',
+                    'http_credential_field' => 'credential',
 
-                    return sha1($password);
-                }
-            ))
-        ),
+                    'entity_identity_property'   => 'email',
+                    'entity_credential_property' => 'password',
 
-        'listeners' => array(
+                    // Credential treatment is applied on the user supplied password
+                    // before comparing it with the password stored in the backend
+                    'credential_treatment' => function($password) {
 
-            'mcn.listener.user.authentication.update-login'
+                        return sha1($password);
+                    }
+                ))
+            ),
+
+            'listeners' => array(
+
+                'mcn.listener.user.authentication.update-login'
+            )
         )
     ),
 
