@@ -50,7 +50,7 @@ class AuthenticationOptions extends AbstractOptions
     /**
      * @var string
      */
-    protected $user_service_sl_key = 'user.service';
+    protected $user_service_sl_key = 'mcn.service.user';
 
     /**
      * @var array
