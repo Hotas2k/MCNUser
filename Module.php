@@ -61,6 +61,18 @@ class Module
         );
     }
 
+    public function getViewHelperConfig()
+    {
+        return array(
+            'factories' => array(
+                'isAuth' => function ($sm) {
+                    return new View\Helper\IsAuth($sm->getServiceLocator()->get('mcn.service.user.authentication'));
+                },
+            ),
+        );
+
+    }
+
     /**
      * @return array
      */
