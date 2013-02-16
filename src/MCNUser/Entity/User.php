@@ -48,9 +48,11 @@ class User extends AbstractEntity
     protected $password;
 
     /**
-     * IP used when they last logged in
+     * Last known ip-address
      *
      * @var string
+     *
+     * @ORM\Column(type="string", nullable=true)
      */
     protected $last_login_ip;
 

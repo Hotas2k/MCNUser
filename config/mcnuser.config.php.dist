@@ -25,6 +25,9 @@ return array(
         'plugins' => array(
             new Plugin\Standard(array(
 
+                'http_identity_field' => 'identity',
+                'http_credential_field' => 'credential',
+
                 'entity_identity_property'   => 'email',
                 'entity_credential_property' => 'password',
 
