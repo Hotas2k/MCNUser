@@ -40,14 +40,14 @@ class AuthenticationController extends AbstractActionController
     /**
      * Authentication action
      *
-     * @throws \MCNUser\Authentication\Exception\DomainException
+     * @throws \MCNUser\Authentication\Exception\InvalidArgumentException
      *
      * @return \Zend\Http\Response
      */
     public function authenticateAction()
     {
+        $return = $this->params('return');
         $plugin = $this->params('plugin', 'standard');
-        $return = $this->params('return', null);
 
         $result = $this->service->authenticate($this->getRequest(), $plugin);
 
@@ -70,9 +70,25 @@ class AuthenticationController extends AbstractActionController
         } else {
 
             $this->flashMessenger()->addErrorMessage($result->getMessage());
+
+            $route = $this->service->getOptions()->getFailedLoginRoute();
+
+            if (! $route) {
+
+                throw new AuthenticationException\InvalidArgumentException('No failed login route has been specified');
+            }
+
+            return $this->redirect()->toRoute($route);
         }
     }
 
+    /**
+     * Logout and redirect user
+     *
+     * @throws \MCNUser\Authentication\Exception\InvalidArgumentException
+     *
+     * @return \Zend\Http\Response
+     */
     public function logoutAction()
     {
         $route = $this->service->getOptions()->getLogoutRoute();

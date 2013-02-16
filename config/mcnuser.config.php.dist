@@ -41,5 +41,52 @@ return array(
 
             'mcn.listener.user.authentication.update-login'
         )
+    ),
+
+
+    'router' => array(
+
+        'routes' => array(
+
+            'mcn-user' => array(
+
+                'type' => 'literal',
+                'options' => array(
+
+                    'route' => '/mcn-user'
+                ),
+
+                'may_terminate' => false,
+                'child_routes'  => array(
+
+                    'login' => array(
+                        'type'    => 'Segment',
+                        'options' => array(
+
+                            'route' => '/login/[:plugin]',
+                            'defaults' => array(
+
+                                'controller' => 'mcn.user.authentication',
+                                'action'     => 'login'
+                            )
+                        )
+                    ),
+
+                    'logout' => array(
+
+                        'type'    => 'literal',
+                        'options' => array(
+
+                            'route' => '/logout',
+                            'defaults' => array(
+
+                                'controller' => 'mcn.user.authentication',
+                                'action'     => 'logout'
+                            )
+                        )
+                    )
+                )
+            )
+        )
     )
 );

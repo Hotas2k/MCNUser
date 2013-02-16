@@ -28,7 +28,6 @@ class AuthenticationServiceTest extends PHPUnit_Framework_TestCase
         $this->userService = new UserService;
     }
 
-
     /**
      * @expectedException \MCNUser\Authentication\Exception\DomainException
      */

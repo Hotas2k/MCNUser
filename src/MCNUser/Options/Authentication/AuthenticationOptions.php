@@ -34,6 +34,13 @@ class AuthenticationOptions extends AbstractOptions
     protected $successful_login_route = null;
 
     /**
+     * The route to redirect to if the authentication fails
+     *
+     * @var string|null
+     */
+    protected $failed_login_route = null;
+
+    /**
      * Get the route to redirect to after the users logs out
      *
      * @var string|null
@@ -205,5 +212,21 @@ class AuthenticationOptions extends AbstractOptions
     public function setLogoutRoute($logout_route)
     {
         $this->logout_route = $logout_route;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getFailedLoginRoute()
+    {
+        return $this->failed_login_route;
+    }
+
+    /**
+     * @param null|string $failed_login_route
+     */
+    public function setFailedLoginRoute($failed_login_route)
+    {
+        $this->failed_login_route = $failed_login_route;
     }
 }

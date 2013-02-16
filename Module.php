@@ -9,6 +9,8 @@
 namespace MCNUser;
 
 use Zend\Mvc\MvcEvent;
+use Zend\Mvc\Controller\ControllerManager;
+use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 
@@ -41,6 +43,27 @@ class Module
         );
     }
 
+    /**
+     * @return array
+     */
+    public function getControllerConfig()
+    {
+        return array(
+            'factories' => array(
+
+                'mcn.user.authentication' => function(ControllerManager $sm) {
+
+                    return new Controller\AuthenticationController(
+                        $sm->getServiceLocator()->get('mcn.service.user')
+                    );
+                }
+            )
+        );
+    }
+
+    /**
+     * @return array
+     */
     public function getServiceConfig()
     {
         return array(
