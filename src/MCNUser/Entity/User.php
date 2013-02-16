@@ -11,6 +11,8 @@ namespace MCNUser\Entity;
 use MCN\Object\Entity\AbstractEntity;
 use MCN\Object\Entity\Behavior\TimestampableTrait;
 
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * Class User
  * @package MCNUser\Entity
