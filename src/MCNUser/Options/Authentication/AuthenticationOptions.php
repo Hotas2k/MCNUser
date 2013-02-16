@@ -50,7 +50,7 @@ class AuthenticationOptions extends AbstractOptions
     /**
      * @var string
      */
-    protected $user_service_sl_key = 'mcn.service.user';
+    protected $user_service_sl_key = 'user.service';
 
     /**
      * @var array
@@ -118,14 +118,14 @@ class AuthenticationOptions extends AbstractOptions
      */
     public function addPlugin(Plugin\AbstractPluginOptions $plugin, $overwrite = false)
     {
-        if (isset($this->plugins[$plugin->getAlias()]) && !$overwrite) {
+        if (isset($this->plugins[$plugin->getDefaultAlias()]) && !$overwrite) {
 
             throw new \LogicException(
-                sprintf('Plugin with the alias %s already exists and overwrite was disabled', $plugin->getAlias())
+                sprintf('Plugin with the alias %s already exists and overwrite was disabled', $plugin->getDefaultAlias())
             );
         }
 
-        $this->plugins[$plugin->getAlias()] = $plugin;
+        $this->plugins[$plugin->getDefaultAlias()] = $plugin;
 
         return $this;
     }

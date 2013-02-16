@@ -6,8 +6,6 @@
  * @copyright PMG Media Group AB
  */
 
-
-
 return array(
     'MCNUser' => array(
         'authentication' => array(
@@ -20,5 +18,22 @@ return array(
 
             'mcn.service.user.authentication' => 'MCNUser\Factory\AuthenticationServiceFactory'
         )
-    )
+    ),
+
+    'doctrine' => array(
+        'driver' => array(
+            'mcnuser_annotation_driver' => array(
+                'class'     => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
+                'paths'     => array(
+                    __DIR__ . '/../src/MCNUser/Entity/',
+                ),
+            ),
+
+            'orm_default' => array(
+                'drivers' => array(
+                    'MCNUser\Entity' => 'mcnuser_annotation_driver'
+                )
+            )
+        )
+    ),
 );

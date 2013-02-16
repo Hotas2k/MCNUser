@@ -54,7 +54,7 @@ class Module
                 'mcn.user.authentication' => function(ControllerManager $sm) {
 
                     return new Controller\AuthenticationController(
-                        $sm->getServiceLocator()->get('mcn.service.user')
+                        $sm->getServiceLocator()->get('mcn.service.user.authentication')
                     );
                 }
             )

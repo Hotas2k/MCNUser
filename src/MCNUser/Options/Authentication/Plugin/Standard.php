@@ -52,6 +52,14 @@ class Standard extends AbstractPluginOptions
     }
 
     /**
+     * @return string
+     */
+    public function getDefaultAlias()
+    {
+        return 'standard';
+    }
+
+    /**
      * @param Callable $credential_treatment
      */
     public function setCredentialTreatment(Callable $credential_treatment)

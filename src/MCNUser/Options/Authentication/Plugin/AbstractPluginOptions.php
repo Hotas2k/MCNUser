@@ -18,4 +18,11 @@ abstract class AbstractPluginOptions extends AbstractOptions
      * @return string
      */
     abstract public function getClassName();
+
+    /**
+     * Plugin alias
+     *
+     * @return string
+     */
+    abstract public function getDefaultAlias();
 }
