@@ -26,6 +26,16 @@ class Module
     public function onBootstrap(MvcEvent $e)
     {
         $sm = $e->getApplication()->getServiceManager();
+
+        /**
+         * @var $service \MCNUser\Authentication\AuthenticationService
+         */
+        $service = $sm->get('mcn.service.user.authentication');
+
+        if ($service->getOptions()->isEnabledRememberMe() && !$service->hasIdentity()) {
+
+            $service->authenticate($sm->get('request'), 'remember-me');
+        }
     }
 
 

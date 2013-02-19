@@ -20,7 +20,7 @@ return array(
 
             // If a param by the name of "redirect" exists
             // and is not empty a user will be redirected to that page
-            'enable_redirection' => true,
+            'enabled_redirection' => true,
 
             // service locator key for the class to use
             'user_service_sl_key' => 'mcn.service.user',

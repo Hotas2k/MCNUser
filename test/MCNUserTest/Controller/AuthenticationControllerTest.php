@@ -105,7 +105,7 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
         $this->routeMatch->setParam('return', '/hello/world');
         $this->routeMatch->setParam('plugin', 'success');
 
-        $this->authService->getOptions()->setEnableRedirection(true);
+        $this->authService->getOptions()->setEnabledRedirection(true);
 
         $result = $this->controller->dispatch($this->request);
 
