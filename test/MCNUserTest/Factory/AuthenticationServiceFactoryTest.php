@@ -8,6 +8,7 @@
 
 namespace MCNUserTest\Factory;
 
+use DoctrineORMModuleTest\Util\ServiceManagerFactory;
 use MCNUser\Authentication\AuthenticationService;
 use MCNUser\Factory\AuthenticationServiceFactory;
 use MCNUserTest\Bootstrap;
@@ -15,44 +16,16 @@ use Zend\Stdlib\ArrayObject;
 
 class AuthenticationServiceFactoryTest extends \PHPUnit_Framework_TestCase
 {
-    public function testFactoryWithBasicConfiguration()
-    {
-        $factory = new AuthenticationServiceFactory();
-        $result = $factory->createService(Bootstrap::getServiceManager());
-
-        $this->assertTrue($result instanceof AuthenticationService);
-    }
-
-    /**
-     * @expectedException MCNUser\Factory\Exception\RuntimeException
-     */
-    public function testExceptionThrownOnMissingConfigurationKey()
-    {
-        $sm = Bootstrap::getServiceManager();
-        $config = $sm->get('Config');
-
-        unset($config['MCNUser']);
-
-        $sm->setService('Config', $config);
-
-        $factory = new AuthenticationServiceFactory();
-        $factory->createService(Bootstrap::getServiceManager());
-    }
-
     /**
      * @expectedException MCNUser\Factory\Exception\InvalidArgumentException
      */
     public function testInvalidSlKey()
     {
-        $sm = Bootstrap::getServiceManager();
-        $config = $sm->get('Config');
-
-        $config['MCNUser']['authentication']['user_service_sl_key'] = null;
-
-        $sm->setService('Config', $config);
+        $sm = ServiceManagerFactory::getServiceManager();
+        $sm->get('mcn.options.user.authentication')->setUserServiceSlKey(null);
 
         $factory = new AuthenticationServiceFactory();
-        $factory->createService(Bootstrap::getServiceManager());
+        $factory->createService($sm);
     }
 
     /**
@@ -60,15 +33,12 @@ class AuthenticationServiceFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidInstanceOfSlKey()
     {
-        $sm = Bootstrap::getServiceManager();
-        $config = $sm->get('Config');
-
+        $sm = ServiceManagerFactory::getServiceManager();
         $sm->setService('fail', new ArrayObject());
-        $config['MCNUser']['authentication']['user_service_sl_key'] = 'fail';
 
-        $sm->setService('Config', $config);
+        $sm->get('mcn.options.user.authentication')->setUserServiceSlKey('fail');
 
         $factory = new AuthenticationServiceFactory();
-        $factory->createService(Bootstrap::getServiceManager());
+        $factory->createService($sm);
     }
 }

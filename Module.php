@@ -8,11 +8,10 @@
 
 namespace MCNUser;
 
-use Zend\Mvc\MvcEvent;
 use Zend\Mvc\Controller\ControllerManager;
+use Zend\Mvc\MvcEvent;
 use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\ServiceLocatorInterface;
-
 
 /**
  * Class Module
@@ -21,6 +20,15 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  */
 class Module
 {
+    /**
+     * @param MvcEvent $e
+     */
+    public function onBootstrap(MvcEvent $e)
+    {
+        $sm = $e->getApplication()->getServiceManager();
+    }
+
+
     /**
      * @return array
      */

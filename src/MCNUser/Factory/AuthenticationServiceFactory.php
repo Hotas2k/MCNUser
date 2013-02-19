@@ -35,15 +35,7 @@ class AuthenticationServiceFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $sl)
     {
-        // Make sure configuration has been specified
-        if (! isSet($sl->get('Config')['MCNUser']['authentication'])) {
-
-            throw new Exception\RuntimeException('No configuration specified.');
-        }
-
-        $config = $sl->get('Config')['MCNUser']['authentication'];
-
-        $options = new AuthenticationOptions($config);
+        $options = $sl->get('mcn.options.user.authentication');
 
         if (! $sl->has($options->getUserServiceSlKey())) {
 

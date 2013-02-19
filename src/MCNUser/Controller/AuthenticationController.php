@@ -46,8 +46,9 @@ class AuthenticationController extends AbstractActionController
      */
     public function authenticateAction()
     {
-        $return = $this->params('return');
-        $plugin = $this->params('plugin', 'standard');
+        $return   = $this->params('return');
+        $plugin   = $this->params('plugin', 'standard');
+        $remember = $this->params('remember', false);
 
         $result = $this->service->authenticate($this->getRequest(), $plugin);
 
