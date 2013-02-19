@@ -1,6 +1,7 @@
 <?php
 namespace MCNUserTest;
 
+use DoctrineORMModuleTest\Util\ServiceManagerFactory;
 use Zend\Loader\AutoloaderFactory;
 use Zend\Mvc\Service\ServiceManagerConfig;
 use Zend\ServiceManager\ServiceManager;
@@ -57,9 +58,12 @@ class Bootstrap
 
         static::$serviceManager = $serviceManager;
         static::$config = $config;
+
+        ServiceManagerFactory::setConfig($config);
     }
 
     /**
+     * @deprecated
      * @return \Zend\ServiceManager\ServiceManager
      */
     public static function getServiceManager()

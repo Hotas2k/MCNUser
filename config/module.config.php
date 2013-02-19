@@ -16,7 +16,12 @@ return array(
     'service_manager' => array(
         'factories' => array(
 
-            'mcn.service.user.authentication' => 'MCNUser\Factory\AuthenticationServiceFactory'
+            // services
+            'mcn.service.user.authentication' => 'MCNUser\Factory\AuthenticationServiceFactory',
+
+            // options
+            'mcn.options.user.authentication' => 'MCNUser\Factory\AuthenticationOptionsFactory'
+
         )
     ),
 
