@@ -54,7 +54,7 @@ class AuthenticationController extends AbstractActionController
 
         if ($result->getCode() == Result::SUCCESS) {
 
-            if ($this->service->getOptions()->isEnableRedirection() && $return) {
+            if ($this->service->getOptions()->isEnabledRedirection() && $return) {
 
                 return $this->redirect()->toUrl($return);
             }

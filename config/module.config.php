@@ -21,7 +21,6 @@ return array(
 
             // options
             'mcn.options.user.authentication' => 'MCNUser\Factory\AuthenticationOptionsFactory'
-
         )
     ),
 

@@ -68,7 +68,8 @@ class AuthenticationServiceFactory implements FactoryInterface
 
             $className = $pluginOptions->getClassName();
 
-            $plugin = new $className($pluginOptions);
+            $plugin = $sl->get($className);
+            $plugin->setOptions($pluginOptions);
 
             $pluginManager->setService($alias, $plugin);
         }
