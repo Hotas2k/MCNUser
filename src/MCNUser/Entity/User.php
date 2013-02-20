@@ -8,6 +8,7 @@
 
 namespace MCNUser\Entity;
 
+use DateTime;
 use MCN\Object\Entity\AbstractEntity;
 use MCN\Object\Entity\Behavior\TimestampableTrait;
 use Doctrine\ORM\Mapping as ORM;
@@ -20,8 +21,9 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\HasLifecycleCallbacks
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
-class User extends AbstractEntity
+class User extends AbstractEntity implements UserInterface
 {
+    use AuthTokenTrait;
     use TimestampableTrait;
 
     /**
@@ -98,9 +100,9 @@ class User extends AbstractEntity
     }
 
     /**
-     * @param \DateTime|null $last_login_at
+     * @param \DateTime $last_login_at
      */
-    public function setLastLoginAt($last_login_at)
+    public function setLastLoginAt(DateTime $last_login_at)
     {
         $this->last_login_at = $last_login_at;
     }
