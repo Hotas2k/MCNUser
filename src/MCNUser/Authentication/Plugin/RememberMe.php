@@ -9,13 +9,19 @@
 namespace MCNUser\Authentication\Plugin;
 
 use MCNUser\Service\UserInterface;
+use Zend\Http\Client\Cookies;
 use Zend\Http\Request as HttpRequest;
+use MCNUser\Service\User\AuthToken as AuthTokenService;
 
 class RememberMe implements PluginInterface
 {
-    public function __construct(AuthTokenService $service)
+    /**
+     * @param \MCNUser\Service\User\AuthToken $service
+     */
+    public function __construct(AuthTokenServiceInterface $service, Cookies $cookies = null)
     {
-
+        $this->service = $service;
+        $this->cookies = ($cookies == null) ? new Cookies : $cookies;
     }
 
     /**
