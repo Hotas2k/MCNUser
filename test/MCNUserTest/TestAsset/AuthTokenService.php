@@ -9,23 +9,20 @@
 namespace MCNUserTest\TestAsset;
 
 use DateInterval;
-use MCNUser\Entity\User\AuthToken as TokenEntity;
-use MCNUser\Service\AuthTokenInterface;
-use MCNUser\Service\Exception;
-use MCNUser\Service\UserEntityInterface;
+use MCNUser\Authentication\Exception;
+use MCNUser\Authentication\TokenServiceInterface;
 
-class AuthTokenService implements AuthTokenInterface
+class AuthTokenService implements TokenServiceInterface
 {
-
     /**
      * Create a new authentication token
      *
-     * @param \MCNUser\Entity\User $user
+     * @param mixed         $entity Should use the trait MCNUser\Entity\AuthTokenTrait
      * @param \DateInterval $valid_until
      *
-     * @return TokenEntity
+     * @return \MCNUser\Entity\AuthToken
      */
-    public function create(UserEntityInterface $user, DateInterval $valid_until = null)
+    public function create($entity, DateInterval $valid_until = null)
     {
         // TODO: Implement create() method.
     }
@@ -33,16 +30,42 @@ class AuthTokenService implements AuthTokenInterface
     /**
      * Consume a token
      *
-     * @param TokenEntity $token
-     * @param bool        $renew Optional
+     * @param mixed  $entity
+     * @param string $token
      *
      * @throws Exception\ExpiredTokenException
      * @throws Exception\AlreadyConsumedException
      *
-     * @return TokenEntity|void
+     * @return \MCNUser\Entity\AuthToken
      */
-    public function consumeToken(TokenEntity $token, $renew = false)
+    public function consumeToken($entity, $token)
     {
-        // TODO: Implement consumeToken() method.
+        switch ($token)
+        {
+            case 'already-used':
+                throw new Exception\AlreadyConsumedException;
+
+            case 'not-found':
+                throw new Exception\TokenNotFoundException;
+
+            case 'has-expired':
+                throw new Exception\ExpiredTokenException;
+        }
+    }
+
+    /**
+     * Consume a token and return a new one
+     *
+     * @param mixed $entity
+     * @param string $token
+     *
+     * @throws Exception\ExpiredTokenException
+     * @throws Exception\AlreadyConsumedException
+     *
+     * @return \MCNUser\Entity\AuthToken
+     */
+    public function consumeAndRenewToken($entity, $token)
+    {
+        $this->consumeToken($entity, $token);
     }
 }
