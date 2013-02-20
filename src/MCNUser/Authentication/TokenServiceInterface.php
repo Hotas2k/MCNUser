@@ -9,8 +9,6 @@
 namespace MCNUser\Authentication;
 
 use DateInterval;
-use MCNUser\Entity\User as UserEntity;
-use MCNUser\Entity\User\AuthToken as TokenEntity;
 
 /**
  * Class AuthTokenInterface
@@ -24,21 +22,33 @@ interface TokenServiceInterface
      * @param mixed         $entity Should use the trait MCNUser\Entity\AuthTokenTrait
      * @param \DateInterval $valid_until
      *
-     * @internal param \MCNUser\Entity\User $user
-     * @return TokenEntity
+     * @return \MCNUser\Entity\AuthToken
      */
     public function create($entity, DateInterval $valid_until = null);
 
     /**
      * Consume a token
      *
-     * @param TokenEntity $token
-     * @param bool        $renew Optional
+     * @param mixed  $entity
+     * @param string $token
      *
      * @throws Exception\ExpiredTokenException
      * @throws Exception\AlreadyConsumedException
      *
-     * @return TokenEntity|void
+     * @return \MCNUser\Entity\AuthToken
      */
-    public function consumeToken(TokenEntity $token, $renew = false);
+    public function consumeToken($entity, $token);
+
+    /**
+     * Consume a token and return a new one
+     *
+     * @param mixed $entity
+     * @param string $token
+     *
+     * @throws Exception\ExpiredTokenException
+     * @throws Exception\AlreadyConsumedException
+     *
+     * @return \MCNUser\Entity\AuthToken
+     */
+    public function consumeAndRenewToken($entity, $token);
 }

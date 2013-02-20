@@ -6,10 +6,10 @@
  * @copyright PMG Media Group AB
  */
 
-namespace MCNUser\Entity\User;
+namespace MCNUser\Entity;
 
 use DateTime;
-use Doctrine\ORM\Mapping as ORM:
+use Doctrine\ORM\Mapping as ORM;
 use MCN\Object\Entity\AbstractEntity;
 
 /**
