@@ -11,12 +11,11 @@ namespace MCNUser\Authentication;
 use DateInterval;
 use DateTime;
 use Doctrine\ORM\EntityManager;
-use ErrorException;
 use MCN\Stdlib\ClassUtils;
-use MCNUser\Entity\User\AuthToken as TokenEntity;
-use MCNUser\Entity\User as UserEntity;
+use MCNUser\Entity\AuthToken as TokenEntity;
+use Zend\Http\PhpEnvironment\RemoteAddress;
 use Zend\Json\Server\Error;
-use Zend\Stdlib\ErrorHandler;
+use Zend\Math;
 
 /**
  * Class AuthToken
@@ -60,29 +59,15 @@ class TokenService implements TokenServiceInterface
         if (! ClassUtils::uses($entity, 'MCNUser\Entity\AuthTokenTrait')) {
 
             throw new Exception\LogicException(
-                sprintf('The class %s does not use the required trait MCNUser\Entity\AuthTokenTrait', get_class($entity))
+                sprintf(
+                    'The class %s does not use the required trait MCNUser\Entity\AuthTokenTrait',
+                    get_class($entity)
+                )
             );
         }
 
-        try {
-
-            ErrorHandler::start();
-
-            $resource = fopen('/dev/urandom', 'r');
-
-            $token = base64_encode(fread($resource, 100));
-
-            fclose($resource);
-
-            ErrorHandler::stop(true);
-
-        } catch(ErrorException $e) {
-
-            throw new Exception\LogicException('Failed to generate token', null, $e);
-        }
-
         $tokenEntity = new TokenEntity();
-        $tokenEntity->setToken($token);
+        $tokenEntity->setToken(Math\Rand::getBytes(100));
         $tokenEntity->setOwner($entity->getId());
 
         if ($valid_until) {
@@ -100,18 +85,64 @@ class TokenService implements TokenServiceInterface
     }
 
     /**
-     * Consume a token
-     *
-     * @param TokenEntity $token
-     * @param bool        $renew Optional
-     *
-     * @throws Exception\ExpiredTokenException
-     * @throws Exception\AlreadyConsumedException
-     *
-     * @return TokenEntity|void
+     * @inheritdoc
      */
-    public function consumeToken($entity, $token, $renew = false)
+    public function consumeToken($entity, $token)
     {
+        if (! ClassUtils::uses($entity, 'MCNUser\Entity\AuthTokenTrait')) {
 
+            throw new Exception\LogicException(
+                sprintf(
+                    'The class %s does not use the required trait MCNUser\Entity\AuthTokenTrait',
+                    get_class($entity)
+                )
+            );
+        }
+
+        /**
+         * @var $token \MCNUser\Entity\AuthToken
+         */
+        $token = $this->getRepository()->findOneBy(array(
+            'owner' => $entity->getId(),
+            'token' => $token
+        ));
+
+        if (! $token) {
+
+            throw new Exception\TokenNotFoundException;
+        }
+
+        if ($token->getUsedAt() !== null) {
+
+            throw new Exception\AlreadyConsumedException;
+        }
+
+        $dt = new DateTime;
+
+        if ($token->getValidUntil() < $dt) {
+
+            throw new Exception\ExpiredTokenException;
+        }
+
+        $ip = (new RemoteAddress())->getIpAddress();
+
+        $token->setUsedAt($dt);
+        $token->setUsedByIp($ip);
+
+        $this->entityManager->flush($token);
+
+        return $token;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function consumeAndRenewToken($entity, $token)
+    {
+        $token = $this->consumeToken($entity, $token);
+
+        $interval = $token->getValidUntil() !== null ? $token->getCreatedAt()->diff($token->getValidUntil()) : null;
+
+        return $this->create($entity, $interval);
     }
 }
