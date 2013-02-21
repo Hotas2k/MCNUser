@@ -8,8 +8,8 @@
 
 namespace MCNUserTest\Authentication\Plugin;
 
-use MCNUser\Authentication\Exception\AlreadyConsumedException;
-use MCNUser\Authentication\Exception\ExpiredTokenException;
+use MCNUser\Authentication\Exception\TokenAlreadyConsumedException;
+use MCNUser\Authentication\Exception\TokenHasExpiredException;
 use MCNUser\Authentication\Exception\TokenNotFoundException;
 use MCNUser\Authentication\Plugin\RememberMe;
 use MCNUser\Authentication\Result;
@@ -99,7 +99,7 @@ class RememberMeTest extends \PHPUnit_Framework_TestCase
         $this->service
              ->expects($this->once())
              ->method('consumeAndRenewToken')
-             ->will($this->throwException(new AlreadyConsumedException()));
+             ->will($this->throwException(new TokenAlreadyConsumedException()));
 
         $result = $this->plugin->authenticate($this->request, $this->userService);
 
@@ -136,7 +136,7 @@ class RememberMeTest extends \PHPUnit_Framework_TestCase
         $this->service
             ->expects($this->once())
             ->method('consumeAndRenewToken')
-            ->will($this->throwException(new ExpiredTokenException()));
+            ->will($this->throwException(new TokenHasExpiredException()));
 
         $result = $this->plugin->authenticate($this->request, $this->userService);
 
