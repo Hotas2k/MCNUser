@@ -12,6 +12,8 @@ use MCNUser\Authentication\Result;
 use MCNUser\Options\Authentication\Plugin\RememberMe as Options;
 use MCNUser\Authentication\TokenServiceInterface;
 use MCNUser\Service\UserInterface;
+use Zend\Http\Client\Cookies;
+use Zend\Http\Header\SetCookie;
 use Zend\Http\Request as HttpRequest;
 use MCNUser\Authentication\Exception;
 
@@ -42,10 +44,12 @@ class RememberMe implements PluginInterface
     }
 
     /**
-     *
+     * Uses a stored token to renew
      *
      * @param \Zend\Http\Request             $request
      * @param \MCNUser\Service\UserInterface $service
+     *
+     * @throws \MCNUser\Authentication\Exception\DomainException
      *
      * @return \MCNUser\Authentication\Result
      */
@@ -67,7 +71,7 @@ class RememberMe implements PluginInterface
 
         try {
 
-            $this->service->consumeAndRenewToken($user, $token);
+            $token = $this->service->consumeAndRenewToken($user, $token);
 
         } catch (Exception\AlreadyConsumedException $e) {
 

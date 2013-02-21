@@ -10,11 +10,10 @@ namespace MCNUser\Authentication;
 
 use DateInterval;
 use DateTime;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ObjectManager;
 use MCN\Stdlib\ClassUtils;
 use MCNUser\Entity\AuthToken as TokenEntity;
 use Zend\Http\PhpEnvironment\RemoteAddress;
-use Zend\Json\Server\Error;
 use Zend\Math;
 
 /**
@@ -24,16 +23,16 @@ use Zend\Math;
 class TokenService implements TokenServiceInterface
 {
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\Common\Persistence\ObjectManager
      */
-    protected $entityManager;
+    protected $objectManager;
 
     /**
-     * @param \Doctrine\ORM\EntityManager $entityManager
+     * @param \Doctrine\Common\Persistence\ObjectManager $objectManager
      */
-    public function __construct(EntityManager $entityManager)
+    public function __construct(ObjectManager $objectManager)
     {
-        $this->entityManager = $entityManager;
+        $this->objectManager = $objectManager;
     }
 
     /**
@@ -41,7 +40,7 @@ class TokenService implements TokenServiceInterface
      */
     protected function getRepository()
     {
-        return $this->entityManager->getRepository('MCNUser\Entity\AuthToken');
+        return $this->objectManager->getRepository('MCNUser\Entity\AuthToken');
     }
 
     /**
@@ -78,8 +77,8 @@ class TokenService implements TokenServiceInterface
             $tokenEntity->setValidUntil($dt);
         }
 
-        $this->entityManager->persist($tokenEntity);
-        $this->entityManager->flush($tokenEntity);
+        $this->objectManager->persist($tokenEntity);
+        $this->objectManager->flush($tokenEntity);
 
         return $tokenEntity;
     }
@@ -129,7 +128,7 @@ class TokenService implements TokenServiceInterface
         $token->setUsedAt($dt);
         $token->setUsedByIp($ip);
 
-        $this->entityManager->flush($token);
+        $this->objectManager->flush($token);
 
         return $token;
     }
