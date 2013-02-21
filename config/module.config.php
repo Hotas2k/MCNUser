@@ -10,20 +10,7 @@ return array(
     'MCNUser' => array(
         'authentication' => array(
             'plugins' => array(
-                'MCNUser\Options\Authentication\Plugin\Standard' => array(
-                    'http_identity_field' => 'identity',
-                    'http_credential_field' => 'credential',
 
-                    'entity_identity_property'   => 'email',
-                    'entity_credential_property' => 'password',
-
-                    // Credential treatment is applied on the user supplied password
-                    // before comparing it with the password stored in the backend
-                    'credential_treatment' => function($password) {
-
-                        return sha1($password);
-                    }
-                )
             )
         )
     ),
@@ -40,7 +27,7 @@ return array(
 
         'invokables' => array(
 
-            'mcn.authentication.plugin.standard' => 'MCNUser\Options\Authentication\Plugin\Standard'
+            'mcn.authentication.plugin.standard' => 'MCNUser\Authentication\Plugin\Standard'
         )
     ),
 

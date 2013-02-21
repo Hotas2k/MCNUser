@@ -19,7 +19,7 @@ trait AuthTokenTrait
     /**
      * @var \Doctrine\Common\Collections\ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="MCNUser\Entity\AuthToken")
+     * @ORM\OneToMany(targetEntity="MCNUser\Entity\AuthToken", mappedBy="owner")
      */
     protected $auth_tokens;
 

@@ -64,7 +64,7 @@ class Standard extends AbstractPluginOptions
      */
     public function getServiceManagerAlias()
     {
-        return 'mcn.authentication.plugin.remember-me';
+        return 'mcn.authentication.plugin.standard';
     }
 
     /**

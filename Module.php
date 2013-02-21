@@ -27,15 +27,6 @@ class Module
     {
         $sm = $e->getApplication()->getServiceManager();
 
-        /**
-         * @var $service \MCNUser\Authentication\AuthenticationService
-         */
-        $service = $sm->get('mcn.service.user.authentication');
-
-        if ($service->getOptions()->isEnabledRememberMe() && !$service->hasIdentity()) {
-
-            $service->authenticate($sm->get('request'), 'remember-me');
-        }
     }
 
 
@@ -110,6 +101,11 @@ class Module
                 'mcn.listener.user.authentication.update-login' => function(ServiceLocatorInterface $sm) {
 
                     return new Listener\Authentication\LastLogin($sm->get('mcn.service.user'));
+                },
+
+                'mcn.service.user.authentication.token' => function(ServiceLocatorInterface $sm) {
+
+                    return new Authentication\TokenService($sm->get('doctrine.entitymanager.ormdefault'));
                 },
 
                 'mcn.service.user' => function(ServiceLocatorInterface $sm) {

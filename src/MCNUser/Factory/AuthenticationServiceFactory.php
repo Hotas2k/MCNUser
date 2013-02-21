@@ -66,9 +66,7 @@ class AuthenticationServiceFactory implements FactoryInterface
          */
         foreach ($options->getPlugins() as $alias => $pluginOptions) {
 
-            $className = $pluginOptions->getClassName();
-
-            $plugin = $sl->get($className);
+            $plugin = $sl->get($pluginOptions->getServiceManagerAlias());
             $plugin->setOptions($pluginOptions);
 
             $pluginManager->setService($alias, $plugin);
