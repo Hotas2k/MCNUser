@@ -16,6 +16,7 @@ use Zend\Http\Client\Cookies;
 use Zend\Http\Header\SetCookie;
 use Zend\Http\Request as HttpRequest;
 use MCNUser\Authentication\Exception;
+use Zend\Http\Response as HttpResponse;
 
 /**
  * Class RememberMe
@@ -35,12 +36,14 @@ class RememberMe implements PluginInterface
 
     /**
      * @param \MCNUser\Authentication\TokenServiceInterface $service
+     * @param \Zend\Http\Response $response
      * @param \MCNUser\Options\Authentication\Plugin\RememberMe $options
      */
-    public function __construct(TokenServiceInterface $service, Options $options = null)
+    public function __construct(TokenServiceInterface $service, HttpResponse $response, Options $options = null)
     {
-        $this->service = $service;
-        $this->options = $options;
+        $this->service  = $service;
+        $this->options  = $options;
+        $this->response = $response;
     }
 
     /**
@@ -72,6 +75,12 @@ class RememberMe implements PluginInterface
         try {
 
             $token = $this->service->consumeAndRenewToken($user, $token);
+
+            $validUntil = $token->getValidUntil() !== null ? $token->getValidUntil()->getTimestamp() : null;
+
+            $cookie = new SetCookie('remember_me', $identity . '|' . $token->getToken(), $validUntil);
+
+            $this->response->getHeaders()->addHeader($cookie);
 
         } catch (Exception\AlreadyConsumedException $e) {
 

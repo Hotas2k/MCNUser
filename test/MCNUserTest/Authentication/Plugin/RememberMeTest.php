@@ -20,6 +20,7 @@ use MCNUserTest\TestAsset;
 use Zend\Http\Client\Cookies;
 use Zend\Http\Header\Cookie;
 use Zend\Http\Request;
+use Zend\Http\Response;
 use Zend\Stdlib\DateTime;
 
 class RememberMeTest extends \PHPUnit_Framework_TestCase
@@ -28,6 +29,11 @@ class RememberMeTest extends \PHPUnit_Framework_TestCase
      * @var \Zend\Http\Request
      */
     protected $request;
+
+    /**
+     * @var \Zend\Http\Response
+     */
+    protected $response;
 
     /**
      * @var \MCNUser\Authentication\TokenServiceInterface
@@ -58,10 +64,12 @@ class RememberMeTest extends \PHPUnit_Framework_TestCase
         $this->request = new Request();
         $this->request->getHeaders()->addHeader(new Cookie(array('remember_me' => 'a coookie for |  you sir!')));
 
+        $this->response = new Response();
+
         $this->service     = $this->getMock('MCNUser\Authentication\TokenServiceInterface');
         $this->userService = $this->getMock('MCNUser\Service\UserInterface');
 
-        $this->plugin = new RememberMe($this->service, $this->options);
+        $this->plugin = new RememberMe($this->service, $this->response, $this->options);
     }
 
     /**
@@ -72,11 +80,6 @@ class RememberMeTest extends \PHPUnit_Framework_TestCase
         $this->request->getHeaders()->clearHeaders();
 
         $this->plugin->authenticate($this->request, $this->userService);
-    }
-
-    public function testForNewTokenOnSuccess()
-    {
-        $this->markTestIncomplete('Not yet implemented');
     }
 
     public function testForNonExistingUserAccount()
@@ -143,11 +146,13 @@ class RememberMeTest extends \PHPUnit_Framework_TestCase
 
     public function testSuccessfulLogin()
     {
+        $dt = DateTime::createFromFormat('U', time() + 3600);
+
         $token = new AuthToken();
         $token->setCreatedAtOnPersist();
         $token->setToken('hello.world');
         $token->setOwner(1);
-        $token->setValidUntil(DateTime::createFromFormat('U', time() + 3600));
+        $token->setValidUntil($dt);
 
         $this->userService
             ->expects($this->once())
@@ -161,6 +166,14 @@ class RememberMeTest extends \PHPUnit_Framework_TestCase
 
         $result = $this->plugin->authenticate($this->request, $this->userService);
 
+
+        /**
+         * @var $cookie \Zend\Http\Header\SetCookie
+         */
+        $cookie = $this->response->getHeaders()->get('set-cookie')[0];
+
+        $this->assertEquals($cookie->getName(), 'remember_me');
+        $this->assertEquals($dt->getTimestamp(), strtotime($cookie->getExpires()));
         $this->assertEquals(Result::SUCCESS, $result->getCode());
     }
 }
