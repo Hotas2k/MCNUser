@@ -176,7 +176,7 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
         $authResult = Result::create(Result::FAILURE_INVALID_CREDENTIAL, null, Result::MSG_INVALID_CREDENTIAL);
 
         $this->authService
-            ->expects($this->once())
+            ->expects($this->any())
             ->method('authenticate')
             ->withAnyParameters()
             ->will($this->returnValue($authResult));
@@ -245,5 +245,27 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Zend\View\Model\JsonModel', $response);
         $this->assertEquals($response->serialize(), '{"code":1,"message":"","identity":{"id":1,"email":"hello@world.com","created_at":null,"last_login_ip":null,"last_login_at":null}}');
+    }
+
+    public function testJsonResponseDoesNotContainIdentityOnFailedLogin()
+    {
+        $this->request->getHeaders()->addHeader(
+            Accept::fromString('Accept: application/json')
+        );
+
+        $this->routeMatch->setParam('action', 'authenticate');
+
+        $authResult = Result::create(Result::FAILURE_INVALID_CREDENTIAL, null, Result::MSG_INVALID_CREDENTIAL);
+
+        $this->authService
+            ->expects($this->any())
+            ->method('authenticate')
+            ->withAnyParameters()
+            ->will($this->returnValue($authResult));
+
+        $response = $this->controller->dispatch($this->request);
+
+        $this->assertInstanceOf('Zend\View\Model\JsonModel', $response);
+        $this->assertNull($response->getVariable('identity'));
     }
 }

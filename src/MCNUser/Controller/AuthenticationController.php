@@ -54,7 +54,14 @@ class AuthenticationController extends AbstractActionController
 
         if ($this->http()->acceptsMimeType('application/json')) {
 
-            return new JsonModel($result->toArray());
+            $data = $result->toArray();
+
+            if ($result->getCode() != Result::SUCCESS) {
+
+                unset($data['identity']);
+            }
+
+            return new JsonModel($data);
         }
 
         if ($result->getCode() == Result::SUCCESS) {
