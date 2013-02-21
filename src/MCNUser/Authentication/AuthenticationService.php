@@ -141,8 +141,11 @@ class AuthenticationService implements EventsCapableInterface
                 $result->setCode(Result::FAILURE_UNCATEGORIZED);
                 $result->setMessage($response->last());
             }
+        }
 
-        } else {
+        // Do not use a else statement on the previous
+        // Because if the event loop fails and we use an else this will not be triggered
+        if ($result->getCode() != Result::SUCCESS) {
 
             $this->getEventManager()->trigger(AuthEvent::EVENT_AUTH_FAILURE, $result, compact('plugin', 'request'));
         }

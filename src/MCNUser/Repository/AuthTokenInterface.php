@@ -9,13 +9,13 @@
 namespace MCNUser\Repository;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Persistence\ObjectRepository;
 
 /**
  * Class AuthTokenInterface
  * @package MCNUser\Repository
  */
-interface AuthTokenInterface extends ObjectRepository
+interface AuthTokenInterface extends ObjectRepository, Selectable
 {
-    public function match(Criteria $criteria);
 }

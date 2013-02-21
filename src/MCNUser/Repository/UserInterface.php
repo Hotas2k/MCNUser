@@ -8,14 +8,13 @@
 
 namespace MCNUser\Repository;
 
-use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Persistence\ObjectRepository;
 
 /**
  * Class UserInterface
  * @package MCNUser\Repository
  */
-interface UserInterface extends ObjectRepository
+interface UserInterface extends ObjectRepository, Selectable
 {
-    public function matching(Criteria $criteria);
 }

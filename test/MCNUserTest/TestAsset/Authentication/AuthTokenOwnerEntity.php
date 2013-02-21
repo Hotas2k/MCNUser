@@ -10,6 +10,13 @@ namespace MCNUserTest\TestAsset\Authentication;
 
 use MCNUser\Entity\AuthTokenTrait;
 
+/**
+ * Class AuthTokenOwnerEntity
+ *
+ * @todo replace this class when phpunit 3.8 is released and use getMockForTrait()
+ *
+ * @package MCNUserTest\TestAsset\Authentication
+ */
 class AuthTokenOwnerEntity
 {
     use AuthTokenTrait;

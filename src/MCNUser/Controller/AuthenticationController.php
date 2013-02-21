@@ -11,7 +11,6 @@ namespace MCNUser\Controller;
 use MCNUser\Authentication\AuthenticationService;
 use MCNUser\Authentication\Result;
 use Zend\Mvc\Controller\AbstractActionController;
-use MCNUser\Authentication\Exception as AuthenticationException;
 
 /**
  * Class AuthenticationController
@@ -40,7 +39,7 @@ class AuthenticationController extends AbstractActionController
     /**
      * Authentication action
      *
-     * @throws \MCNUser\Authentication\Exception\InvalidArgumentException
+     * @throws \MCNUser\Authentication\Exception\DomainException
      *
      * @return \Zend\Http\Response
      */
@@ -63,7 +62,7 @@ class AuthenticationController extends AbstractActionController
 
             if (! $route) {
 
-                throw new AuthenticationException\InvalidArgumentException('No successful login route has been specified');
+                throw new Exception\MissingRouteException('No successful login route has been specified');
             }
 
             return $this->redirect()->toRoute($route);
@@ -76,7 +75,7 @@ class AuthenticationController extends AbstractActionController
 
             if (! $route) {
 
-                throw new AuthenticationException\InvalidArgumentException('No failed login route has been specified');
+                throw new Exception\MissingRouteException('No failed login route has been specified');
             }
 
             return $this->redirect()->toRoute($route);
@@ -96,7 +95,7 @@ class AuthenticationController extends AbstractActionController
 
         if (! $route) {
 
-            throw new AuthenticationException\InvalidArgumentException('No logout route has been specified.');
+            throw new Exception\MissingRouteException('No logout route has been specified.');
         }
 
         $this->service->clearIdentity();

@@ -8,6 +8,8 @@
 
 namespace MCNUserTest\Controller;
 
+use DoctrineORMModuleTest\Util\ServiceManagerFactory;
+use Exception;
 use MCNUser\Authentication\Result;
 use MCNUser\Controller\AuthenticationController;
 use MCNUser\Entity\User;
@@ -24,31 +26,59 @@ use Zend\Stdlib\Parameters;
 
 class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var \MCNUser\Controller\AuthenticationController
+     */
     protected $controller;
+
+    /**
+     * @var \Zend\Http\Request
+     */
     protected $request;
+
+    /**
+     * @var \Zend\Http\Response
+     */
     protected $response;
+
+    /**
+     * @var \Zend\Mvc\Router\RouteMatch
+     */
     protected $routeMatch;
+
+    /**
+     * @var \Zend\Mvc\MvcEvent
+     */
     protected $event;
+
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
     protected $authService;
+
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $userService;
 
     protected function setUp()
     {
-        $serviceManager = Bootstrap::getServiceManager();
-        $serviceManager->setAllowOverride(true);
-        $serviceManager->setService('mcn.service.user', new UserService);
+        $serviceManager = ServiceManagerFactory::getServiceManager();
 
-        $this->authService = $serviceManager->get('mcn.service.user.authentication');
-        $this->authService->getPluginManager()->setService('success', new Successful());
+        $this->userService = $this->getMock('MCNUser\Service\UserInterface');
+        $this->authService = $this->getMock(
+            'MCNUser\Authentication\AuthenticationService',
+            array('authenticate'),
+            array($this->userService)
+        );
 
         $this->controller = new AuthenticationController($this->authService);
         $this->request    = new Request();
         $this->routeMatch = new RouteMatch(array('controller' => 'mcn.authentication'));
         $this->event      = new MvcEvent();
-        $config = $serviceManager->get('Config');
-        $routerConfig = isset($config['router']) ? $config['router'] : array();
 
         // setup a router
-        $router = HttpRouter::factory($routerConfig);
+        $router = HttpRouter::factory();
         $router->addRoute('home', new Literal('/'), array('controller' => 'index'));
 
         $this->event->setRouter($router);
@@ -57,119 +87,139 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
         $this->controller->setServiceLocator($serviceManager);
     }
 
-    /**
-     * @expectedException MCNUser\Authentication\Exception\InvalidArgumentException
-     */
-    public function testAuthenticationThrowExceptionOnNoSuccessfulLoginRoute()
+    public function testAuthenticateThrowExceptionOnMissingSuccessfulLoginRoute()
     {
         $this->routeMatch->setParam('action', 'authenticate');
-        $this->routeMatch->setParam('plugin', 'success');
 
-        $options = $this->authService->getOptions();
-        $options->setSuccessfulLoginRoute(null);
+        $authResult = new Result(array('code' => Result::SUCCESS));
 
-        $response = $this->controller->dispatch($this->request);
+        $this->authService
+            ->expects($this->once())
+            ->method('authenticate')
+            ->withAnyParameters()
+            ->will($this->returnValue($authResult));
 
-        $this->assertTrue($response instanceof Response);
-        $this->assertEquals(500, $response->getStatusCode());
+        try {
+
+            $this->controller->dispatch($this->request);
+
+        } catch(Exception $e) {
+
+            // DO NOT DO ANY TESTING IN CATCH
+        }
+
+        $this->assertInstanceOf('MCNUser\Controller\Exception\MissingRouteException', $e);
+        $this->assertEquals('No successful login route has been specified', $e->getMessage());
+    }
+
+    public function testAuthenticateThrowExceptionOnMissingFailedLoginRoute()
+    {
+        $this->routeMatch->setParam('action', 'authenticate');
+
+        $authResult = new Result(array('code' => Result::FAILURE_INVALID_CREDENTIAL));
+
+        $this->authService
+            ->expects($this->once())
+            ->method('authenticate')
+            ->withAnyParameters()
+            ->will($this->returnValue($authResult));
+
+
+        try {
+
+            $this->controller->dispatch($this->request);
+
+        } catch(Exception $e) {
+
+            // DO NOT DO ANY TESTING IN CATCH
+        }
+
+        $this->assertInstanceOf('MCNUser\Controller\Exception\MissingRouteException', $e);
+        $this->assertEquals('No failed login route has been specified', $e->getMessage());
     }
 
     /**
-     * @expectedException MCNUser\Authentication\Exception\DomainException
+     * @expectedException \MCNUser\Controller\Exception\MissingRouteException
      */
-    public function testStatusCode500ForIllegalPlugin()
+    public function testLogoutThrowsExceptionOnMissingRoute()
     {
-        $this->routeMatch->setParam('action', 'authenticate');
-        $this->routeMatch->setParam('plugin', 'a plugin that does not exist');
-
+        $this->routeMatch->setParam('action', 'logout');
         $this->controller->dispatch($this->request);
     }
 
-    public function testSuccessfulLoginRedirect()
+    public function testRedirectOnSuccessfulLogin()
     {
         $this->routeMatch->setParam('action', 'authenticate');
-        $this->routeMatch->setParam('plugin', 'success');
+
+        $authResult = new Result(array('code' => Result::SUCCESS));
+
+        $this->authService
+            ->expects($this->once())
+            ->method('authenticate')
+            ->withAnyParameters()
+            ->will($this->returnValue($authResult));
 
         $this->authService->getOptions()->setSuccessfulLoginRoute('home');
 
-        $result   = $this->controller->dispatch($this->request);
-        $response = $this->controller->getResponse();
+        /**
+         * @var $response \Zend\Http\Response
+         */
+        $response = $this->controller->dispatch($this->request);
 
-        $this->assertEquals('/', $result->getHeaders()->get('location')->getUri());
+        $this->assertInstanceOf('Zend\Http\Response', $response);
         $this->assertEquals(302, $response->getStatusCode());
+        $this->assertEquals('/', $response->getHeaders()->get('location')->getFieldValue());
     }
 
-    public function testSuccessfulLoginRedirectToReturnPosition()
+    public function testFailedLogin()
+    {
+        $this->routeMatch->setParam('action', 'authenticate');
+
+        $authResult = Result::create(Result::FAILURE_INVALID_CREDENTIAL, null, Result::MSG_INVALID_CREDENTIAL);
+
+        $this->authService
+            ->expects($this->once())
+            ->method('authenticate')
+            ->withAnyParameters()
+            ->will($this->returnValue($authResult));
+
+        $this->authService->getOptions()->setFailedLoginRoute('home');
+
+        /**
+         * @var $response \Zend\Http\Response
+         */
+        $response = $this->controller->dispatch($this->request);
+
+        $this->assertInstanceOf('Zend\Http\Response', $response);
+        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertEquals('/', $response->getHeaders()->get('location')->getFieldValue());
+
+        $this->assertContains(
+            Result::MSG_INVALID_CREDENTIAL,
+            $this->controller->flashMessenger()->getCurrentErrorMessages()
+        );
+    }
+
+    public function testReturnOnSuccessfulLogin()
     {
         $this->routeMatch->setParam('action', 'authenticate');
         $this->routeMatch->setParam('return', '/hello/world');
-        $this->routeMatch->setParam('plugin', 'success');
 
-        $this->authService->getOptions()->setEnabledRedirection(true);
+        $authResult = new Result(array('code' => Result::SUCCESS));
 
-        $result = $this->controller->dispatch($this->request);
+        $this->authService
+            ->expects($this->once())
+            ->method('authenticate')
+            ->withAnyParameters()
+            ->will($this->returnValue($authResult));
 
-        $this->assertEquals('/hello/world', $result->getHeaders()->get('location')->getUri());
-    }
-
-    public function testErrorMessageOnUnsuccessfulLogin()
-    {
-        $this->routeMatch->setParam('action', 'authenticate');
-        $this->authService->getOptions()->setFailedLoginRoute('home');
-
-        $this->request->setPost(
-            new Parameters(array(
-                'identity' => 'wrong email',
-                'credential' => 'password'
-            ))
-        );
-
-        $this->controller->dispatch($this->request);
-
-
-        $this->assertTrue(
-            in_array(Result::MSG_IDENTITY_NOT_FOUND, $this->controller->flashMessenger()->getCurrentErrorMessages())
-        );
-
-        $this->request->setPost(
-            new Parameters(array(
-                'identity' => 'hello@world.com',
-                'credential' => 'wrong password'
-            ))
-        );
-
-        $this->controller->dispatch($this->request);
-
-        $this->assertTrue(
-            in_array(Result::MSG_INVALID_CREDENTIAL, $this->controller->flashMessenger()->getCurrentErrorMessages())
-        );
-    }
-
-    /**
-     * @expectedException MCNUser\Authentication\Exception\InvalidArgumentException
-     */
-    public function testLogoutThrowExceptionOnNoRoute()
-    {
-        $this->routeMatch->setParam('action', 'logout');
-        $this->controller->dispatch($this->request);
-    }
-
-    public function testSuccessfulLogoutAction()
-    {
-        $this->routeMatch->setParam('action', 'authenticate');
-        $this->routeMatch->setParam('plugin', 'success');
-        $this->controller->dispatch($this->request);
-
-        $this->authService->getOptions()->setLogoutRoute('home');
-
-        $this->assertTrue($this->authService->hasIdentity());
-
-        $this->routeMatch->setParam('action', 'logout');
-
+        /**
+         * @var $response \Zend\Http\Response
+         */
         $response = $this->controller->dispatch($this->request);
 
-        $this->assertTrue(!$this->authService->hasIdentity());
-        $this->assertEquals('/', $response->getHeaders()->get('location')->getUri());
+        $this->assertInstanceOf('Zend\Http\Response', $response);
         $this->assertEquals(302, $response->getStatusCode());
+        $this->assertEquals('/hello/world', $response->getHeaders()->get('location')->getFieldValue());
     }
 }

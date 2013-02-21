@@ -8,24 +8,33 @@
 
 namespace MCNUserTest\Authentication;
 
+
 use MCNUser\Authentication\AuthEvent;
 use MCNUser\Authentication\AuthenticationService;
 use MCNUser\Authentication\Result;
-use MCNUser\Factory\AuthenticationServiceFactory;
-use MCNUserTest\Bootstrap;
-use MCNUserTest\TestAsset\UserService;
 use PHPUnit_Framework_TestCase;
-use Zend\EventManager\Event;
 use Zend\Http\Request;
-use Zend\Stdlib\Parameters;
 
 class AuthenticationServiceTest extends PHPUnit_Framework_TestCase
 {
-    protected $userService;
+    /**
+     * @var \Zend\Http\Request
+     */
+    protected $request;
 
-    public function setUp()
+    /**
+     * @var \MCNUser\Authentication\AuthenticationService
+     */
+    protected $service;
+
+    protected $useService;
+
+    protected function setUp()
     {
-        $this->userService = new UserService;
+        $this->request     = new Request();
+        $this->userService = $this->getMock('MCNUser\Service\UserInterface');
+
+        $this->service = new AuthenticationService($this->userService);
     }
 
     /**
@@ -33,29 +42,50 @@ class AuthenticationServiceTest extends PHPUnit_Framework_TestCase
      */
     public function testAuthenticateThrowsExceptionOnInvalidPlugin()
     {
-        $service = new AuthenticationService($this->userService);
-        $service->authenticate(new Request, 'i don\'t exist');
+        $this->service->authenticate($this->request, 'i am a plugin that does not exist');
     }
 
-    public function testSetResultCodeFailureUncategorizedIfEventAuthSuccessEventStops()
+    public function testAuthFailsIfSuccessEventIsStopped()
     {
-        $service = new AuthenticationService($this->userService);
-        $service->getEventManager()->attach(AuthEvent::EVENT_AUTH_SUCCESS, function(Event $e) {
+        $this->service->getEventManager()->attach(AuthEvent::EVENT_AUTH_SUCCESS, function(AuthEvent $e) {
 
             $e->stopPropagation(true);
         });
 
-        $request = new Request();
-        $request->setPost(
-            new Parameters(array(
-                'identity' => 'hello@world.com',
-                'credential' => 'password'
-            ))
-        );
+        $result = Result::create(Result::SUCCESS, 'identity');
+        $plugin = $this->getMock('MCNUser\Authentication\Plugin\PluginInterface');
 
-        $result = $service->authenticate($request);
+        $plugin->expects($this->once())
+               ->method('authenticate')
+               ->withAnyParameters()
+               ->will($this->returnValue($result));
 
-        $this->assertTrue($result->getCode() == Result::FAILURE_UNCATEGORIZED);
-        $this->assertTrue(!$service->hasIdentity());
+        $this->service->getPluginManager()->setService('success', $plugin);
+
+        $result = $this->service->authenticate($this->request, 'success');
+
+        $this->assertEquals(Result::FAILURE_UNCATEGORIZED, $result->getCode());
+    }
+
+    public function testSuccessfulLogin()
+    {
+        $result = Result::create(Result::SUCCESS, 'identity');
+        $plugin = $this->getMock('MCNUser\Authentication\Plugin\PluginInterface');
+
+        $plugin->expects($this->once())
+            ->method('authenticate')
+            ->withAnyParameters()
+            ->will($this->returnValue($result));
+
+        $this->service->getPluginManager()->setService('success', $plugin);
+
+        $this->assertFalse($this->service->hasIdentity());
+
+        $result = $this->service->authenticate($this->request, 'success');
+
+        $this->assertEquals(Result::SUCCESS, $result->getCode());
+        $this->assertEquals($result->getIdentity(), 'identity');
+        $this->assertEquals($this->service->getIdentity(), 'identity');
+        $this->assertTrue($this->service->hasIdentity());
     }
 }
