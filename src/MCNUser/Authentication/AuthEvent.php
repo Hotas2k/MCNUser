@@ -16,8 +16,6 @@ use Zend\EventManager\Event;
  */
 class AuthEvent extends Event
 {
-    const EVENT_PRE_AUTH  = 'auth.pre';
-    const EVENT_POST_AUTH = 'auth.post';
-    const EVENT_AUTH_SUCCESS = 'auth.success';
-    const EVENT_AUTH_FAILURE = 'auth.failure';
+    const EVENT_AUTH_SUCCESS = 'authenticate.success';
+    const EVENT_AUTH_FAILURE = 'authenticate.failure';
 }
