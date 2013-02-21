@@ -24,6 +24,31 @@ use Zend\Stdlib\DateTime;
 
 class RememberMeTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var \Zend\Http\Request
+     */
+    protected $request;
+
+    /**
+     * @var \MCNUser\Authentication\TokenServiceInterface
+     */
+    protected $service;
+
+    /**
+     * @var \MCNUser\Service\UserInterface
+     */
+    protected $userService;
+
+    /**
+     * @var \MCNUser\Authentication\Plugin\RememberMe
+     */
+    protected $plugin;
+
+    /**
+     * @var \MCNUser\Options\Authentication\Plugin\RememberMe
+     */
+    protected $options;
+
     public function setUp()
     {
         $this->options = new RememberMeOptions(array(
@@ -32,7 +57,6 @@ class RememberMeTest extends \PHPUnit_Framework_TestCase
 
         $this->request = new Request();
         $this->request->getHeaders()->addHeader(new Cookie(array('remember_me' => 'a coookie for |  you sir!')));
-
 
         $this->service     = $this->getMock('MCNUser\Authentication\TokenServiceInterface');
         $this->userService = $this->getMock('MCNUser\Service\UserInterface');
