@@ -27,8 +27,7 @@ return array(
 
             // list of plugins
             'plugins' => array(
-                new Plugin\Standard(array(
-
+                array(
                     'http_identity_field' => 'identity',
                     'http_credential_field' => 'credential',
 
@@ -41,7 +40,7 @@ return array(
 
                         return sha1($password);
                     }
-                ))
+                )
             ),
 
             'listeners' => array(

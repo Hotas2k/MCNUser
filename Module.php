@@ -99,6 +99,14 @@ class Module
         return array(
             'factories' => array(
 
+                'mcn.authentication.plugin.remember-me' => function(ServiceLocatorInterface $sm) {
+
+                    return new Authentication\Plugin\RememberMe(
+                        $sm->get('mcn.service.user.authentication.token'),
+                        $sm->get('response')
+                    );
+                },
+
                 'mcn.listener.user.authentication.update-login' => function(ServiceLocatorInterface $sm) {
 
                     return new Listener\Authentication\LastLogin($sm->get('mcn.service.user'));

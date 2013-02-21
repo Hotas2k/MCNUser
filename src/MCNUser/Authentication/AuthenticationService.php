@@ -116,7 +116,7 @@ class AuthenticationService implements EventsCapableInterface
         }
 
         /**
-         * @var $plugin \MCNUser\Authentication\Plugin\PluginInterface
+         * @var $plugin \MCNUser\Authentication\Plugin\AbstractPlugin
          */
         $plugin = $this->getPluginManager()->get($plugin);
 

@@ -10,6 +10,7 @@ namespace MCNUserTest\Authentication\Plugin;
 
 use MCNUser\Authentication\Plugin\Standard;
 use MCNUser\Authentication\Result;
+use MCNUser\Entity\User;
 use MCNUser\Options\Authentication\Plugin\Standard as StandardOptions;
 use MCNUserTest\TestAsset\UserService;
 use Zend\Http\Request;
@@ -17,40 +18,32 @@ use Zend\Stdlib\Parameters;
 
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var \MCNUser\Entity\User
+     */
+    protected $user;
+
+    /**
+     * @var \MCNUser\Authentication\Plugin\Standard
+     */
+    protected $plugin;
+
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
     protected $userService;
 
     public function setUp()
     {
-        $this->userService = new UserService;
-    }
-
-    public function tearDown()
-    {
-        unset($this->userService);
-    }
-
-    protected function getOptions()
-    {
-        return new StandardOptions(array(
-
-            'http_identity_field'   => 'identity',
-            'http_credential_field' => 'credential',
-
-            'entity_identity_property'   => 'email',
-            'entity_credential_property' => 'password',
-
-            // Credential treatment is applied on the user supplied password
-            // before comparing it with the password stored in the backend
-            'credential_treatment' => function($password) {
-
-                return sha1($password);
-            }
+        $this->user = new User();
+        $this->user->fromArray(array(
+            'id'    => 1,
+            'email' => 'hello@world.com',
+            'password' => sha1('password')
         ));
-    }
 
-    protected function getPlugin()
-    {
-        return new Standard($this->getOptions());
+        $this->userService = $this->getMock('MCNUser\Service\UserInterface');
+        $this->plugin = new Standard();
     }
 
     public function testForIdentityNotFound()
@@ -63,7 +56,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
             ))
         );
 
-        $result = $this->getPlugin()->authenticate($request, $this->userService);
+        $result = $this->plugin->authenticate($request, $this->userService);
 
         $this->assertTrue($result->getCode() == Result::FAILURE_IDENTITY_NOT_FOUND);
         $this->assertNull($result->getIdentity());
@@ -79,14 +72,24 @@ class StandardTest extends \PHPUnit_Framework_TestCase
             ))
         );
 
-        $result = $this->getPlugin()->authenticate($request, $this->userService);
+        $this->userService
+            ->expects($this->any())
+            ->method('getOneBy')
+            ->will($this->returnValue($this->user));
+
+        $result = $this->plugin->authenticate($request, $this->userService);
 
         $this->assertTrue($result->getCode()     == Result::FAILURE_INVALID_CREDENTIAL);
-        $this->assertTrue($result->getIdentity() == $this->userService->users[0]);
+        $this->assertTrue($result->getIdentity() == $this->user);
     }
 
     public function testForSuccessfulLogin()
     {
+        $this->userService
+            ->expects($this->any())
+            ->method('getOneBy')
+            ->will($this->returnValue($this->user));
+
         $request = new Request();
         $request->setPost(
             new Parameters(array(
@@ -95,9 +98,9 @@ class StandardTest extends \PHPUnit_Framework_TestCase
             ))
         );
 
-        $result = $this->getPlugin()->authenticate($request, $this->userService);
+        $result = $this->plugin->authenticate($request, $this->userService);
 
         $this->assertTrue($result->getCode()     == Result::SUCCESS);
-        $this->assertTrue($result->getIdentity() == $this->userService->users[0]);
+        $this->assertTrue($result->getIdentity() == $this->user);
     }
 }

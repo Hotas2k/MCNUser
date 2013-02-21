@@ -27,7 +27,10 @@ class AuthenticationServiceTest extends PHPUnit_Framework_TestCase
      */
     protected $service;
 
-    protected $useService;
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $userService;
 
     protected function setUp()
     {
@@ -53,7 +56,7 @@ class AuthenticationServiceTest extends PHPUnit_Framework_TestCase
         });
 
         $result = Result::create(Result::SUCCESS, 'identity');
-        $plugin = $this->getMock('MCNUser\Authentication\Plugin\PluginInterface');
+        $plugin = $this->getMock('MCNUser\Authentication\Plugin\AbstractPlugin');
 
         $plugin->expects($this->once())
                ->method('authenticate')
@@ -70,7 +73,7 @@ class AuthenticationServiceTest extends PHPUnit_Framework_TestCase
     public function testSuccessfulLogin()
     {
         $result = Result::create(Result::SUCCESS, 'identity');
-        $plugin = $this->getMock('MCNUser\Authentication\Plugin\PluginInterface');
+        $plugin = $this->getMock('MCNUser\Authentication\Plugin\AbstractPlugin');
 
         $plugin->expects($this->once())
             ->method('authenticate')

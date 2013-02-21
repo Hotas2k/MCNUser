@@ -125,14 +125,14 @@ class AuthenticationOptions extends AbstractOptions
      */
     public function addPlugin(Plugin\AbstractPluginOptions $plugin, $overwrite = false)
     {
-        if (isset($this->plugins[$plugin->getDefaultAlias()]) && !$overwrite) {
+        if (isset($this->plugins[$plugin->getPluginManagerAlias()]) && !$overwrite) {
 
             throw new \LogicException(
-                sprintf('Plugin with the alias %s already exists and overwrite was disabled', $plugin->getDefaultAlias())
+                sprintf('Plugin with the alias %s already exists and overwrite was disabled', $plugin->getPluginManagerAlias())
             );
         }
 
-        $this->plugins[$plugin->getDefaultAlias()] = $plugin;
+        $this->plugins[$plugin->getPluginManagerAlias()] = $plugin;
 
         return $this;
     }

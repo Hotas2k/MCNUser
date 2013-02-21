@@ -15,7 +15,7 @@ use Zend\Stdlib\ArrayObject;
 class AuthenticationServiceFactoryTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @expectedException MCNUser\Factory\Exception\InvalidArgumentException
+     * @expectedException \MCNUser\Factory\Exception\InvalidArgumentException
      */
     public function testInvalidSlKey()
     {
@@ -27,7 +27,7 @@ class AuthenticationServiceFactoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException MCNUser\Factory\Exception\LogicException
+     * @expectedException \MCNUser\Factory\Exception\LogicException
      */
     public function testInvalidInstanceOfSlKey()
     {

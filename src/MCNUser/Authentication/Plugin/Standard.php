@@ -17,10 +17,8 @@ use MCNUser\Options\Authentication\Plugin\Standard as Options;
  * Class Standard
  * @package MCNUser\Authentication\Plugin
  */
-class Standard implements PluginInterface
+class Standard extends AbstractPlugin
 {
-    protected $options;
-
     /**
      * @param \MCNUser\Options\Authentication\Plugin\Standard $options
      */

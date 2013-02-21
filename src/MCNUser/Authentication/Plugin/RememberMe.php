@@ -22,7 +22,7 @@ use Zend\Http\Response as HttpResponse;
  * Class RememberMe
  * @package MCNUser\Authentication\Plugin
  */
-class RememberMe implements PluginInterface
+class RememberMe extends AbstractPlugin
 {
     /**
      * @var \MCNUser\Authentication\TokenServiceInterface

@@ -28,7 +28,7 @@ class PluginManager extends AbstractPluginManager
     /**
      * Validate the plugin
      *
-     * Checks that the plugin loaded is an instance of Plugin\PluginInterface.
+     * Checks that the plugin loaded is an instance of Plugin\AbstractPlugin.
      *
      * @param  mixed $plugin
      * @return void
@@ -36,7 +36,7 @@ class PluginManager extends AbstractPluginManager
      */
     public function validatePlugin($plugin)
     {
-        if ($plugin instanceof Plugin\PluginInterface) {
+        if ($plugin instanceof Plugin\AbstractPlugin) {
 
             return;
         }

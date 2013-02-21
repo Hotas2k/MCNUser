@@ -20,12 +20,6 @@ class UserService implements UserInterface
 
     public function __construct()
     {
-        $user = new User();
-        $user->fromArray(array(
-            'id'    => 1,
-            'email' => 'hello@world.com',
-            'password' => sha1('password')
-        ));
 
         $this->users[] = $user;
     }

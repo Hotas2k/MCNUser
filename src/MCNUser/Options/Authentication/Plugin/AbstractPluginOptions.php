@@ -10,6 +10,10 @@ namespace MCNUser\Options\Authentication\Plugin;
 
 use Zend\Stdlib\AbstractOptions;
 
+/**
+ * Class AbstractPluginOptions
+ * @package MCNUser\Options\Authentication\Plugin
+ */
 abstract class AbstractPluginOptions extends AbstractOptions
 {
     /**
@@ -24,5 +28,12 @@ abstract class AbstractPluginOptions extends AbstractOptions
      *
      * @return string
      */
-    abstract public function getDefaultAlias();
+    abstract public function getPluginManagerAlias();
+
+    /**
+     * SL alias
+     *
+     * @return string
+     */
+    abstract public function getServiceManagerAlias();
 }
