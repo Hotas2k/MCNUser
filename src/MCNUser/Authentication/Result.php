@@ -8,6 +8,7 @@
 
 namespace MCNUser\Authentication;
 
+use MCNUser\Entity\UserInterface;
 use Zend\Stdlib\AbstractOptions;
 
 class Result extends AbstractOptions
@@ -44,7 +45,7 @@ class Result extends AbstractOptions
      *
      * @return static
      */
-    public static function create($code, $identity, $message = '')
+    public static function create($code, UserInterface $identity = null, $message = '')
     {
         return new static(array(
             'code'     => $code,

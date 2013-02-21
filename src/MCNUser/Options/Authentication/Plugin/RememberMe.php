@@ -51,9 +51,7 @@ class RememberMe extends AbstractPluginOptions
         return 'remember-me';
     }
 
-    /**
-     * @return string
-     */
+
     public function getServiceManagerAlias()
     {
         return 'mcn.authentication.plugin.remember-me';

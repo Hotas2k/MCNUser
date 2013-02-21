@@ -12,6 +12,7 @@ namespace MCNUserTest\Authentication;
 use MCNUser\Authentication\AuthEvent;
 use MCNUser\Authentication\AuthenticationService;
 use MCNUser\Authentication\Result;
+use MCNUser\Entity\User;
 use PHPUnit_Framework_TestCase;
 use Zend\Http\Request;
 
@@ -55,7 +56,7 @@ class AuthenticationServiceTest extends PHPUnit_Framework_TestCase
             $e->stopPropagation(true);
         });
 
-        $result = Result::create(Result::SUCCESS, 'identity');
+        $result = Result::create(Result::SUCCESS);
         $plugin = $this->getMock('MCNUser\Authentication\Plugin\AbstractPlugin');
 
         $plugin->expects($this->once())
@@ -72,7 +73,9 @@ class AuthenticationServiceTest extends PHPUnit_Framework_TestCase
 
     public function testSuccessfulLogin()
     {
-        $result = Result::create(Result::SUCCESS, 'identity');
+        $user = new User();
+
+        $result = Result::create(Result::SUCCESS, $user);
         $plugin = $this->getMock('MCNUser\Authentication\Plugin\AbstractPlugin');
 
         $plugin->expects($this->once())
@@ -86,9 +89,9 @@ class AuthenticationServiceTest extends PHPUnit_Framework_TestCase
 
         $result = $this->service->authenticate($this->request, 'success');
 
-        $this->assertEquals(Result::SUCCESS, $result->getCode());
-        $this->assertEquals($result->getIdentity(), 'identity');
-        $this->assertEquals($this->service->getIdentity(), 'identity');
         $this->assertTrue($this->service->hasIdentity());
+        $this->assertEquals(Result::SUCCESS, $result->getCode());
+        $this->assertEquals($result->getIdentity(), $user);
+        $this->assertEquals($this->service->getIdentity(), $user);
     }
 }

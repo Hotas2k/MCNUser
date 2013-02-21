@@ -9,6 +9,7 @@
 return array(
     'MCNUser' => array(
         'authentication' => array(
+
             'plugins' => array(
 
             )
@@ -16,6 +17,12 @@ return array(
     ),
 
     'service_manager' => array(
+
+        'abstract_factories' => array(
+
+            'MCNUser\Factory\Authentication\PluginOptionsFactory'
+        ),
+
         'factories' => array(
 
             // services

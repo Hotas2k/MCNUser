@@ -40,18 +40,18 @@ class AuthenticationController extends AbstractActionController
     /**
      * Authentication action
      *
-     * @throws \MCNUser\Authentication\Exception\DomainException
+     * @throws Exception\MissingRouteException
      *
-     * @return \Zend\Http\Response
+     * @return \Zend\Http\Response|\Zend\View\Model\JsonModel
      */
     public function authenticateAction()
     {
         $return   = $this->params('return');
         $plugin   = $this->params('plugin', 'standard');
-        $remember = $this->params('remember', false);
 
         $result = $this->service->authenticate($this->getRequest(), $plugin);
 
+        // short circuit on ajax request
         if ($this->http()->acceptsMimeType('application/json')) {
 
             $data = $result->toArray();
@@ -98,7 +98,7 @@ class AuthenticationController extends AbstractActionController
     /**
      * Logout and redirect user
      *
-     * @throws \MCNUser\Authentication\Exception\InvalidArgumentException
+     * @throws Exception\MissingRouteException
      *
      * @return \Zend\Http\Response
      */

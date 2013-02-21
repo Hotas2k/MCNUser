@@ -27,7 +27,7 @@ return array(
 
             // list of plugins
             'plugins' => array(
-                'MCNUser\Options\Authentication\Plugin\Options' => array(
+                'MCNUser\Options\Authentication\Plugin\Standard' => array(
                     'http_identity_field'   => 'identity',
                     'http_credential_field' => 'credential',
 

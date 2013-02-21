@@ -198,6 +198,24 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testLogout()
+    {
+        $this->routeMatch->setParam('action', 'logout');
+
+        $this->authService
+            ->expects($this->once())
+            ->method('clearIdentity')
+            ->withAnyParameters();
+
+        $this->authService->getOptions()->setLogoutRoute('home');
+
+        $response = $this->controller->dispatch($this->request);
+
+        $this->assertInstanceOf('Zend\Http\Response', $response);
+        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertEquals('/', $response->getHeaders()->get('location')->getFieldValue());
+    }
+
     public function testReturnOnSuccessfulLogin()
     {
         $this->routeMatch->setParam('action', 'authenticate');/**/
@@ -258,7 +276,7 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
         $authResult = Result::create(Result::FAILURE_INVALID_CREDENTIAL, null, Result::MSG_INVALID_CREDENTIAL);
 
         $this->authService
-            ->expects($this->any())
+            ->expects($this->once())
             ->method('authenticate')
             ->withAnyParameters()
             ->will($this->returnValue($authResult));
