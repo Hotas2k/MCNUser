@@ -11,11 +11,12 @@ namespace MCNUser\Controller;
 use MCNUser\Authentication\AuthenticationService;
 use MCNUser\Authentication\Result;
 use Zend\Mvc\Controller\AbstractActionController;
+use Zend\View\Model\JsonModel;
 
 /**
  * Class AuthenticationController
  *
- * @method \Zend\Http\Response getResponse
+ * @method \MCN\Controller\Plugin\Http http
  *
  * @package MCNUser\Controller
  */
@@ -50,6 +51,11 @@ class AuthenticationController extends AbstractActionController
         $remember = $this->params('remember', false);
 
         $result = $this->service->authenticate($this->getRequest(), $plugin);
+
+        if ($this->http()->acceptsMimeType('application/json')) {
+
+            return new JsonModel($result->toArray());
+        }
 
         if ($result->getCode() == Result::SUCCESS) {
 

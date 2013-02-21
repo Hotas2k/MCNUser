@@ -8,21 +8,18 @@
 
 namespace MCNUserTest\Controller;
 
-use DoctrineORMModuleTest\Util\ServiceManagerFactory;
 use Exception;
 use MCNUser\Authentication\Result;
 use MCNUser\Controller\AuthenticationController;
 use MCNUser\Entity\User;
-use MCNUserTest\Bootstrap;
-use MCNUserTest\TestAsset\Authentication\Plugin\Successful;
-use MCNUserTest\TestAsset\UserService;
+use MCNUserTest\Util\ServiceManagerFactory;
+use Zend\Http\Header\Accept;
 use Zend\Http\PhpEnvironment\Request;
 use Zend\Http\Response;
 use Zend\Mvc\MvcEvent;
 use Zend\Mvc\Router\Http\Literal;
 use Zend\Mvc\Router\RouteMatch;
 use Zend\Mvc\Router\Http\TreeRouteStack as HttpRouter;
-use Zend\Stdlib\Parameters;
 
 class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
 {
@@ -85,6 +82,7 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
         $this->event->setRouteMatch($this->routeMatch);
         $this->controller->setEvent($this->event);
         $this->controller->setServiceLocator($serviceManager);
+        $this->controller->setPluginManager($serviceManager->get('controllerpluginmanager'));
     }
 
     public function testAuthenticateThrowExceptionOnMissingSuccessfulLoginRoute()
@@ -202,7 +200,7 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
 
     public function testReturnOnSuccessfulLogin()
     {
-        $this->routeMatch->setParam('action', 'authenticate');
+        $this->routeMatch->setParam('action', 'authenticate');/**/
         $this->routeMatch->setParam('return', '/hello/world');
 
         $authResult = new Result(array('code' => Result::SUCCESS));
@@ -221,5 +219,31 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Zend\Http\Response', $response);
         $this->assertEquals(302, $response->getStatusCode());
         $this->assertEquals('/hello/world', $response->getHeaders()->get('location')->getFieldValue());
+    }
+
+    public function testJsonResponse()
+    {
+        $this->routeMatch->setParam('action', 'authenticate');
+
+        $this->request->getHeaders()->addHeader(
+            Accept::fromString('Accept: application/json')
+        );
+
+        $user = new User();
+        $user->setId(1);
+        $user->setEmail('hello@world.com');
+
+        $authResult = Result::create(Result::SUCCESS, $user);
+
+        $this->authService
+            ->expects($this->once())
+            ->method('authenticate')
+            ->withAnyParameters()
+            ->will($this->returnValue($authResult));
+
+        $response = $this->controller->dispatch($this->request);
+
+        $this->assertInstanceOf('Zend\View\Model\JsonModel', $response);
+        $this->assertEquals($response->serialize(), '{"code":1,"message":"","identity":{"id":1,"email":"hello@world.com","created_at":null,"last_login_ip":null,"last_login_at":null}}');
     }
 }

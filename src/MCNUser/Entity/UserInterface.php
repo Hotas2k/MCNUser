@@ -10,12 +10,13 @@ namespace MCNUser\Entity;
 
 use ArrayAccess;
 use DateTime;
+use JsonSerializable;
 
 /**
  * Class UserInterface
  * @package MCNUser\Entity
  */
-interface UserInterface extends ArrayAccess
+interface UserInterface extends ArrayAccess, JsonSerializable
 {
     /**
      * @return mixed

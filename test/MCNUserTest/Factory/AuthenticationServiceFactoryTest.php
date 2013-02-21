@@ -8,10 +8,8 @@
 
 namespace MCNUserTest\Factory;
 
-use DoctrineORMModuleTest\Util\ServiceManagerFactory;
-use MCNUser\Authentication\AuthenticationService;
 use MCNUser\Factory\AuthenticationServiceFactory;
-use MCNUserTest\Bootstrap;
+use MCNUserTest\Util\ServiceManagerFactory;
 use Zend\Stdlib\ArrayObject;
 
 class AuthenticationServiceFactoryTest extends \PHPUnit_Framework_TestCase
