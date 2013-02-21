@@ -32,8 +32,8 @@ interface TokenServiceInterface
      * @param mixed  $entity
      * @param string $token
      *
-     * @throws Exception\ExpiredTokenException
-     * @throws Exception\AlreadyConsumedException
+     * @throws Exception\TokenHasExpiredException
+     * @throws Exception\TokenAlreadyConsumedException
      *
      * @return \MCNUser\Entity\AuthToken
      */
@@ -45,8 +45,8 @@ interface TokenServiceInterface
      * @param mixed $entity
      * @param string $token
      *
-     * @throws Exception\ExpiredTokenException
-     * @throws Exception\AlreadyConsumedException
+     * @throws Exception\TokenHasExpiredException
+     * @throws Exception\TokenAlreadyConsumedException
      *
      * @return \MCNUser\Entity\AuthToken
      */

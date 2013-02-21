@@ -9,8 +9,8 @@
 namespace MCNUser\Authentication\Exception;
 
 /**
- * Class ExpiredTokenException
+ * Class TokenHasExpiredException
  * @package MCNUser\Service\User\Exception
  */
-class ExpiredTokenException extends RuntimeException implements ExceptionInterface
+class TokenHasExpiredException extends RuntimeException implements ExceptionInterface
 {}

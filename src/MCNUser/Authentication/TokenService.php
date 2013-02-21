@@ -113,14 +113,14 @@ class TokenService implements TokenServiceInterface
 
         if ($token->getUsedAt() !== null) {
 
-            throw new Exception\AlreadyConsumedException;
+            throw new Exception\TokenAlreadyConsumedException;
         }
 
         $dt = new DateTime;
 
-        if ($token->getValidUntil() < $dt) {
+        if ($token->getValidUntil() && $token->getValidUntil() < $dt) {
 
-            throw new Exception\ExpiredTokenException;
+            throw new Exception\TokenHasExpiredException;
         }
 
         $ip = (new RemoteAddress())->getIpAddress();

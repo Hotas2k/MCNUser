@@ -82,11 +82,11 @@ class RememberMe implements PluginInterface
 
             $this->response->getHeaders()->addHeader($cookie);
 
-        } catch (Exception\AlreadyConsumedException $e) {
+        } catch (Exception\TokenAlreadyConsumedException $e) {
 
             return Result::create(Result::FAILURE_UNCATEGORIZED, $user, 'Token has already been consumed.');
 
-        } catch(Exception\ExpiredTokenException $e) {
+        } catch(Exception\TokenHasExpiredException $e) {
 
             return Result::create(Result::FAILURE_UNCATEGORIZED, $user, 'Token has expired.');
 
