@@ -98,7 +98,7 @@ class RememberMeCookieCreator implements ListenerAggregateInterface
         $expires = $token->getValidUntil() ? $token->getValidUntil()->getTimestamp() : null;
 
         $this->response->getHeaders()->addHeader(
-            new SetCookie('remember_me', $hash, $expires)
+            new SetCookie('remember_me', $hash, $expires, '/')
         );
     }
 }
