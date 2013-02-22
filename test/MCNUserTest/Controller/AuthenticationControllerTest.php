@@ -204,8 +204,7 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
 
         $this->authService
             ->expects($this->once())
-            ->method('clearIdentity')
-            ->withAnyParameters();
+            ->method('clearIdentity');
 
         $this->authService->getOptions()->setLogoutRoute('home');
 

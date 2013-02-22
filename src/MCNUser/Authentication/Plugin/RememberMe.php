@@ -42,7 +42,7 @@ class RememberMe extends AbstractPlugin
     public function __construct(TokenServiceInterface $service, HttpResponse $response, Options $options = null)
     {
         $this->service  = $service;
-        $this->options  = $options;
+        $this->options  = ($options == null ? new Options() : $options);
         $this->response = $response;
     }
 

@@ -12,8 +12,7 @@ use InvalidArgumentException;
 use MCNUser\Options\Authentication\Plugin\AbstractPluginOptions;
 use Zend\Http\Request as HttpRequest;
 use MCNUser\Service\UserInterface;
-use Zend\Stdlib\AbstractOptions;
-
+use MCNUser\Authentication\Exception;
 /**
  * Interface AbstractPlugin
  * @package MCNUser\Authentication\Plugin
@@ -30,7 +29,7 @@ abstract class AbstractPlugin
      *
      * @param \MCNUser\Options\Authentication\Plugin\AbstractPluginOptions $options
      *
-     * @throws \InvalidArgumentException
+     * @throws \MCNUser\Authentication\Exception\InvalidArgumentException
      *
      * @return $this
      */
@@ -38,12 +37,26 @@ abstract class AbstractPlugin
     {
         if ($options->getClassName() != get_class($this)) {
 
-            throw new InvalidArgumentException('Wrong plugins options to given to wrong class');
+            throw new Exception\InvalidArgumentException('Wrong plugins options to given to wrong class');
         }
 
         $this->options = $options;
 
         return $this;
+    }
+
+    /**
+     * @return \MCNUser\Options\Authentication\Plugin\AbstractPluginOptions
+     * @throws \MCNUser\Authentication\Exception\DomainException
+     */
+    public function getOptions()
+    {
+        if ($this->options === null) {
+
+            throw new Exception\DomainException('No options have been specified');
+        }
+
+        return $this->options;
     }
 
     /**

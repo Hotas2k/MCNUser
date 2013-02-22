@@ -120,8 +120,6 @@ class AuthenticationService implements EventsCapableInterface
          */
         $plugin = $this->getPluginManager()->get($plugin);
 
-        $this->getEventManager()->trigger(__FUNCTION__.'.pre', null, compact('plugin', 'request'));
-
         $result = $plugin->authenticate($request, $this->service);
 
         if ($result->getCode() == Result::SUCCESS) {
@@ -149,8 +147,6 @@ class AuthenticationService implements EventsCapableInterface
 
             $this->getEventManager()->trigger(AuthEvent::EVENT_AUTH_FAILURE, $result, compact('plugin', 'request'));
         }
-
-        $this->getEventManager()->trigger(__FUNCTION__.'.post', $result, compact('plugin', 'request'));
 
         return $result;
     }

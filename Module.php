@@ -98,9 +98,20 @@ class Module
                     );
                 },
 
+                'mcn.listener.user.authentication.remember-me' => function(ServiceLocatorInterface $sm) {
+
+                    return new Listener\Authentication\RememberMeCookieCreator(
+                        $sm->get('mcn.service.user.authentication.token'),
+                        $sm->get('response'),
+                        $sm->get('MCNUser\Options\Authentication\Plugin\RememberMe')
+                    );
+                },
+
                 'mcn.listener.user.authentication.update-login' => function(ServiceLocatorInterface $sm) {
 
-                    return new Listener\Authentication\LastLogin($sm->get('mcn.service.user'));
+                    return new Listener\Authentication\LastLogin(
+                        $sm->get('mcn.service.user')
+                    );
                 },
 
                 'mcn.service.user.authentication.token' => function(ServiceLocatorInterface $sm) {

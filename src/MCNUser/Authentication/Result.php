@@ -14,9 +14,10 @@ use Zend\Stdlib\AbstractOptions;
 class Result extends AbstractOptions
 {
     const SUCCESS = 1;
+    const FAILURE_DISABLED_PLUGIN    = -4;
     const FAILURE_IDENTITY_NOT_FOUND = -1;
     const FAILURE_INVALID_CREDENTIAL = -2;
-    const FAILURE_UNCATEGORIZED = -3;
+    const FAILURE_UNCATEGORIZED      = -3;
 
     const MSG_INVALID_CREDENTIAL = 'Wrong identity or credential specified.';
     const MSG_IDENTITY_NOT_FOUND = 'No entity with the given identity was found.';

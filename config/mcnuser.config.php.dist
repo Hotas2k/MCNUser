@@ -40,12 +40,17 @@ return array(
 
                         return sha1($password);
                     }
+                ),
+
+                'MCNUser\Options\Authentication\Plugin\RememberMe' => array(
+
                 )
             ),
 
             'listeners' => array(
 
-                'mcn.listener.user.authentication.update-login'
+                'mcn.listener.user.authentication.update-login'.
+                'mcn.listener.user.authentication.remember-me'
             )
         )
     ),

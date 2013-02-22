@@ -16,10 +16,6 @@ use DateInterval;
  */
 class RememberMe extends AbstractPluginOptions
 {
-    /**
-     * @var string
-     */
-    protected $cookie_host;
 
     /**
      * @var string
@@ -51,7 +47,9 @@ class RememberMe extends AbstractPluginOptions
         return 'remember-me';
     }
 
-
+    /**
+     * @return string
+     */
     public function getServiceManagerAlias()
     {
         return 'mcn.authentication.plugin.remember-me';
@@ -71,22 +69,6 @@ class RememberMe extends AbstractPluginOptions
     public function setValidInterval(DateInterval $valid_until)
     {
         $this->valid_interval = $valid_until;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCookieHost()
-    {
-        return $this->cookie_host;
-    }
-
-    /**
-     * @param string $cookie_host
-     */
-    public function setCookieHost($cookie_host)
-    {
-        $this->cookie_host = $cookie_host;
     }
 
     /**

@@ -16,16 +16,17 @@ use MCNUser\Entity\User;
 use MCNUser\Listener\Authentication\RememberMeCookieCreator;
 use Zend\Http\Request;
 use Zend\Http\Response;
+use MCNUser\Options\Authentication\Plugin\RememberMe as Options;
 
 /**
  * @property User entity
  * @property Request request
  * @property Response response
  * @property RememberMeCookieCreator listener
- * @property \PHPUnit_Framework_MockObject_MockObject options
  * @property \PHPUnit_Framework_MockObject_MockObject tokenService
  * @property \PHPUnit_Framework_MockObject_MockObject plugin
  * @property AuthEvent event
+ * @property Options options
  */
 class RememberMeCookieCreatorTest extends \PHPUnit_Framework_TestCase
 {
@@ -38,7 +39,8 @@ class RememberMeCookieCreatorTest extends \PHPUnit_Framework_TestCase
         $this->response = new Response();
 
         $this->tokenService = $this->getMock('MCNUser\Authentication\TokenService', array(), array(), '', false);
-        $this->options      = $this->getMock('MCNUser\Options\Authentication\Plugin\RememberMe');
+        $this->options      = new Options();
+
 
         $this->event = new AuthEvent(AuthEvent::EVENT_AUTH_SUCCESS, $this->entity, array('request' => $this->request));
         $this->listener = new RememberMeCookieCreator($this->tokenService, $this->response, $this->options);

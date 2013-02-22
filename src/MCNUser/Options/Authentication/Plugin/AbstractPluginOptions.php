@@ -17,11 +17,6 @@ use Zend\Stdlib\AbstractOptions;
 abstract class AbstractPluginOptions extends AbstractOptions
 {
     /**
-     * @var bool
-     */
-    protected $enabled = true;
-
-    /**
      * Class name of representing plugin
      *
      * @return string
@@ -41,20 +36,4 @@ abstract class AbstractPluginOptions extends AbstractOptions
      * @return string
      */
     abstract public function getServiceManagerAlias();
-
-    /**
-     * @param boolean $enabled
-     */
-    public function setEnabled($enabled)
-    {
-        $this->enabled = $enabled;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function getEnabled()
-    {
-        return $this->enabled;
-    }
 }
