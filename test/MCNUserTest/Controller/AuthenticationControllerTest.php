@@ -65,7 +65,7 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
         $this->userService = $this->getMock('MCNUser\Service\UserInterface');
         $this->authService = $this->getMock(
             'MCNUser\Authentication\AuthenticationService',
-            array('authenticate'),
+            array('authenticate', 'clearIdentity'),
             array($this->userService)
         );
 
@@ -261,8 +261,20 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
 
         $response = $this->controller->dispatch($this->request);
 
+
         $this->assertInstanceOf('Zend\View\Model\JsonModel', $response);
-        $this->assertEquals($response->serialize(), '{"code":1,"message":"","identity":{"id":1,"email":"hello@world.com","created_at":null,"last_login_ip":null,"last_login_at":null}}');
+        $this->assertEquals(
+            array(
+                'code' => 1,
+                'message' => '',
+                'identity' =>
+                User::__set_state(array(
+                    'id' => 1,
+                    'email' => 'hello@world.com'
+                ))
+            ),
+            $response->getVariables()
+        );
     }
 
     public function testJsonResponseDoesNotContainIdentityOnFailedLogin()

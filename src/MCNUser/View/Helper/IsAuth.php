@@ -11,21 +11,30 @@ namespace MCNUser\View\Helper;
 use MCNUser\Authentication\AuthenticationService;
 use Zend\View\Helper\AbstractHelper;
 
+/**
+ * Class IsAuth
+ * @package MCNUser\View\Helper
+ */
 class IsAuth extends AbstractHelper
 {
+    /**
+     * @var \MCNUser\Authentication\AuthenticationService
+     */
     protected $authService;
 
+    /**
+     * @param \MCNUser\Authentication\AuthenticationService $authService
+     */
     public function __construct(AuthenticationService $authService)
     {
         $this->authService = $authService;
     }
 
+    /**
+     * @return \MCNUser\Entity\UserInterface|null
+     */
     public function __invoke()
     {
-        if ($this->authService->hasIdentity()) {
-            return $this->authService->getIdentity();
-        } else {
-            return false;
-        }
+        return $this->authService->hasIdentity() ? $this->authService->getIdentity() : null;
     }
 }

@@ -27,13 +27,6 @@ class AuthenticationOptions extends AbstractOptions
     protected $enabled_redirection = true;
 
     /**
-     * Enable remember me
-     *
-     * @var bool
-     */
-    protected $enabled_remember_me = false;
-
-    /**
      * The route to redirect the user to on a successful login
      *
      * @var string|null
@@ -235,25 +228,5 @@ class AuthenticationOptions extends AbstractOptions
     public function setFailedLoginRoute($failed_login_route)
     {
         $this->failed_login_route = $failed_login_route;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isEnabledRememberMe()
-    {
-        return $this->enabled_remember_me;
-    }
-
-    /**
-     * @param boolean $enabled_remember_me
-     *
-     * @return $this
-     */
-    public function setEnabledRememberMe($enabled_remember_me)
-    {
-        $this->enabled_remember_me = $enabled_remember_me;
-
-        return $this;
     }
 }
