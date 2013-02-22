@@ -8,5 +8,9 @@
 
 namespace MCNUser\Controller\Exception;
 
+/**
+ * Class MissingRouteException
+ * @package MCNUser\Controller\Exception
+ */
 class MissingRouteException extends DomainException implements ExceptionInterface
 {}

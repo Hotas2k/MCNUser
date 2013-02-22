@@ -18,8 +18,8 @@ use Zend\Session\Storage\StorageInterface;
 use MCNUser\Options\Authentication\AuthenticationOptions as Options;
 
 /**
- * Class Authentication
- * @package MCNUser\Service
+ * Class AuthenticationService
+ * @package MCNUser\Authentication
  */
 class AuthenticationService implements EventsCapableInterface
 {
@@ -172,6 +172,7 @@ class AuthenticationService implements EventsCapableInterface
      */
     public function clearIdentity()
     {
+        $this->getEventManager()->trigger(AuthEvent::EVENT_LOGOUT, $this->getIdentity());
         $this->storage->clear();
     }
 }

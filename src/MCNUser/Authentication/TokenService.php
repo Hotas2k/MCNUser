@@ -10,6 +10,7 @@ namespace MCNUser\Authentication;
 
 use DateInterval;
 use DateTime;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Persistence\ObjectManager;
 use MCN\Stdlib\ClassUtils;
 use MCNUser\Entity\AuthToken as TokenEntity;
@@ -17,8 +18,8 @@ use Zend\Http\PhpEnvironment\RemoteAddress;
 use Zend\Math;
 
 /**
- * Class AuthToken
- * @package MCNUser\Service\User
+ * Class TokenService
+ * @package MCNUser\Authentication
  */
 class TokenService implements TokenServiceInterface
 {
@@ -36,7 +37,7 @@ class TokenService implements TokenServiceInterface
     }
 
     /**
-     * @return \Doctrine\ORM\EntityRepository
+     * @return \MCNUser\Repository\AuthTokenInterface
      */
     protected function getRepository()
     {
@@ -44,14 +45,35 @@ class TokenService implements TokenServiceInterface
     }
 
     /**
-     * Create a new authentication token
+     * Get a token entity
      *
-     * @param mixed         $entity
-     * @param \DateInterval $valid_until
+     * @param mixed  $entity
+     * @param string $token
      *
-     * @throws Exception\LogicException If an issue arrives during token initiation
+     * @throws Exception\LogicException
      *
-     * @return TokenEntity
+     * @return \MCNUser\Entity\AuthToken|null
+     */
+    protected function getToken($entity, $token)
+    {
+        if (! ClassUtils::uses($entity, 'MCNUser\Entity\AuthTokenTrait')) {
+
+            throw new Exception\LogicException(
+                sprintf(
+                    'The class %s does not use the required trait MCNUser\Entity\AuthTokenTrait',
+                    get_class($entity)
+                )
+            );
+        }
+
+        return $this->getRepository()->findOneBy(array(
+            'owner' => $entity->getId(),
+            'token' => $token
+        ));
+    }
+
+    /**
+     * @inheritdoc
      */
     public function create($entity, DateInterval $valid_until = null)
     {
@@ -88,23 +110,7 @@ class TokenService implements TokenServiceInterface
      */
     public function consumeToken($entity, $token)
     {
-        if (! ClassUtils::uses($entity, 'MCNUser\Entity\AuthTokenTrait')) {
-
-            throw new Exception\LogicException(
-                sprintf(
-                    'The class %s does not use the required trait MCNUser\Entity\AuthTokenTrait',
-                    get_class($entity)
-                )
-            );
-        }
-
-        /**
-         * @var $token \MCNUser\Entity\AuthToken
-         */
-        $token = $this->getRepository()->findOneBy(array(
-            'owner' => $entity->getId(),
-            'token' => $token
-        ));
+        $token = $this->getToken($entity, $token);
 
         if (! $token) {
 
@@ -143,5 +149,44 @@ class TokenService implements TokenServiceInterface
         $interval = $token->getValidUntil() !== null ? $token->getCreatedAt()->diff($token->getValidUntil()) : null;
 
         return $this->create($entity, $interval);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function removeToken($entity, $token)
+    {
+        $token = $this->getToken($entity, $token);
+
+        $this->objectManager->remove($token);
+        $this->objectManager->flush();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function removeAllTokensForEntity($entity)
+    {
+        if (! ClassUtils::uses($entity, 'MCNUser\Entity\AuthTokenTrait')) {
+
+            throw new Exception\LogicException(
+                sprintf(
+                    'The class %s does not use the required trait MCNUser\Entity\AuthTokenTrait',
+                    get_class($entity)
+                )
+            );
+        }
+
+        $criteria = new Criteria();
+        $criteria->where($criteria->expr()->eq('owner', $entity->getId()));
+
+        $tokens = $this->getRepository()->matching($criteria);
+
+        foreach ($tokens as $token) {
+
+            $this->objectManager->remove($token);
+        }
+
+        $this->objectManager->flush();
     }
 }

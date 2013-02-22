@@ -12,6 +12,10 @@ use MCNUser\Options\Authentication\AuthenticationOptions;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
+/**
+ * Class AuthenticationOptionsFactory
+ * @package MCNUser\Factory
+ */
 class AuthenticationOptionsFactory implements FactoryInterface
 {
     /**

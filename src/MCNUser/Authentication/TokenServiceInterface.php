@@ -11,8 +11,8 @@ namespace MCNUser\Authentication;
 use DateInterval;
 
 /**
- * Class AuthTokenInterface
- * @package MCNUser\Service\User
+ * Class TokenServiceInterface
+ * @package MCNUser\Authentication
  */
 interface TokenServiceInterface
 {
@@ -25,6 +25,22 @@ interface TokenServiceInterface
      * @return \MCNUser\Entity\AuthToken
      */
     public function create($entity, DateInterval $valid_until = null);
+
+    /**
+     *
+     * @param mixed  $entity
+     * @param string $token
+     *
+     * @return void
+     */
+    public function removeToken($entity, $token);
+
+    /**
+     * @param mixed $entity
+     *
+     * @return void
+     */
+    public function removeAllTokensForEntity($entity);
 
     /**
      * Consume a token

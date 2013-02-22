@@ -13,7 +13,7 @@ use DateTime;
 use MCNUser\Authentication\AuthEvent;
 use MCNUser\Entity\AuthToken;
 use MCNUser\Entity\User;
-use MCNUser\Listener\Authentication\RememberMeCookieCreator;
+use MCNUser\Listener\Authentication\RememberMeCookieHandler;
 use Zend\Http\Request;
 use Zend\Http\Response;
 use MCNUser\Options\Authentication\Plugin\RememberMe as Options;
@@ -22,7 +22,7 @@ use MCNUser\Options\Authentication\Plugin\RememberMe as Options;
  * @property User entity
  * @property Request request
  * @property Response response
- * @property RememberMeCookieCreator listener
+ * @property RememberMeCookieHandler listener
  * @property \PHPUnit_Framework_MockObject_MockObject tokenService
  * @property \PHPUnit_Framework_MockObject_MockObject plugin
  * @property AuthEvent event
@@ -43,7 +43,7 @@ class RememberMeCookieCreatorTest extends \PHPUnit_Framework_TestCase
 
 
         $this->event = new AuthEvent(AuthEvent::EVENT_AUTH_SUCCESS, $this->entity, array('request' => $this->request));
-        $this->listener = new RememberMeCookieCreator($this->tokenService, $this->response, $this->options);
+        $this->listener = new RememberMeCookieHandler($this->tokenService, $this->response, $this->options);
     }
 
     public function testNoHeaderIfMissingOrFalseRememberMePostParam()

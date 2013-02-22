@@ -11,6 +11,10 @@ namespace MCNUser\Authentication;
 use MCNUser\Entity\UserInterface;
 use Zend\Stdlib\AbstractOptions;
 
+/**
+ * Class Result
+ * @package MCNUser\Authentication
+ */
 class Result extends AbstractOptions
 {
     const SUCCESS = 1;

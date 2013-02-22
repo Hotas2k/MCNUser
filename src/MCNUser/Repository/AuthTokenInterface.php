@@ -18,4 +18,5 @@ use Doctrine\Common\Persistence\ObjectRepository;
  */
 interface AuthTokenInterface extends ObjectRepository, Selectable
 {
+
 }

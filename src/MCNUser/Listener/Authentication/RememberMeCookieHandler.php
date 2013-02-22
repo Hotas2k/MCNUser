@@ -20,12 +20,12 @@ use MCNUser\Options\Authentication\Plugin\RememberMe as Options;
  * Class RememberMe
  * @package MCNUser\Listener\Authentication\RememberMe
  */
-class RememberMeCookieCreator implements ListenerAggregateInterface
+class RememberMeCookieHandler implements ListenerAggregateInterface
 {
     /**
      * @var array
      */
-    protected $handlers = array();
+    protected $handles = array();
 
     /**
      * @var \Zend\Http\Response
@@ -64,6 +64,7 @@ class RememberMeCookieCreator implements ListenerAggregateInterface
      */
     public function attach(EventManagerInterface $events)
     {
+        $events->attach(AuthEvent::EVENT_LOGOUT,       array($this, 'clearCookieOnLogout'));
         $events->attach(AuthEvent::EVENT_AUTH_SUCCESS, array($this, 'setRememberMeCookie'));
     }
 
@@ -74,9 +75,11 @@ class RememberMeCookieCreator implements ListenerAggregateInterface
      */
     public function detach(EventManagerInterface $events)
     {
-        array_walk($this->handlers, array($events, 'detach'));
+        foreach ($this->handles as $idx => $handle) {
 
-        $this->handlers = array();
+            $events->detach($handle);
+            unset($this->handles[$idx]);
+        }
     }
 
     /**
@@ -100,5 +103,13 @@ class RememberMeCookieCreator implements ListenerAggregateInterface
         $this->response->getHeaders()->addHeader(
             new SetCookie('remember_me', $hash, $expires)
         );
+    }
+
+    /**
+     * Clears the cookie and removes the token stopping it from being used in the future
+     */
+    public function clearCookieOnLogout(AuthEvent $e)
+    {
+        $request = $e->getRequest();
     }
 }

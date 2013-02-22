@@ -16,6 +16,8 @@ use Zend\EventManager\Event;
  */
 class AuthEvent extends Event
 {
+    const EVENT_LOGOUT = 'logout';
+
     const EVENT_AUTH_SUCCESS = 'authenticate.success';
     const EVENT_AUTH_FAILURE = 'authenticate.failure';
 

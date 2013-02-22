@@ -29,7 +29,6 @@ class Module
 
     }
 
-
     /**
      * @return array
      */
@@ -70,6 +69,9 @@ class Module
         );
     }
 
+    /**
+     * @return array
+     */
     public function getViewHelperConfig()
     {
         return array(
@@ -100,7 +102,7 @@ class Module
 
                 'mcn.listener.user.authentication.remember-me' => function(ServiceLocatorInterface $sm) {
 
-                    return new Listener\Authentication\RememberMeCookieCreator(
+                    return new Listener\Authentication\RememberMeCookieHandler(
                         $sm->get('mcn.service.user.authentication.token'),
                         $sm->get('response'),
                         $sm->get('MCNUser\Options\Authentication\Plugin\RememberMe')

@@ -17,4 +17,5 @@ use Doctrine\Common\Persistence\ObjectRepository;
  */
 interface UserInterface extends ObjectRepository, Selectable
 {
+
 }
