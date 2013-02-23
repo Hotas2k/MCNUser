@@ -100,7 +100,14 @@ class Module
                     );
                 },
 
-                'mcn.listener.user.authentication.remember-me' => function(ServiceLocatorInterface $sm) {
+                'mcn.listener.user.authentication.remember-me-auth-trigger' => function(ServiceLocatorInterface $sm) {
+
+                    return new Listener\Authentication\RememberMeAuthTrigger(
+                        $sm->get('mcn.service.user.authentication')
+                    );
+                },
+
+                'mcn.listener.user.authentication.remember-me-cookie-handler' => function(ServiceLocatorInterface $sm) {
 
                     return new Listener\Authentication\RememberMeCookieHandler(
                         $sm->get('mcn.service.user.authentication.token'),
