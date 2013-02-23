@@ -116,4 +116,17 @@ class RememberMeCookieCreatorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($dt->getTimestamp(), strtotime($cookie->getExpires()));
         $this->assertEquals('1|hash', $cookie->getValue());
     }
+
+    public function testRemoveCookie()
+    {
+        $this->listener->clearCookieOnLogout($this->event);
+
+        /**
+         * @var \Zend\Http\Header\SetCookie $cookie
+         */
+        $cookie = $this->response->getHeaders()->get('SetCookie')[0];
+
+        $this->assertEquals(0,  strtotime($cookie->getExpires()));
+        $this->assertEquals('', $cookie->getValue());
+    }
 }

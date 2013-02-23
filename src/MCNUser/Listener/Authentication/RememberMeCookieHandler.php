@@ -110,6 +110,8 @@ class RememberMeCookieHandler implements ListenerAggregateInterface
      */
     public function clearCookieOnLogout(AuthEvent $e)
     {
-        $request = $e->getRequest();
+        $this->response->getHeaders()->addHeader(
+            new SetCookie('remember_me', '', 0)
+        );
     }
 }
