@@ -88,7 +88,7 @@ class TokenService implements TokenServiceInterface
         }
 
         $tokenEntity = new TokenEntity();
-        $tokenEntity->setToken(Math\Rand::getBytes(100));
+        $tokenEntity->setToken(base64_encode(Math\Rand::getBytes(100)));
         $tokenEntity->setOwner($entity->getId());
 
         if ($valid_until) {

@@ -56,21 +56,21 @@ class AuthToken extends AbstractEntity
     /**
      * @var \DateTime|null
      *
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
     protected $valid_until;
 
     /**
      * @var \DateTime|null
      *
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
     protected $used_at;
 
     /**
      * @var string
      *
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
     protected $used_by_ip;
 
