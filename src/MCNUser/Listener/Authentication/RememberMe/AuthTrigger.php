@@ -6,7 +6,7 @@
  * @copyright PMG Media Group AB
  */
 
-namespace MCNUser\Listener\Authentication;
+namespace MCNUser\Listener\Authentication\RememberMe;
 
 use MCNUser\Authentication\AuthenticationService;
 use Zend\Mvc\MvcEvent;
@@ -16,10 +16,10 @@ use Zend\EventManager\ListenerAggregateInterface;
 use MCNUser\Authentication\Exception;
 
 /**
- * Class RememberMeAuthTrigger
+ * Class RememberMe\AuthTrigger
  * @package MCNUser\Listener\Authentication
  */
-class RememberMeAuthTrigger implements ListenerAggregateInterface
+class AuthTrigger implements ListenerAggregateInterface
 {
     /**
      * @var array

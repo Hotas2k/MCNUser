@@ -13,7 +13,7 @@ use DateTime;
 use MCNUser\Authentication\AuthEvent;
 use MCNUser\Entity\AuthToken;
 use MCNUser\Entity\User;
-use MCNUser\Listener\Authentication\RememberMeCookieHandler;
+use MCNUser\Listener\Authentication\RememberMe\CookieHandler;
 use Zend\Http\Request;
 use Zend\Http\Response;
 use MCNUser\Options\Authentication\Plugin\RememberMe as Options;
@@ -22,18 +22,17 @@ use MCNUser\Options\Authentication\Plugin\RememberMe as Options;
  * @property User entity
  * @property Request request
  * @property Response response
- * @property RememberMeCookieHandler listener
  * @property \PHPUnit_Framework_MockObject_MockObject tokenService
  * @property \PHPUnit_Framework_MockObject_MockObject plugin
  * @property AuthEvent event
  * @property Options options
  */
-class RememberMeCookieCreatorTest extends \PHPUnit_Framework_TestCase
+class CookieHandlerTest extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
         $this->entity = new User();
-        $this->entity->setId(1);
+        $this->entity->setEmail('hello@world.com');
 
         $this->request  = new Request();
         $this->response = new Response();
@@ -43,7 +42,7 @@ class RememberMeCookieCreatorTest extends \PHPUnit_Framework_TestCase
 
 
         $this->event = new AuthEvent(AuthEvent::EVENT_AUTH_SUCCESS, $this->entity, array('request' => $this->request));
-        $this->listener = new RememberMeCookieHandler($this->tokenService, $this->response, $this->options);
+        $this->listener = new CookieHandler($this->tokenService, $this->response, $this->options);
     }
 
     public function testNoHeaderIfMissingOrFalseRememberMePostParam()
@@ -83,7 +82,7 @@ class RememberMeCookieCreatorTest extends \PHPUnit_Framework_TestCase
         $cookie = $this->response->getHeaders()->get('SetCookie')[0];
 
         $this->assertNull($cookie->getExpires());
-        $this->assertEquals('1|hash', $cookie->getValue());
+        $this->assertEquals('hello@world.com|hash', $cookie->getValue());
     }
 
     public function testHeaderExpires()
@@ -97,7 +96,7 @@ class RememberMeCookieCreatorTest extends \PHPUnit_Framework_TestCase
 
         $token = new AuthToken();
         $token->fromArray(array(
-            'token' => 'hash',
+            'token'       => 'hash',
             'valid_until' => $dt
         ));
 
@@ -114,7 +113,7 @@ class RememberMeCookieCreatorTest extends \PHPUnit_Framework_TestCase
         $cookie = $this->response->getHeaders()->get('SetCookie')[0];
 
         $this->assertEquals($dt->getTimestamp(), strtotime($cookie->getExpires()));
-        $this->assertEquals('1|hash', $cookie->getValue());
+        $this->assertEquals('hello@world.com|hash', $cookie->getValue());
     }
 
     public function testRemoveCookie()

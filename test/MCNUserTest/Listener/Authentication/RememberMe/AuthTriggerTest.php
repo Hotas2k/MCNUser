@@ -8,7 +8,7 @@
 
 namespace MCNUserTest\Listener\Authentication;
 
-use MCNUser\Listener\Authentication\RememberMeAuthTrigger;
+use MCNUser\Listener\Authentication\RememberMe\AuthTrigger;
 use Zend\Http\Request;
 
 use MCNUser\Authentication\Exception;
@@ -16,16 +16,16 @@ use MCNUser\Authentication\Exception;
 /**
  * @property mixed event
  * @property mixed service
- * @property RememberMeAuthTrigger listener
+ * @property AuthTrigger listener
  */
-class RememberMeAuthTriggerTest extends \PHPUnit_Framework_TestCase
+class AuthTriggerTest extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
         $this->event   = $this->getMock('Zend\Mvc\MvcEvent');
         $this->service = $this->getMock('MCNUser\Authentication\AuthenticationService', array(), array(), '', false);
 
-        $this->listener = new RememberMeAuthTrigger($this->service);
+        $this->listener = new AuthTrigger($this->service);
     }
 
     public function testIgnoreOnInvalidRequest()

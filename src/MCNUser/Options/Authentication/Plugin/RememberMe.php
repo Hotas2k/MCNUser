@@ -16,11 +16,10 @@ use DateInterval;
  */
 class RememberMe extends AbstractPluginOptions
 {
-
     /**
      * @var string
      */
-    protected $entity_identity_property = 'identity';
+    protected $entity_identity_property = 'email';
 
     /**
      * @var \DateInterval

@@ -6,7 +6,7 @@
  * @copyright PMG Media Group AB
  */
 
-namespace MCNUser\Listener\Authentication;
+namespace MCNUser\Listener\Authentication\RememberMe;
 
 use MCNUser\Authentication\AuthEvent;
 use MCNUser\Authentication\TokenServiceInterface;
@@ -20,7 +20,7 @@ use MCNUser\Options\Authentication\Plugin\RememberMe as Options;
  * Class RememberMe
  * @package MCNUser\Listener\Authentication\RememberMe
  */
-class RememberMeCookieHandler implements ListenerAggregateInterface
+class CookieHandler implements ListenerAggregateInterface
 {
     /**
      * @var array
@@ -50,8 +50,8 @@ class RememberMeCookieHandler implements ListenerAggregateInterface
     public function __construct(TokenServiceInterface $service, Response $response, Options $options)
     {
         $this->service  = $service;
-        $this->response = $response;
         $this->options  = $options;
+        $this->response = $response;
     }
 
     /**

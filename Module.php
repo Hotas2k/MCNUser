@@ -123,14 +123,14 @@ class Module
 
                 'mcn.listener.user.authentication.remember-me-auth-trigger' => function(ServiceLocatorInterface $sm) {
 
-                    return new Listener\Authentication\RememberMeAuthTrigger(
+                    return new Listener\Authentication\RememberMe\AuthTrigger(
                         $sm->get('mcn.service.user.authentication')
                     );
                 },
 
                 'mcn.listener.user.authentication.remember-me-cookie-handler' => function(ServiceLocatorInterface $sm) {
 
-                    return new Listener\Authentication\RememberMeCookieHandler(
+                    return new Listener\Authentication\RememberMe\CookieHandler(
                         $sm->get('mcn.service.user.authentication.token'),
                         $sm->get('response'),
                         $sm->get('MCNUser\Options\Authentication\Plugin\RememberMe')
