@@ -90,14 +90,16 @@ class RememberMeCookieHandler implements ListenerAggregateInterface
         $entity  = $e->getEntity();
         $request = $e->getRequest();
 
-        if (! $request->getPost('remember_me')) {
+        $accepted = array('1', 'true');
+
+        if (! in_array($request->getPost('remember_me'), $accepted)) {
 
             return;
         }
 
         $token = $this->service->create($e->getEntity(), $this->options->getValidInterval());
 
-        $hash    = $entity->getId()  . '|' . $token->getToken();
+        $hash    = $entity[$this->options->getEntityIdentityProperty()] . '|' . $token->getToken();
         $expires = $token->getValidUntil() ? $token->getValidUntil()->getTimestamp() : null;
 
         $this->response->getHeaders()->addHeader(
@@ -111,7 +113,7 @@ class RememberMeCookieHandler implements ListenerAggregateInterface
     public function clearCookieOnLogout(AuthEvent $e)
     {
         $this->response->getHeaders()->addHeader(
-            new SetCookie('remember_me', '', 0)
+            new SetCookie('remember_me', '', 0, '/')
         );
     }
 }

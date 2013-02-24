@@ -80,7 +80,7 @@ class RememberMeAuthTrigger implements ListenerAggregateInterface
 
         $cookie = $request->getHeader('Cookie');
 
-        if (isSet($cookie->remember_me)) {
+        if (isSet($cookie->remember_me) && !empty($cookie->remember_me) && !$this->service->hasIdentity()) {
 
             try {
 

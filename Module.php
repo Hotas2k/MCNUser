@@ -75,6 +75,24 @@ class Module
     /**
      * @return array
      */
+    public function getControllerPluginConfig()
+    {
+        return array(
+            'factories' => array(
+
+                'userEntity' => function($sm) {
+
+                    return new Controller\Plugin\MCNAuth(
+                        $sm->getServiceLocator()->get('mcn.service.user.authentication')
+                    );
+                }
+            )
+        );
+    }
+
+    /**
+     * @return array
+     */
     public function getViewHelperConfig()
     {
         return array(

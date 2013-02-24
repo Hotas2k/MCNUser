@@ -50,8 +50,6 @@ return array(
             'listeners' => array(
 
                 'mcn.listener.user.authentication.update-login'.
-
-
                 'mcn.listener.user.authentication.remember-me-auth-trigger',
                 'mcn.listener.user.authentication.remember-me-cookie-handler'
             )
