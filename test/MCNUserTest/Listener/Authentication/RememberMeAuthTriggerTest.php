@@ -11,6 +11,8 @@ namespace MCNUserTest\Listener\Authentication;
 use MCNUser\Listener\Authentication\RememberMeAuthTrigger;
 use Zend\Http\Request;
 
+use MCNUser\Authentication\Exception;
+
 /**
  * @property mixed event
  * @property mixed service
@@ -41,9 +43,27 @@ class RememberMeAuthTriggerTest extends \PHPUnit_Framework_TestCase
         $request->getHeaders()->addHeaderLine('Cookie', 'remember_me=1|hello; foo=test');
 
         $this->event
-            ->expects($this->exactly(2))
+            ->expects($this->atLeastOnce())
             ->method('getRequest')
             ->will($this->returnValue($request));
+
+        $this->listener->attemptAuthenticationByCookie($this->event);
+    }
+
+    public function testHandleAuthServiceExceptionOnInvalidPlugin()
+    {
+        $request = new Request();
+        $request->getHeaders()->addHeaderLine('Cookie', 'remember_me=1|hello; foo=test');
+
+        $this->event
+            ->expects($this->any())
+            ->method('getRequest')
+            ->will($this->returnValue($request));
+
+        $this->service
+            ->expects($this->once())
+            ->method('authenticate')
+            ->will($this->throwException(new Exception\DomainException));
 
         $this->listener->attemptAuthenticationByCookie($this->event);
     }

@@ -27,6 +27,9 @@ class Module
     {
         $sm = $e->getApplication()->getServiceManager();
 
+        $e->getApplication()->getEventManager()->attach(
+            $sm->get('mcn.listener.user.authentication.remember-me-auth-trigger')
+        );
     }
 
     /**

@@ -13,7 +13,12 @@ use Zend\Mvc\MvcEvent;
 use Zend\Http\Request as HttpRequest;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ListenerAggregateInterface;
+use MCNUser\Authentication\Exception;
 
+/**
+ * Class RememberMeAuthTrigger
+ * @package MCNUser\Listener\Authentication
+ */
 class RememberMeAuthTrigger implements ListenerAggregateInterface
 {
     /**
@@ -77,7 +82,13 @@ class RememberMeAuthTrigger implements ListenerAggregateInterface
 
         if (isSet($cookie->remember_me)) {
 
-            $this->service->authenticate($e->getRequest(), 'remember-me');
+            try {
+
+                $this->service->authenticate($e->getRequest(), 'remember-me');
+
+            } catch(Exception\DomainException $e) {
+
+            }
         }
     }
 }
