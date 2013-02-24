@@ -34,23 +34,20 @@ return array(
                     'entity_identity_property'   => 'email',
                     'entity_credential_property' => 'password',
 
-                    // Credential treatment is applied on the user supplied password
-                    // before comparing it with the password stored in the backend
-                    'credential_treatment' => function($password) {
-
-                        return sha1($password);
-                    }
+                    'bcrypt_cost' => 10,
+                    'bcrypt_salt' => ':((*^&!@#!(@#^*(&!@)'
                 ),
 
                 'MCNUser\Options\Authentication\Plugin\RememberMe' => array(
 
+                    'valid_interval'           => new \DateInterval('P7D'),
+                    'entity_identity_property' => 'email'
                 )
             ),
 
             'listeners' => array(
 
                 'mcn.listener.user.authentication.update-login'.
-                'mcn.listener.user.authentication.remember-me-auth-trigger',
                 'mcn.listener.user.authentication.remember-me-cookie-handler'
             )
         )

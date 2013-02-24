@@ -18,6 +18,10 @@ use JsonSerializable;
  */
 interface UserInterface extends ArrayAccess, JsonSerializable
 {
+    const STATE_DEFAULT     = 1;
+    const STATE_ACTIVATED   = 2;
+    const STATE_BANNED      = 4;
+
     /**
      * @return mixed
      */

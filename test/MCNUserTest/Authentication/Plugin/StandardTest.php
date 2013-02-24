@@ -13,11 +13,22 @@ use MCNUser\Authentication\Result;
 use MCNUser\Entity\User;
 use MCNUser\Options\Authentication\Plugin\Standard as StandardOptions;
 use MCNUserTest\TestAsset\UserService;
+use Zend\Crypt\Password\Bcrypt;
 use Zend\Http\Request;
 use Zend\Stdlib\Parameters;
 
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var \MCNUser\Options\Authentication\Plugin\Standard
+     */
+    public $options;
+
+    /**
+     * @var \Zend\Crypt\Password\Bcrypt
+     */
+    public $bcrypt;
+
     /**
      * @var \MCNUser\Entity\User
      */
@@ -35,15 +46,22 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        $this->options     = new StandardOptions();
+        $this->userService = $this->getMock('MCNUser\Service\UserInterface');
+
+        $this->bcrypt = new Bcrypt(array(
+            'salt' => $this->options->getBcryptSalt(),
+            'cost' => $this->options->getBcryptCost()
+        ));
+
         $this->user = new User();
         $this->user->fromArray(array(
             'id'    => 1,
             'email' => 'hello@world.com',
-            'password' => sha1('password')
+            'password' => $this->bcrypt->create('password')
         ));
 
-        $this->userService = $this->getMock('MCNUser\Service\UserInterface');
-        $this->plugin = new Standard();
+        $this->plugin = new Standard($this->options);
     }
 
     public function testForIdentityNotFound()
@@ -51,8 +69,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
         $request = new Request();
         $request->setPost(
             new Parameters(array(
-                'email'    => 'wrong email',
-                'password' => 'password'
+                'email'    => 'wrong email'
             ))
         );
 
@@ -93,7 +110,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
         $request = new Request();
         $request->setPost(
             new Parameters(array(
-                'identity' => 'hello@world.com',
+                'identity'   => 'hello@world.com',
                 'credential' => 'password'
             ))
         );

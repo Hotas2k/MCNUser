@@ -8,8 +8,10 @@
 
 namespace MCNUser\Authentication\Plugin;
 
+use MCN\Stdlib\NamingConvention;
 use MCNUser\Authentication\Result;
 use MCNUser\Service\UserInterface;
+use Zend\Crypt\Password\Bcrypt;
 use Zend\Http\Request as HttpRequest;
 use MCNUser\Options\Authentication\Plugin\Standard as Options;
 
@@ -42,20 +44,21 @@ class Standard extends AbstractPlugin
         $identity   = $request->getPost($this->options->getHttpIdentityField());
         $credential = $request->getPost($this->options->getHttpCredentialField());
 
-        if ($this->options->getCredentialTreatment() !== null) {
-
-            // apply credential treatment
-            $credential = call_user_func_array($this->options->getCredentialTreatment(), array($credential));
-        }
-
         $user = $service->getOneBy($this->options->getEntityIdentityProperty(), $identity);
+
+        $bcrypt = new Bcrypt(array(
+            'salt' => $this->options->getBcryptSalt(),
+            'cost' => $this->options->getBcryptCost()
+        ));
 
         if (! $user) {
 
             return Result::create(Result::FAILURE_IDENTITY_NOT_FOUND, null, Result::MSG_IDENTITY_NOT_FOUND);
         }
 
-        if (strcmp($user[$this->options->getEntityCredentialProperty()], $credential) != 0) {
+        $method = NamingConvention::toCamelCase('get_' . $this->options->getEntityCredentialProperty());
+
+        if (! $bcrypt->verify($credential, $user->$method())) {
 
             return Result::create(Result::FAILURE_INVALID_CREDENTIAL, $user, Result::MSG_INVALID_CREDENTIAL);
         }

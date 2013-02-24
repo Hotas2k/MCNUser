@@ -35,11 +35,14 @@ class Standard extends AbstractPluginOptions
     protected $http_credential_field = 'credential';
 
     /**
-     * A callable method that is applied before comparing passwords
-     *
-     * @var \Callable
+     * @var int
      */
-    protected $credential_treatment = 'sha1';
+    protected $bcrypt_cost = 10;
+
+    /**
+     * @var string
+     */
+    protected $bcrypt_salt = ':((*^&!@#!(@#^*(&!@)';
 
     /**
      * Class name of representing plugin
@@ -65,22 +68,6 @@ class Standard extends AbstractPluginOptions
     public function getServiceManagerAlias()
     {
         return 'mcn.authentication.plugin.standard';
-    }
-
-    /**
-     * @param Callable $credential_treatment
-     */
-    public function setCredentialTreatment(Callable $credential_treatment)
-    {
-        $this->credential_treatment = $credential_treatment;
-    }
-
-    /**
-     * @return Callable
-     */
-    public function getCredentialTreatment()
-    {
-        return $this->credential_treatment;
     }
 
     /**
@@ -145,5 +132,37 @@ class Standard extends AbstractPluginOptions
     public function getHttpIdentityField()
     {
         return $this->http_identity_field;
+    }
+
+    /**
+     * @return int
+     */
+    public function getBcryptCost()
+    {
+        return $this->bcrypt_cost;
+    }
+
+    /**
+     * @param int $bcrypt_cost
+     */
+    public function setBcryptCost($bcrypt_cost)
+    {
+        $this->bcrypt_cost = $bcrypt_cost;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBcryptSalt()
+    {
+        return $this->bcrypt_salt;
+    }
+
+    /**
+     * @param string $bcrypt_salt
+     */
+    public function setBcryptSalt($bcrypt_salt)
+    {
+        $this->bcrypt_salt = $bcrypt_salt;
     }
 }

@@ -50,6 +50,11 @@ class User extends AbstractEntity implements UserInterface
     protected $password;
 
     /**
+     * @var int
+     */
+    protected $state;
+
+    /**
      * Last known ip-address
      *
      * @var string
