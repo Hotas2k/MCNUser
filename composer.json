@@ -1,0 +1,20 @@
+{
+    "name": "MCN/User",
+    "minimum-stability": "stable",
+    "authors": [
+        {
+            "name": "Antoine Hedgecock",
+            "email": "antoine.hedgecock@gmail.com"
+        },
+        {
+            "name": "Jonas Eriksson",
+            "email": "jonas@pmg.se"
+        }
+    ],
+
+    "require": {
+        "mcn/mcn": "3.0.0",
+        "zendframework/zendframework": "2.1.*",
+        "doctrine/common": "2.3.*"
+    }
+}
