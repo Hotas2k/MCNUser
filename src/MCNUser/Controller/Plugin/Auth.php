@@ -10,23 +10,31 @@ namespace MCNUser\Controller\Plugin;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 use MCNUser\Authentication\AuthenticationService;
 
-class MCNAuth extends AbstractPlugin
+/**
+ * Class Auth
+ * @package MCNUser\Controller\Plugin
+ */
+class Auth extends AbstractPlugin
 {
-
+    /**
+     * @var \MCNUser\Authentication\AuthenticationService
+     */
     protected $authService;
 
+    /**
+     * @param \MCNUser\Authentication\AuthenticationService $authService
+     */
     public function __construct(AuthenticationService $authService)
     {
         $this->authService = $authService;
     }
 
+    /**
+     * @return $this
+     */
     public function __invoke()
     {
-        if ($this->authService->hasIdentity()) {
-            return $this->authService->getIdentity();
-        } else {
-            return false;
-        }
+        return $this;
     }
 
     /**

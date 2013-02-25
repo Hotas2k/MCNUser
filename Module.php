@@ -80,9 +80,9 @@ class Module
         return array(
             'factories' => array(
 
-                'userEntity' => function($sm) {
+                'auth' => function($sm) {
 
-                    return new Controller\Plugin\MCNAuth(
+                    return new Controller\Plugin\Auth(
                         $sm->getServiceLocator()->get('mcn.service.user.authentication')
                     );
                 }
