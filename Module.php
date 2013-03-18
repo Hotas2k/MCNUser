@@ -12,6 +12,7 @@ use Zend\Mvc\Controller\ControllerManager;
 use Zend\Mvc\MvcEvent;
 use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Http\Request as HttpRequest;
 
 /**
  * Class Module
@@ -27,9 +28,12 @@ class Module
     {
         $sm = $e->getApplication()->getServiceManager();
 
-        $e->getApplication()->getEventManager()->attach(
-            $sm->get('mcn.listener.user.authentication.remember-me-auth-trigger')
-        );
+        if ($e->getRequest() instanceof HttpRequest) {
+
+            $e->getApplication()->getEventManager()->attach(
+                $sm->get('mcn.listener.user.authentication.remember-me-auth-trigger')
+            );
+        }
     }
 
     /**

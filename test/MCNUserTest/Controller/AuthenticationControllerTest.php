@@ -261,16 +261,18 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
         $response = $this->controller->dispatch($this->request);
 
 
+        $user = new User();
+        $user->fromArray(array(
+            'id' => 1,
+            'email' => 'hello@world.com'
+        ));
+
         $this->assertInstanceOf('Zend\View\Model\JsonModel', $response);
         $this->assertEquals(
             array(
                 'code' => 1,
                 'message' => '',
-                'identity' =>
-                User::__set_state(array(
-                    'id' => 1,
-                    'email' => 'hello@world.com'
-                ))
+                'identity' => $user
             ),
             $response->getVariables()
         );
