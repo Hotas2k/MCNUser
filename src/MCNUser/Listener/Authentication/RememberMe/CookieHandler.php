@@ -13,7 +13,8 @@ use MCNUser\Authentication\TokenServiceInterface;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ListenerAggregateInterface;
 use Zend\Http\Header\SetCookie;
-use Zend\Http\Response;
+use Zend\Http\Response as HttpResponse;
+use Zend\Stdlib\ResponseInterface;
 use MCNUser\Options\Authentication\Plugin\RememberMe as Options;
 
 /**
@@ -43,11 +44,11 @@ class CookieHandler implements ListenerAggregateInterface
     protected $options;
 
     /**
-     * @param \MCNUser\Authentication\TokenServiceInterface $service
-     * @param \Zend\Http\Response $response
+     * @param \MCNUser\Authentication\TokenServiceInterface     $service
+     * @param \Zend\Stdlib\ResponseInterface                    $response
      * @param \MCNUser\Options\Authentication\Plugin\RememberMe $options
      */
-    public function __construct(TokenServiceInterface $service, Response $response, Options $options)
+    public function __construct(TokenServiceInterface $service, ResponseInterface $response, Options $options)
     {
         $this->service  = $service;
         $this->options  = $options;
@@ -87,6 +88,11 @@ class CookieHandler implements ListenerAggregateInterface
      */
     public function setRememberMeCookie(AuthEvent $e)
     {
+        if (! $this->response instanceof HttpResponse) {
+
+            return;
+        }
+
         $entity  = $e->getEntity();
         $request = $e->getRequest();
 

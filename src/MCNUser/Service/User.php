@@ -12,6 +12,7 @@ use MCNUser\Entity\User as UserEntity;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Persistence\ObjectManager;
 use MCNUser\Entity\User as User0;
+use MCNUser\Options\UserOptions as Options;
 
 /**
  * Class User
@@ -26,9 +27,11 @@ class User implements UserInterface
 
     /**
      * @param \Doctrine\Common\Persistence\ObjectManager $manager
+     * @param \MCNUser\Options\UserOptions               $options
      */
-    public function __construct(ObjectManager $manager)
+    public function __construct(ObjectManager $manager, Options $options = null)
     {
+        $this->options       = ($options === null) ? new Options() : $options;
         $this->objectManager = $manager;
     }
 
@@ -39,7 +42,7 @@ class User implements UserInterface
      */
     protected function getRepository()
     {
-        return $this->objectManager->getRepository('MCNUser\Entity\User');
+        return $this->objectManager->getRepository($this->options->getUserEntity());
     }
 
     /**

@@ -28,12 +28,9 @@ class Module
     {
         $sm = $e->getApplication()->getServiceManager();
 
-        if ($e->getRequest() instanceof HttpRequest) {
-
-            $e->getApplication()->getEventManager()->attach(
-                $sm->get('mcn.listener.user.authentication.remember-me-auth-trigger')
-            );
-        }
+        $e->getApplication()->getEventManager()->attach(
+            $sm->get('mcn.listener.user.authentication.remember-me-auth-trigger')
+        );
     }
 
     /**
@@ -155,7 +152,10 @@ class Module
 
                 'mcn.service.user' => function(ServiceLocatorInterface $sm) {
 
-                    return new Service\User($sm->get('doctrine.entitymanager.ormdefault'));
+                    return new Service\User(
+                        $sm->get('doctrine.entitymanager.ormdefault'),
+                        new Options\UserOptions($sm->get('Config')['MCNUser']['service'])
+                    );
                 }
             )
         );
