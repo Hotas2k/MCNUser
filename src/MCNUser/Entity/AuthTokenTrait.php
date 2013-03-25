@@ -19,7 +19,11 @@ trait AuthTokenTrait
     /**
      * @var \Doctrine\Common\Collections\ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="MCNUser\Entity\AuthToken", mappedBy="owner")
+     * @ORM\ManyToMany(targetEntity="MCNUser\Entity\AuthToken")
+     * @ORM\JoinTable(name="mcn_user_auth_tokens_reference",
+     *  joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *  inverseJoinColumns={@ORM\JoinColumn(name="token_id", referencedColumnName="id")}
+     * )
      */
     protected $auth_tokens;
 
