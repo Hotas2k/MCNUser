@@ -45,7 +45,7 @@ class User extends AbstractEntity implements UserInterface
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=40)
+     * @ORM\Column(type="string", length=60)
      */
     protected $password;
 
