@@ -18,7 +18,7 @@ use MCN\Object\Entity\Behavior\TimestampableTrait;
  * @package MCNUser\Entity\User
  *
  * @ORM\Table(name="mcn_user_auth_tokens")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="MCNUser\Repository\AuthToken")
  * @ORM\HasLifecycleCallbacks
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */

@@ -9,10 +9,14 @@ namespace MCNUser\Entity\AuthToken;
 
 use DateTime;
 use MCN\Object\Entity\AbstractEntity;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Class History
  * @package MCNUser\Entity\AuthToken
+ *
+ * @ORM\Entity
+ * @ORM\Table(name="mcn_token_history")
  */
 class History extends AbstractEntity
 {
