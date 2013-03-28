@@ -19,52 +19,32 @@ interface TokenServiceInterface
     /**
      * Create a new authentication token
      *
-     * @param mixed         $entity Should use the trait MCNUser\Entity\AuthTokenTrait
-     * @param \DateInterval $valid_until
+     * @param TokenConsumerInterface $entity
+     * @param \DateInterval          $valid_until
      *
      * @return \MCNUser\Entity\AuthToken
      */
-    public function create($entity, DateInterval $valid_until = null);
+    public function create(TokenConsumerInterface $entity, DateInterval $valid_until = null);
 
     /**
+     * @param TokenConsumerInterface $entity
+     * @param string                 $token
      *
-     * @param mixed  $entity
-     * @param string $token
+     * @throws Exception\TokenHasExpiredException
+     * @throws Exception\TokenNotFoundException
+     * @throws Exception\TokenIsConsumedException
+     *
+     * @return \MCNUser\Entity\AuthToken
+     */
+    public function useToken(TokenConsumerInterface $entity, $token);
+
+    /**
+     * Uses a token and then consumes it
+     *
+     * @param TokenConsumerInterface $entity
+     * @param string                 $token
      *
      * @return void
      */
-    public function removeToken($entity, $token);
-
-    /**
-     * @param mixed $entity
-     *
-     * @return void
-     */
-    public function removeAllTokensForEntity($entity);
-
-    /**
-     * Consume a token
-     *
-     * @param mixed  $entity
-     * @param string $token
-     *
-     * @throws Exception\TokenHasExpiredException
-     * @throws Exception\TokenAlreadyConsumedException
-     *
-     * @return \MCNUser\Entity\AuthToken
-     */
-    public function consumeToken($entity, $token);
-
-    /**
-     * Consume a token and return a new one
-     *
-     * @param mixed $entity
-     * @param string $token
-     *
-     * @throws Exception\TokenHasExpiredException
-     * @throws Exception\TokenAlreadyConsumedException
-     *
-     * @return \MCNUser\Entity\AuthToken
-     */
-    public function consumeAndRenewToken($entity, $token);
+    public function useAndConsume(TokenConsumerInterface $entity, $token);
 }

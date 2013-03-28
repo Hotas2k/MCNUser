@@ -9,9 +9,11 @@
 namespace MCNUser\Entity;
 
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use MCN\Object\Entity\AbstractEntity;
 use MCN\Object\Entity\Behavior\TimestampableTrait;
 use Doctrine\ORM\Mapping as ORM;
+use MCNUser\Authentication\TokenConsumerInterface;
 
 /**
  * Class User
@@ -23,7 +25,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class User extends AbstractEntity implements UserInterface
 {
-    use AuthTokenTrait;
     use TimestampableTrait;
 
     /**
@@ -73,6 +74,25 @@ class User extends AbstractEntity implements UserInterface
     protected $last_login_at;
 
     /**
+     * @var \Doctrine\Common\Collections\ArrayCollection
+     *
+     * @ORM\ManyToMany(targetEntity="MCNUser\Entity\AuthToken")
+     * @ORM\JoinTable(name="mcn_user_auth_tokens_reference",
+     *  joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *  inverseJoinColumns={@ORM\JoinColumn(name="token_id", referencedColumnName="id", unique=true)}
+     * )
+     */
+    protected $auth_tokens;
+
+    /**
+     * Construct a new user instance
+     */
+    public function __construct()
+    {
+        $this->auth_tokens = new ArrayCollection();
+    }
+
+    /**
      * (PHP 5 >= 5.4.0)
      * Serializes the object to a value that can be serialized natively by json_encode().
      * @link http://docs.php.net/manual/en/jsonserializable.jsonserialize.php
@@ -87,6 +107,14 @@ class User extends AbstractEntity implements UserInterface
             'last_login_ip' => $this->last_login_ip,
             'last_login_at' => $this->last_login_at
         );
+    }
+
+    /**
+     * @return \Doctrine\Common\Collections\ArrayCollection<\MCNUser\Entity\AuthToken>
+     */
+    public function getAuthTokens()
+    {
+        return $this->auth_tokens;
     }
 
     /**

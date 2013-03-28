@@ -45,51 +45,51 @@ class TokenService implements TokenServiceInterface
     }
 
     /**
-     * Get a token entity
+     * Consume the given token of a consumer
      *
-     * @param mixed  $entity
-     * @param string $token
+     * @param TokenConsumerInterface $owner
+     * @param string                 $token
      *
-     * @throws Exception\LogicException
-     *
-     * @return \MCNUser\Entity\AuthToken|null
+     * @throws Exception\TokenNotFoundException
      */
-    protected function getToken($entity, $token)
+    public function consumeToken(TokenConsumerInterface $owner, $token)
     {
-        if (! ClassUtils::uses($entity, 'MCNUser\Entity\AuthTokenTrait')) {
+        $token = $this->getRepository()->getByOwnerAndToken($owner, $token);
 
-            throw new Exception\LogicException(
-                sprintf(
-                    'The class %s does not use the required trait MCNUser\Entity\AuthTokenTrait',
-                    get_class($entity)
-                )
-            );
+        if (! $token) {
+
+            throw new Exception\TokenNotFoundException;
         }
 
-        return $this->getRepository()->findOneBy(array(
-            'owner' => $entity->getId(),
-            'token' => $token
-        ));
+        $token->setConsumed(true);
+        $this->objectManager->flush($token);
     }
 
     /**
-     * @inheritdoc
+     * Consume all the tokens of a given consumer
+     *
+     * Will consume all the tokens of the given Consumer object and returns the number of tokens affected
+     *
+     * @param TokenConsumerInterface $owner
+     *
+     * @return integer The number of tokens affected
      */
-    public function create($entity, DateInterval $valid_until = null)
+    public function consumeAllTokens(TokenConsumerInterface $owner)
     {
-        if (! ClassUtils::uses($entity, 'MCNUser\Entity\AuthTokenTrait')) {
+        $this->getRepository()->consumeAllTokensAndReturnCount($owner);
+    }
 
-            throw new Exception\LogicException(
-                sprintf(
-                    'The class %s does not use the required trait MCNUser\Entity\AuthTokenTrait',
-                    get_class($entity)
-                )
-            );
-        }
-
+    /**
+     * @param TokenConsumerInterface $owner
+     * @param DateInterval           $valid_until
+     *
+     * @return TokenEntity
+     */
+    public function create(TokenConsumerInterface $owner, DateInterval $valid_until = null)
+    {
         $tokenEntity = new TokenEntity();
         $tokenEntity->setToken(base64_encode(Math\Rand::getBytes(100)));
-        $tokenEntity->setOwner($entity->getId());
+        $tokenEntity->setOwner($owner->getId());
 
         if ($valid_until) {
 
@@ -106,87 +106,64 @@ class TokenService implements TokenServiceInterface
     }
 
     /**
-     * @inheritdoc
+     * @param TokenConsumerInterface $owner
+     * @param string                 $token
+     *
+     * @throws Exception\TokenHasExpiredException
+     * @throws Exception\TokenNotFoundException
+     * @throws Exception\TokenIsConsumedException
+     *
+     * @return TokenEntity
      */
-    public function consumeToken($entity, $token)
+    public function useToken(TokenConsumerInterface $owner, $token)
     {
-        $token = $this->getToken($entity, $token);
+        $token = $this->getRepository()->getByOwnerAndToken($owner, $token);
 
         if (! $token) {
 
             throw new Exception\TokenNotFoundException;
         }
 
-        if ($token->getUsedAt() !== null) {
+        if ($token->isConsumed()) {
 
-            throw new Exception\TokenAlreadyConsumedException;
+            throw new Exception\TokenIsConsumedException;
         }
 
-        $dt = new DateTime;
-
-        if ($token->getValidUntil() && $token->getValidUntil() < $dt) {
+        if ($token->getValidUntil() && new DateTime() > $token->getValidUntil()) {
 
             throw new Exception\TokenHasExpiredException;
         }
 
-        $ip = (new RemoteAddress())->getIpAddress();
+        $history = new TokenEntity\History();
+        $history->setToken($token);
+        $history->setCreatedAt(new DateTime());
 
-        $token->setUsedAt($dt);
-        $token->setUsedByIp($ip);
+        if (isSet($_SERVER['HTTP_USER_AGENT'])) {
 
-        $this->objectManager->flush($token);
+            $history->setHttpUserAgent($_SERVER['HTTP_USER_AGENT']);
+        }
+
+        $this->objectManager->persist($history);
+        $this->objectManager->flush($history);
 
         return $token;
     }
 
     /**
-     * @inheritdoc
+     * Uses a token and then marks it as invalid
+     *
+     * @uses self::useToken
+     *
+     * @param TokenConsumerInterface $owner
+     * @param string                 $token
+     *
+     * @return void
      */
-    public function consumeAndRenewToken($entity, $token)
+    public function useAndConsume(TokenConsumerInterface $owner, $token)
     {
-        $token = $this->consumeToken($entity, $token);
+        $token = $this->useToken($owner, $token);
+        $token->setConsumed(true);
 
-        $interval = $token->getValidUntil() !== null ? $token->getCreatedAt()->diff($token->getValidUntil()) : null;
-
-        return $this->create($entity, $interval);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function removeToken($entity, $token)
-    {
-        $token = $this->getToken($entity, $token);
-
-        $this->objectManager->remove($token);
-        $this->objectManager->flush();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function removeAllTokensForEntity($entity)
-    {
-        if (! ClassUtils::uses($entity, 'MCNUser\Entity\AuthTokenTrait')) {
-
-            throw new Exception\LogicException(
-                sprintf(
-                    'The class %s does not use the required trait MCNUser\Entity\AuthTokenTrait',
-                    get_class($entity)
-                )
-            );
-        }
-
-        $criteria = new Criteria();
-        $criteria->where($criteria->expr()->eq('owner', $entity->getId()));
-
-        $tokens = $this->getRepository()->matching($criteria);
-
-        foreach ($tokens as $token) {
-
-            $this->objectManager->remove($token);
-        }
-
-        $this->objectManager->flush();
+        $this->objectManager->flush($token);
     }
 }

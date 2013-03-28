@@ -8,7 +8,7 @@
 
 namespace MCNUserTest\Authentication\Plugin;
 
-use MCNUser\Authentication\Exception\TokenAlreadyConsumedException;
+use MCNUser\Authentication\Exception\TokenIsConsumedException;
 use MCNUser\Authentication\Exception\TokenHasExpiredException;
 use MCNUser\Authentication\Exception\TokenNotFoundException;
 use MCNUser\Authentication\Plugin\RememberMe;
@@ -21,8 +21,12 @@ use Zend\Http\Client\Cookies;
 use Zend\Http\Header\Cookie;
 use Zend\Http\Request;
 use Zend\Http\Response;
-use Zend\Stdlib\DateTime;
+use DateTime;
 
+/**
+ * Class RememberMeTest
+ * @package MCNUserTest\Authentication\Plugin
+ */
 class RememberMeTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -36,12 +40,12 @@ class RememberMeTest extends \PHPUnit_Framework_TestCase
     protected $response;
 
     /**
-     * @var \MCNUser\Authentication\TokenServiceInterface
+     * @var \PHPUnit_Framework_MockObject_MockObject
      */
     protected $service;
 
     /**
-     * @var \MCNUser\Service\UserInterface
+     * @var \PHPUnit_Framework_MockObject_MockObject
      */
     protected $userService;
 
@@ -94,12 +98,12 @@ class RememberMeTest extends \PHPUnit_Framework_TestCase
         $this->userService
              ->expects($this->once())
              ->method('getOneBy')
-             ->will($this->returnValue(new User()));
+             ->will($this->returnValue(new TestAsset\Authentication\AuthTokenOwnerEntity()));
 
         $this->service
              ->expects($this->once())
-             ->method('consumeAndRenewToken')
-             ->will($this->throwException(new TokenAlreadyConsumedException()));
+             ->method('useAndConsume')
+             ->will($this->throwException(new TokenIsConsumedException()));
 
         $result = $this->plugin->authenticate($this->request, $this->userService);
 
@@ -112,11 +116,11 @@ class RememberMeTest extends \PHPUnit_Framework_TestCase
         $this->userService
             ->expects($this->once())
             ->method('getOneBy')
-            ->will($this->returnValue(new User()));
+            ->will($this->returnValue(new TestAsset\Authentication\AuthTokenOwnerEntity()));
 
         $this->service
             ->expects($this->once())
-            ->method('consumeAndRenewToken')
+            ->method('useAndConsume')
             ->will($this->throwException(new TokenNotFoundException()));
 
 
@@ -131,11 +135,11 @@ class RememberMeTest extends \PHPUnit_Framework_TestCase
         $this->userService
             ->expects($this->once())
             ->method('getOneBy')
-            ->will($this->returnValue(new User()));
+            ->will($this->returnValue(new TestAsset\Authentication\AuthTokenOwnerEntity()));
 
         $this->service
             ->expects($this->once())
-            ->method('consumeAndRenewToken')
+            ->method('useAndConsume')
             ->will($this->throwException(new TokenHasExpiredException()));
 
         $result = $this->plugin->authenticate($this->request, $this->userService);
@@ -146,22 +150,24 @@ class RememberMeTest extends \PHPUnit_Framework_TestCase
 
     public function testSuccessfulLogin()
     {
-        $dt = DateTime::createFromFormat('U', time() + 3600);
 
         $token = new AuthToken();
-        $token->setCreatedAtOnPersist();
+        $token->prePersist();
         $token->setToken('hello.world');
         $token->setOwner(1);
-        $token->setValidUntil($dt);
 
         $this->userService
             ->expects($this->once())
             ->method('getOneBy')
-            ->will($this->returnValue(new User()));
+            ->will($this->returnValue(new TestAsset\Authentication\AuthTokenOwnerEntity()));
 
         $this->service
             ->expects($this->once())
-            ->method('consumeAndRenewToken')
+            ->method('useAndConsume');
+
+        $this->service
+            ->expects($this->once())
+            ->method('create')
             ->will($this->returnValue($token));
 
         $result = $this->plugin->authenticate($this->request, $this->userService);
@@ -173,7 +179,6 @@ class RememberMeTest extends \PHPUnit_Framework_TestCase
         $cookie = $this->response->getHeaders()->get('set-cookie')[0];
 
         $this->assertEquals($cookie->getName(), 'remember_me');
-        $this->assertEquals($dt->getTimestamp(), strtotime($cookie->getExpires()));
         $this->assertEquals(Result::SUCCESS, $result->getCode());
     }
 }

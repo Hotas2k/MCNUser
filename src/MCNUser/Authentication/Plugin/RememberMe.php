@@ -8,6 +8,7 @@
 
 namespace MCNUser\Authentication\Plugin;
 
+use DateTime;
 use MCNUser\Authentication\Result;
 use MCNUser\Options\Authentication\Plugin\RememberMe as Options;
 use MCNUser\Authentication\TokenServiceInterface;
@@ -74,15 +75,9 @@ class RememberMe extends AbstractPlugin
 
         try {
 
-            $token = $this->service->consumeAndRenewToken($user, $token);
+            $this->service->useAndConsume($user, $token);
 
-            $validUntil = $token->getValidUntil() !== null ? $token->getValidUntil()->getTimestamp() : null;
-
-            $cookie = new SetCookie('remember_me', $identity . '|' . $token->getToken(), $validUntil);
-
-            $this->response->getHeaders()->addHeader($cookie);
-
-        } catch (Exception\TokenAlreadyConsumedException $e) {
+        } catch (Exception\TokenIsConsumedException $e) {
 
             return Result::create(Result::FAILURE_UNCATEGORIZED, $user, 'Token has already been consumed.');
 
@@ -94,6 +89,20 @@ class RememberMe extends AbstractPlugin
 
             return Result::create(Result::FAILURE_UNCATEGORIZED, $user, 'Token was not found.');
         }
+
+
+        // create a new token to use
+        $token = $this->service->create($user, $this->options->getValidInterval());
+
+        if (null !== $validUntil = $this->options->getValidInterval()) {
+
+            $validUntil = new DateTime();
+            $validUntil->add($this->options->getValidInterval());
+        }
+
+        $cookie = new SetCookie('remember_me', $identity . '|' . $token->getToken(), $validUntil);
+
+        $this->response->getHeaders()->addHeader($cookie);
 
         return Result::create(Result::SUCCESS, $user);
     }

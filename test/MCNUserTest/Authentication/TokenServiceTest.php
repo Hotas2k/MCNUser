@@ -34,7 +34,7 @@ class TokenServiceTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->objectManager = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
+        $this->objectManager    = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
         $this->objectRepository = $this->getMock('MCNUser\Repository\AuthTokenInterface');
 
         $this->objectManager
@@ -48,22 +48,6 @@ class TokenServiceTest extends \PHPUnit_Framework_TestCase
     protected function getEntity()
     {
         return new AuthTokenOwnerEntity();
-    }
-
-    /**
-     * @expectedException \MCNUser\Authentication\Exception\LogicException
-     */
-    public function testCreateExceptionOnInvalidEntitySpecified()
-    {
-        $this->service->create(new ArrayObject);
-    }
-
-    /**
-     * @expectedException \MCNUser\Authentication\Exception\LogicException
-     */
-    public function testConsumeTokenExceptionOnInvalidEntitySpecified()
-    {
-        $this->service->consumeToken(new ArrayObject, 'test');
     }
 
     public function testCreateToken()
@@ -99,91 +83,44 @@ class TokenServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function testConsumeTokenForTokenNotFoundException()
     {
-        $this->service->consumeToken($this->getEntity(), 'i do not exists');
+        $this->service->useToken($this->getEntity(), 'i do not exists');
     }
 
     /**
-     * @expectedException \MCNUser\Authentication\Exception\TokenAlreadyConsumedException
+     * @expectedException \MCNUser\Authentication\Exception\TokenIsConsumedException
      */
-    public function testConsumeTokenForTokenAlreadyConsumedException()
+    public function testUseTokenForTokenIsConsumedException()
     {
         $token = new AuthToken();
-        $token->setUsedAt(new DateTime());
+        $token->setConsumed(true);
 
-        $this->objectRepository->expects($this->once())->method('findOneBy')->will($this->returnValue($token));
+        $this->objectRepository->expects($this->once())->method('getByOwnerAndToken')->will($this->returnValue($token));
 
-        $this->service->consumeToken($this->getEntity(), 'mock token');
+        $this->service->useToken($this->getEntity(), 'mock token');
     }
 
     /**
      * @expectedException \MCNUser\Authentication\Exception\TokenHasExpiredException
      */
-    public function testConsumeTokenForTokenHasExpiredException()
+    public function testUseTokenForTokenHasExpiredException()
     {
         $token = new AuthToken();
         $token->setValidUntil(DateTime::createFromFormat('U', time() - 1));
 
-        $this->objectRepository->expects($this->once())->method('findOneBy')->will($this->returnValue($token));
+        $this->objectRepository->expects($this->once())->method('getByOwnerAndToken')->will($this->returnValue($token));
 
-        $this->service->consumeToken($this->getEntity(), 'mock token');
+        $this->service->useToken($this->getEntity(), 'mock token');
     }
 
-    public function testConsumeTokenSuccessfully()
+    public function testUseTokenSuccessfully()
     {
-        $token = $this->getMock('MCNUser\Entity\AuthToken');
+        $token = new AuthToken();
 
-        $this->objectRepository->expects($this->once())->method('findOneBy')->will($this->returnValue($token));
-        $this->objectManager->expects($this->once())->method('flush')->with($token);
+        $this->objectRepository->expects($this->once())->method('getByOwnerAndToken')->will($this->returnValue($token));
+        $this->objectManager->expects($this->once())->method('flush');
 
-        $token->expects($this->once())->method('setUsedAt');
-        $token->expects($this->once())->method('setUsedByIp');
-
-        $result = $this->service->consumeToken($this->getEntity(), 'mock token');
+        $result = $this->service->useToken($this->getEntity(), 'mock token');
 
         $this->assertEquals($token, $result);
-    }
-
-    public function testConsumeTokenAndRenewSuccessfully()
-    {
-        $token = $this->getMock('MCNUser\Entity\AuthToken');
-
-        $this->objectRepository->expects($this->once())->method('findOneBy')->will($this->returnValue($token));
-        $this->objectManager->expects($this->exactly(2))->method('flush');
-
-        $token->expects($this->once())->method('setUsedAt');
-        $token->expects($this->once())->method('setUsedByIp');
-
-        $result = $this->service->consumeAndRenewToken($this->getEntity(), 'mock token');
-
-        $this->assertInstanceOf('MCNUser\Entity\AuthToken', $result);
-        $this->assertNotEquals($token, $result);
-    }
-
-    public function testConsumeTokenAndRenewWithTimeConstraintSuccessfully()
-    {
-        $token = $this->getMock('MCNUser\Entity\AuthToken');
-
-        $dt = new DateTime();
-        $interval = new DateInterval('PT1H');
-
-        $token->expects($this->any())->method('getCreatedAt')->will($this->returnValue($dt));
-
-        $dt = new DateTime();
-        $dt->add($interval);
-
-        $token->expects($this->any())->method('getValidUntil')->will($this->returnValue($dt));
-
-        $this->objectRepository->expects($this->once())->method('findOneBy')->will($this->returnValue($token));
-        $this->objectManager->expects($this->exactly(2))->method('flush');
-
-        $token->expects($this->once())->method('setUsedAt');
-        $token->expects($this->once())->method('setUsedByIp');
-
-        $result = $this->service->consumeAndRenewToken($this->getEntity(), 'mock token');
-
-        $this->assertInstanceOf('MCNUser\Entity\AuthToken', $result);
-        $this->assertNotEquals($token, $result);
-
-        $this->assertEquals($dt, $result->getValidUntil());
     }
 }

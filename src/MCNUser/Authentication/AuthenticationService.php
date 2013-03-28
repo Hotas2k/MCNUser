@@ -141,7 +141,7 @@ class AuthenticationService implements EventsCapableInterface
             }
         }
 
-        // Do not use a else statement on the previous
+        // Do not use a else on the previous if statement
         // Because if the event loop fails and we use an else this will not be triggered
         if ($result->getCode() != Result::SUCCESS) {
 

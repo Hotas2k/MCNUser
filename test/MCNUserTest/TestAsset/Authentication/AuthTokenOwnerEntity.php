@@ -8,19 +8,16 @@
 
 namespace MCNUserTest\TestAsset\Authentication;
 
-use MCNUser\Entity\AuthTokenTrait;
+use MCNUser\Authentication\TokenConsumerInterface;
+use MCNUser\Entity\User;
 
 /**
  * Class AuthTokenOwnerEntity
  *
- * @todo replace this class when phpunit 3.8 is released and use getMockForTrait()
- *
  * @package MCNUserTest\TestAsset\Authentication
  */
-class AuthTokenOwnerEntity
+class AuthTokenOwnerEntity extends User implements TokenConsumerInterface
 {
-    use AuthTokenTrait;
-
     public function getId()
     {
         return 1;

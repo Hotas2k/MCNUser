@@ -12,5 +12,5 @@ namespace MCNUser\Authentication\Exception;
  * Class TokenAlreadyConsumedException
  * @package MCNUser\Service\User\Exception
  */
-class TokenAlreadyConsumedException extends DomainException implements ExceptionInterface
+class TokenIsConsumedException extends DomainException implements ExceptionInterface
 {}

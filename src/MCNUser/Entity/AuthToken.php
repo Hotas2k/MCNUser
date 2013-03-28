@@ -11,6 +11,7 @@ namespace MCNUser\Entity;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use MCN\Object\Entity\AbstractEntity;
+use MCN\Object\Entity\Behavior\TimestampableTrait;
 
 /**
  * Class AuthToken
@@ -23,6 +24,8 @@ use MCN\Object\Entity\AbstractEntity;
  */
 class AuthToken extends AbstractEntity
 {
+    use TimestampableTrait;
+
     /**
      * @var integer
      *
@@ -47,13 +50,6 @@ class AuthToken extends AbstractEntity
     protected $token;
 
     /**
-     * @var \DateTime
-     *
-     * @ORM\Column(type="datetime")
-     */
-    protected $created_at;
-
-    /**
      * @var \DateTime|null
      *
      * @ORM\Column(type="datetime", nullable=true)
@@ -61,42 +57,11 @@ class AuthToken extends AbstractEntity
     protected $valid_until;
 
     /**
-     * @var \DateTime|null
+     * @var bool
      *
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="boolean")
      */
-    protected $used_at;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", nullable=true)
-     */
-    protected $used_by_ip;
-
-    /**
-     * @return \DateTime
-     */
-    public function getCreatedAt()
-    {
-        return $this->created_at;
-    }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function setCreatedAtOnPersist()
-    {
-        $this->created_at = new DateTime();
-    }
-
-    /**
-     * @param int $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
+    protected $consumed = false;
 
     /**
      * @return int
@@ -104,6 +69,22 @@ class AuthToken extends AbstractEntity
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isConsumed()
+    {
+        return $this->consumed;
+    }
+
+    /**
+     * @param bool $consumed
+     */
+    public function setConsumed($consumed)
+    {
+        $this->consumed = (bool) $consumed;
     }
 
     /**
@@ -123,38 +104,6 @@ class AuthToken extends AbstractEntity
     }
 
     /**
-     * @param \DateTime|null $used_at
-     */
-    public function setUsedAt(DateTime $used_at = null)
-    {
-        $this->used_at = $used_at;
-    }
-
-    /**
-     * @return \DateTime|null
-     */
-    public function getUsedAt()
-    {
-        return $this->used_at;
-    }
-
-    /**
-     * @param string $used_by_ip
-     */
-    public function setUsedByIp($used_by_ip)
-    {
-        $this->used_by_ip = $used_by_ip;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUsedByIp()
-    {
-        return $this->used_by_ip;
-    }
-
-    /**
      * @param \DateTime|null $valid_until
      */
     public function setValidUntil(DateTime $valid_until = null)
@@ -171,7 +120,7 @@ class AuthToken extends AbstractEntity
     }
 
     /**
-     * @return int
+     * @return mixed
      */
     public function getOwner()
     {
@@ -179,7 +128,7 @@ class AuthToken extends AbstractEntity
     }
 
     /**
-     * @param int $owner
+     * @param mixed $owner
      */
     public function setOwner($owner)
     {

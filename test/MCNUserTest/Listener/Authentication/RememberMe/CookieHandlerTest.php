@@ -14,6 +14,7 @@ use MCNUser\Authentication\AuthEvent;
 use MCNUser\Entity\AuthToken;
 use MCNUser\Entity\User;
 use MCNUser\Listener\Authentication\RememberMe\CookieHandler;
+use MCNUserTest\TestAsset\Authentication\AuthTokenOwnerEntity;
 use Zend\Http\Request;
 use Zend\Http\Response;
 use MCNUser\Options\Authentication\Plugin\RememberMe as Options;
@@ -31,7 +32,7 @@ class CookieHandlerTest extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
-        $this->entity = new User();
+        $this->entity = new AuthTokenOwnerEntity();
         $this->entity->setEmail('hello@world.com');
 
         $this->request  = new Request();
