@@ -14,6 +14,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Persistence\ObjectManager;
 use MCN\Stdlib\ClassUtils;
 use MCNUser\Entity\AuthToken as TokenEntity;
+use Zend\Http\Header\UserAgent;
 use Zend\Http\PhpEnvironment\RemoteAddress;
 use Zend\Math;
 
@@ -137,6 +138,8 @@ class TokenService implements TokenServiceInterface
         $history = new TokenEntity\History();
         $history->setToken($token);
         $history->setCreatedAt(new DateTime());
+        $remoteAddress = new RemoteAddress();
+        $history->setIp($remoteAddress->getIpAddress());
 
         if (isSet($_SERVER['HTTP_USER_AGENT'])) {
 
