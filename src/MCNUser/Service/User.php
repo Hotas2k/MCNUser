@@ -12,6 +12,7 @@ use MCNUser\Entity\User as UserEntity;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Persistence\ObjectManager;
 use MCNUser\Entity\User as User0;
+use MCNUser\Entity\UserInterface as UserEntityInterface;
 use MCNUser\Options\UserOptions as Options;
 
 /**
@@ -114,7 +115,7 @@ class User implements UserInterface
      *
      * @return void
      */
-    public function save(UserEntity $user)
+    public function save(UserEntityInterface $user)
     {
         if (! $this->objectManager->contains($user)) {
 
@@ -131,7 +132,7 @@ class User implements UserInterface
      *
      * @return void
      */
-    public function remove(UserEntity $user)
+    public function remove(UserEntityInterface $user)
     {
         $this->objectManager->remove($user);
         $this->objectManager->flush($user);
