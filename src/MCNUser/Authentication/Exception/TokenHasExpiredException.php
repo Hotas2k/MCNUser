@@ -13,4 +13,9 @@ namespace MCNUser\Authentication\Exception;
  * @package MCNUser\Service\User\Exception
  */
 class TokenHasExpiredException extends RuntimeException implements ExceptionInterface
-{}
+{
+    public function __construct()
+    {
+        parent::__construct('The token has already expired.');
+    }
+}

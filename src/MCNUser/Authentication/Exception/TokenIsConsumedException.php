@@ -13,4 +13,9 @@ namespace MCNUser\Authentication\Exception;
  * @package MCNUser\Service\User\Exception
  */
 class TokenIsConsumedException extends DomainException implements ExceptionInterface
-{}
+{
+    public function __construct()
+    {
+        parent::__construct('The token has been consumed and can no longer be used.');
+    }
+}
