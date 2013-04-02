@@ -16,6 +16,7 @@ use Zend\View\Model\JsonModel;
 /**
  * Class AuthenticationController
  *
+ * @method \Zend\Http\Request getRequest
  * @method \MCN\Controller\Plugin\Http http
  *
  * @package MCNUser\Controller
@@ -52,7 +53,7 @@ class AuthenticationController extends AbstractActionController
         $result = $this->service->authenticate($this->getRequest(), $plugin);
 
         // short circuit on ajax request
-        if ($this->http()->acceptsMimeType('application/json')) {
+        if ($this->http()->acceptsMimeType('application/json') && $this->getRequest()->isXmlHttpRequest()) {
 
             $data = $result->toArray();
 
