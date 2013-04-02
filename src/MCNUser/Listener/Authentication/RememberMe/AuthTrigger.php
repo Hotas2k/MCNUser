@@ -9,6 +9,7 @@
 namespace MCNUser\Listener\Authentication\RememberMe;
 
 use MCNUser\Authentication\AuthenticationService;
+use Zend\EventManager\ListenerAggregateTrait;
 use Zend\Mvc\MvcEvent;
 use Zend\Http\Request as HttpRequest;
 use Zend\EventManager\EventManagerInterface;
@@ -21,10 +22,7 @@ use MCNUser\Authentication\Exception;
  */
 class AuthTrigger implements ListenerAggregateInterface
 {
-    /**
-     * @var array
-     */
-    protected $handles = array();
+    use ListenerAggregateTrait;
 
     /**
      * @var \MCNUser\Authentication\AuthenticationService
@@ -49,22 +47,13 @@ class AuthTrigger implements ListenerAggregateInterface
      */
     public function attach(EventManagerInterface $events)
     {
-        $events->attach(MvcEvent::EVENT_ROUTE, array($this, 'attemptAuthenticationByCookie'), PHP_INT_MAX);
+        $this->listeners[] = $events->attach(
+            MvcEvent::EVENT_ROUTE,
+            array($this, 'attemptAuthenticationByCookie'),
+            PHP_INT_MAX
+        );
     }
 
-    /**
-     * Detach all previously attached listeners
-     *
-     * @param EventManagerInterface $events
-     */
-    public function detach(EventManagerInterface $events)
-    {
-        foreach ($this->handles as &$handle) {
-
-            $events->detach($handle);
-            unset($handle);
-        }
-    }
 
     /**
      * @param \Zend\Mvc\MvcEvent $e

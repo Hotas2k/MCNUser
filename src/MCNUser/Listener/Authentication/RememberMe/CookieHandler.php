@@ -12,6 +12,7 @@ use MCNUser\Authentication\AuthEvent;
 use MCNUser\Authentication\TokenServiceInterface;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ListenerAggregateInterface;
+use Zend\EventManager\ListenerAggregateTrait;
 use Zend\Http\Header\SetCookie;
 use Zend\Http\Response as HttpResponse;
 use Zend\Stdlib\ResponseInterface;
@@ -23,10 +24,7 @@ use MCNUser\Options\Authentication\Plugin\RememberMe as Options;
  */
 class CookieHandler implements ListenerAggregateInterface
 {
-    /**
-     * @var array
-     */
-    protected $handles = array();
+    use ListenerAggregateTrait;
 
     /**
      * @var \Zend\Http\Response
@@ -65,22 +63,8 @@ class CookieHandler implements ListenerAggregateInterface
      */
     public function attach(EventManagerInterface $events)
     {
-        $events->attach(AuthEvent::EVENT_LOGOUT,       array($this, 'clearCookieOnLogout'));
-        $events->attach(AuthEvent::EVENT_AUTH_SUCCESS, array($this, 'setRememberMeCookie'));
-    }
-
-    /**
-     * Detach all previously attached listeners
-     *
-     * @param EventManagerInterface $events
-     */
-    public function detach(EventManagerInterface $events)
-    {
-        foreach ($this->handles as $idx => $handle) {
-
-            $events->detach($handle);
-            unset($this->handles[$idx]);
-        }
+        $this->listeners[] = $events->attach(AuthEvent::EVENT_LOGOUT,       array($this, 'clearCookieOnLogout'));
+        $this->listeners[] = $events->attach(AuthEvent::EVENT_AUTH_SUCCESS, array($this, 'setRememberMeCookie'));
     }
 
     /**

@@ -13,6 +13,7 @@ use MCNUser\Authentication\AuthEvent;
 use MCNUser\Service\UserInterface;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ListenerAggregateInterface;
+use Zend\EventManager\ListenerAggregateTrait;
 use Zend\Http\PhpEnvironment\RemoteAddress;
 
 /**
@@ -21,10 +22,7 @@ use Zend\Http\PhpEnvironment\RemoteAddress;
  */
 class LastLogin implements ListenerAggregateInterface
 {
-    /**
-     * @var array
-     */
-    protected $handler = array();
+    use ListenerAggregateTrait;
 
     /**
      * @var \MCNUser\Service\UserInterface
@@ -49,17 +47,7 @@ class LastLogin implements ListenerAggregateInterface
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->handler[] = $events->attach(AuthEvent::EVENT_AUTH_SUCCESS, array($this, 'updateTimestamp'), PHP_INT_MAX);
-    }
-
-    /**
-     * Detach all previously attached listeners
-     *
-     * @param EventManagerInterface $events
-     */
-    public function detach(EventManagerInterface $events)
-    {
-        array_walk($this->handler, array($events, 'detach'));
+        $this->listeners[] = $events->attach(AuthEvent::EVENT_AUTH_SUCCESS, array($this, 'update'), PHP_INT_MAX);
     }
 
     /**
@@ -69,7 +57,7 @@ class LastLogin implements ListenerAggregateInterface
      *
      * @return void
      */
-    public function updateTimestamp(AuthEvent $e)
+    public function update(AuthEvent $e)
     {
         $address = new RemoteAddress();
 
