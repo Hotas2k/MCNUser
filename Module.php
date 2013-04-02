@@ -156,6 +156,23 @@ class Module
                         $sm->get('doctrine.entitymanager.ormdefault'),
                         new Options\UserOptions($sm->get('Config')['MCNUser']['service'])
                     );
+                },
+
+                'identity' => function(ServiceLocatorInterface $sm) {
+
+                    /**
+                     * @var $userService \MCNUser\Service\User
+                     * @var $authService \MCNUser\Authentication\AuthenticationService
+                     */
+                    $userService = $sm->get('mcn.service.user');
+                    $authService = $sm->get('mcn.service.user.authentication');
+
+                    if ($authService->hasIdentity()) {
+
+                        return $userService->getById($authService->getIdentity()->getId());
+                    }
+
+                    return null;
                 }
             )
         );

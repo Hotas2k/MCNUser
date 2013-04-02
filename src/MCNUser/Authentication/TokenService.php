@@ -135,10 +135,11 @@ class TokenService implements TokenServiceInterface
             throw new Exception\TokenHasExpiredException;
         }
 
+        $remoteAddress = new RemoteAddress();
+
         $history = new TokenEntity\History();
         $history->setToken($token);
         $history->setCreatedAt(new DateTime());
-        $remoteAddress = new RemoteAddress();
         $history->setIp($remoteAddress->getIpAddress());
 
         if (isSet($_SERVER['HTTP_USER_AGENT'])) {

@@ -14,6 +14,7 @@ use MCNUser\Controller\AuthenticationController;
 use MCNUser\Entity\User;
 use MCNUserTest\Util\ServiceManagerFactory;
 use Zend\Http\Header\Accept;
+use Zend\Http\Header\GenericHeader;
 use Zend\Http\PhpEnvironment\Request;
 use Zend\Http\Response;
 use Zend\Mvc\MvcEvent;
@@ -242,9 +243,10 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
     {
         $this->routeMatch->setParam('action', 'authenticate');
 
-        $this->request->getHeaders()->addHeader(
-            Accept::fromString('Accept: application/json')
-        );
+        $this->request->getHeaders()->addHeaders(array(
+            Accept::fromString('Accept: application/json'),
+            GenericHeader::fromString('X_REQUESTED_WITH: XMLHttpRequest')
+        ));
 
         $user = new User();
         $user->setId(1);
@@ -280,9 +282,10 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
 
     public function testJsonResponseDoesNotContainIdentityOnFailedLogin()
     {
-        $this->request->getHeaders()->addHeader(
-            Accept::fromString('Accept: application/json')
-        );
+        $this->request->getHeaders()->addHeaders(array(
+            Accept::fromString('Accept: application/json'),
+            GenericHeader::fromString('X_REQUESTED_WITH: XMLHttpRequest')
+        ));
 
         $this->routeMatch->setParam('action', 'authenticate');
 
