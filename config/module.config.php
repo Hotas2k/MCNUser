@@ -34,7 +34,8 @@ return array(
 
         'invokables' => array(
 
-            'mcn.authentication.plugin.standard' => 'MCNUser\Authentication\Plugin\Standard'
+            'mcn.authentication.plugin.standard'    => 'MCNUser\Authentication\Plugin\Standard',
+            'mcn.listener.authentication.activated' => 'MCNUser\Listener\Authentication\Activated'
         )
     ),
 

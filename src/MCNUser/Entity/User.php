@@ -51,9 +51,11 @@ class User extends AbstractEntity implements UserInterface
     protected $password;
 
     /**
-     * @var int
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean")
      */
-    protected $state;
+    protected $activated = false;
 
     /**
      * Last known ip-address
@@ -115,6 +117,22 @@ class User extends AbstractEntity implements UserInterface
     public function getAuthTokens()
     {
         return $this->auth_tokens;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActivated()
+    {
+        return $this->activated;
+    }
+
+    /**
+     * @param bool $activated
+     */
+    public function setActivated($activated)
+    {
+        $this->activated = (bool) $activated;
     }
 
     /**
