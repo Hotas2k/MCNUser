@@ -100,6 +100,8 @@ class RememberMe extends AbstractPlugin
             $validUntil->add($this->options->getValidInterval());
         }
 
+        $validUntil = $token->getValidUntil() !== null ? $token->getValidUntil()->getTimestamp() : null;
+
         $cookie = new SetCookie('remember_me', $identity . '|' . $token->getToken(), $validUntil);
 
         $this->response->getHeaders()->addHeader($cookie);
