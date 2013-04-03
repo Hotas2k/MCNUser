@@ -76,7 +76,7 @@ class User implements UserInterface
      */
     protected function getRepository()
     {
-        return $this->objectManager->getRepository($this->options->getUserEntity());
+        return $this->objectManager->getRepository($this->options->getEntityClass());
     }
 
     /**

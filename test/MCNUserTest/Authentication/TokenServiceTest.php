@@ -114,7 +114,7 @@ class TokenServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \MCNUser\Authentication\Exception\TokenNotFoundException
      */
-    public function testConsumeTokenForTokenNotFoundException()
+    public function testUseTokenWithNonExistingToken()
     {
         $this->service->useToken($this->getEntity(), 'i do not exists');
     }
@@ -145,12 +145,36 @@ class TokenServiceTest extends \PHPUnit_Framework_TestCase
         $this->service->useToken($this->getEntity(), 'mock token');
     }
 
+    /**
+     *
+     */
     public function testUseTokenSuccessfully()
     {
         $token = new AuthToken();
 
-        $this->objectRepository->expects($this->once())->method('getByOwnerAndToken')->will($this->returnValue($token));
-        $this->objectManager->expects($this->once())->method('flush');
+        $this->objectRepository
+            ->expects($this->once())
+            ->method('getByOwnerAndToken')
+            ->will($this->returnValue($token));
+
+        $this->objectManager
+            ->expects($this->once())
+            ->method('persist')
+            ->with($this->callback(function($entity) use ($token) {
+
+                $this->assertEquals('test', $entity->getHttpUserAgent());
+                $this->assertEquals('127.0.0.1', $entity->getIp());
+                $this->assertEquals($token, $entity->getToken());
+
+                return $entity instanceof AuthToken\History;
+            }));
+
+        $this->objectManager
+            ->expects($this->once())
+            ->method('flush');
+
+        $_SERVER['REMOTE_ADDR']     = '127.0.0.1';
+        $_SERVER['HTTP_USER_AGENT'] = 'test';
 
         $result = $this->service->useToken($this->getEntity(), 'mock token');
 

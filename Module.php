@@ -183,14 +183,6 @@ class Module
                     return new Authentication\TokenService($sm->get('doctrine.entitymanager.ormdefault'));
                 },
 
-                'mcn.service.user' => function(ServiceLocatorInterface $sm) {
-
-                    return new Service\User(
-                        $sm->get('doctrine.entitymanager.ormdefault'),
-                        new Options\UserOptions($sm->get('Config')['MCNUser']['service'])
-                    );
-                },
-
                 'identity' => function(ServiceLocatorInterface $sm) {
 
                     /**

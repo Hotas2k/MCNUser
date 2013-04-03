@@ -47,6 +47,7 @@ use MCN\Object\Entity\AbstractEntity;
 use MCN\Object\Entity\Behavior\TimestampableTrait;
 use Doctrine\ORM\Mapping as ORM;
 use MCNUser\Authentication\TokenConsumerInterface;
+use Zend\Form\Annotation;
 
 /**
  * Class User
@@ -72,6 +73,9 @@ class User extends AbstractEntity implements UserInterface
     /**
      * @var string
      *
+     * @Annotation\Type("Email")
+     * @Annotation\ErrorMessage("Invalid email specified")
+     *
      * @ORM\Column(type="string", nullable=true)
      */
     protected $email;
@@ -79,12 +83,16 @@ class User extends AbstractEntity implements UserInterface
     /**
      * @var string
      *
+     * @Annotation\Type("Password")
+     *
      * @ORM\Column(type="string", length=60)
      */
     protected $password;
 
     /**
      * @var boolean
+     *
+     * @Annotation\Type("Checkbox")
      *
      * @ORM\Column(type="boolean")
      */
@@ -95,6 +103,8 @@ class User extends AbstractEntity implements UserInterface
      *
      * @var string
      *
+     * @Annotation\Excluded
+     *
      * @ORM\Column(type="string", nullable=true)
      */
     protected $last_login_ip;
@@ -104,12 +114,16 @@ class User extends AbstractEntity implements UserInterface
      *
      * @var \DateTime|null
      *
+     * @Annotation\Excluded
+     *
      * @ORM\Column(type="datetime", nullable=true)
      */
     protected $last_login_at;
 
     /**
      * @var \Doctrine\Common\Collections\ArrayCollection
+     *
+     * @Annotation\Excluded
      *
      * @ORM\ManyToMany(targetEntity="MCNUser\Entity\AuthToken")
      * @ORM\JoinTable(name="mcn_user_auth_tokens_reference",

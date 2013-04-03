@@ -39,59 +39,34 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNUser\Options;
+namespace MCNUser\Factory;
 
-use Zend\Stdlib\AbstractOptions;
+use MCNUser\Options\UserOptions;
+use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Class UserOptions
- * @package MCNUser\Options
+ * Class UserServiceFactory
+ * @package MCNUser\Factory
  */
-class UserOptions extends AbstractOptions
+class UserServiceFactory implements FactoryInterface
 {
     /**
-     * FQCN of the entity class
+     * Create service
      *
-     * @var string
-     */
-    protected $entityClass = 'MCNUser\Entity\User';
-
-    /**
-     * FQCN of the service class
+     * @param ServiceLocatorInterface $serviceLocator
      *
-     * @var string
+     * @return mixed
      */
-    protected $serviceClass = 'MCNUser\Service\User';
-
-    /**
-     * @param string $entityClass
-     */
-    public function setEntityClass($entityClass)
+    public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->entityClass = $entityClass;
-    }
+        $config = $serviceLocator->get('Config')['MCNUser']['service'];
 
-    /**
-     * @return string
-     */
-    public function getEntityClass()
-    {
-        return $this->entityClass;
-    }
+        $options = new UserOptions($config);
 
-    /**
-     * @param string $serviceClass
-     */
-    public function setServiceClass($serviceClass)
-    {
-        $this->serviceClass = $serviceClass;
-    }
+        $className     = $options->getServiceClass();
+        $objectManager = $serviceLocator->get('doctrine.entitymanager.ormdefault');
 
-    /**
-     * @return string
-     */
-    public function getServiceClass()
-    {
-        return $this->serviceClass;
+        return new $className($objectManager, $options);
     }
 }

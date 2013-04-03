@@ -46,7 +46,9 @@ return array(
             'plugins' => array(
 
             )
-        )
+        ),
+
+        'service' => array()
     ),
 
     'service_manager' => array(
@@ -59,6 +61,7 @@ return array(
         'factories' => array(
 
             // services
+            'mcn.service.user'                => 'MCNUser\Factory\UserServiceFactory',
             'mcn.service.user.authentication' => 'MCNUser\Factory\AuthenticationServiceFactory',
 
             // options
