@@ -66,7 +66,7 @@ class Activated implements ListenerAggregateInterface
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->listeners[] = $this->attach(AuthEvent::EVENT_AUTH_SUCCESS, array($this, 'isActivated'));
+        $this->listeners[] = $events->attach(AuthEvent::EVENT_AUTH_SUCCESS, array($this, 'isActivated'));
     }
 
     /**
