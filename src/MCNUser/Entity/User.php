@@ -73,8 +73,7 @@ class User extends AbstractEntity implements UserInterface
     /**
      * @var string
      *
-     * @Annotation\Type("Email")
-     * @Annotation\ErrorMessage("Invalid email specified")
+     * @Annotation\Type("Text")
      *
      * @ORM\Column(type="string", nullable=true)
      */
@@ -103,7 +102,7 @@ class User extends AbstractEntity implements UserInterface
      *
      * @var string
      *
-     * @Annotation\Excluded
+     * @Annotation\Exclude
      *
      * @ORM\Column(type="string", nullable=true)
      */
@@ -114,7 +113,7 @@ class User extends AbstractEntity implements UserInterface
      *
      * @var \DateTime|null
      *
-     * @Annotation\Excluded
+     * @Annotation\Exclude
      *
      * @ORM\Column(type="datetime", nullable=true)
      */
@@ -123,7 +122,7 @@ class User extends AbstractEntity implements UserInterface
     /**
      * @var \Doctrine\Common\Collections\ArrayCollection
      *
-     * @Annotation\Excluded
+     * @Annotation\Exclude
      *
      * @ORM\ManyToMany(targetEntity="MCNUser\Entity\AuthToken")
      * @ORM\JoinTable(name="mcn_user_auth_tokens_reference",
