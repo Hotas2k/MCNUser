@@ -1,7 +1,7 @@
 <?php
 return array(
     'modules' => array(
-        'MCN',
+        'MCNStdlib',
         'MCNUser',
     ),
     'module_listener_options' => array(

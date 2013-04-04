@@ -64,6 +64,20 @@ class UserOptions extends AbstractOptions
     protected $serviceClass = 'MCNUser\Service\User';
 
     /**
+     * Key in the service locator for the mail service
+     *
+     * @var string|null
+     */
+    protected $mailServiceSlKey = null;
+
+    /**
+     * Key in the service locator for the search service
+     *
+     * @var string|null
+     */
+    protected $searchServiceSlKey = null;
+
+    /**
      * @param string $entityClass
      */
     public function setEntityClass($entityClass)

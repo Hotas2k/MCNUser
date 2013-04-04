@@ -39,69 +39,71 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNUser\Entity;
+namespace MCNuserTest\Service;
 
-use ArrayAccess;
-use DateTime;
-use JsonSerializable;
+use MCNUser\Options\UserOptions;
+use MCNUser\Service\User;
 
 /**
- * Class UserInterface
- * @package MCNUser\Entity
+ * Class UserTest
+ * @package MCNuserTest\Service
  */
-interface UserInterface extends ArrayAccess, JsonSerializable
+class UserTest extends \PHPUnit_Framework_TestCase
 {
-    const STATE_DEFAULT     = 1;
-    const STATE_ACTIVATED   = 2;
-    const STATE_BANNED      = 4;
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $manager;
 
     /**
-     * @return mixed
+     * @var \MCNUser\Service\User
      */
-    public function getId();
+    protected $service;
 
     /**
-     * @return string
+     * @var \MCNUser\Options\UserOptions
      */
-    public function getEmail();
+    protected $options;
 
     /**
-     * @param string $email
-     *
-     * @return void
+     * @var \PHPUnit_Framework_MockObject_MockObject
      */
-    public function setEmail($email);
+    protected $user;
 
     /**
-     * @return string
+     * @var \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getPassword();
+    protected $evm;
 
-    /**
-     * @param string $password
-     * @return void
-     */
-    public function setPassword($password);
+    protected function setUp()
+    {
+        $this->evm     = $this->getMock('Zend\EventManager\EventManagerInterface');
+        $this->user    = $this->getMock('MCNUser\Entity\User');
+        $this->manager = $this->getMock('Doctrine\Common\Persistence\ObjectManagerInterface');
+        $this->options = new UserOptions();
 
-    /**
-     * @return string
-     */
-    public function getLastLoginIp();
+        $this->service = new User($this->manager, $this->options);
+    }
 
-    /**
-     * @param string $ip
-     * @return void
-     */
-    public function setLastLoginIp($ip);
+    public function testSave_TriggerEventAndObjectManagerPersistOnNewObject()
+    {
+        $this->manager
+            ->expects($this->once())
+            ->method('contains')
+            ->with($this->user)
+            ->will($this->returnValue(false));
 
-    /**
-     * @return string
-     */
-    public function getLastLoginAt();
+        $this->manager
+            ->expects($this->once())
+            ->method('persist')
+            ->with($this->user);
 
-    /**
-     * @param \DateTime $at
-     * @return void
-     */
-    public function setLastLoginAt(DateTime $at);
+       $this->evm
+           ->expects($this->once())
+           ->method('trigger')
+           ->with('persist', $this->service, array('user' => $this->user));
+
+        $this->service->save($this->user);
+    }
 }
+

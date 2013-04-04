@@ -43,8 +43,9 @@ namespace MCNUser\Entity;
 
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
-use MCN\Object\Entity\AbstractEntity;
-use MCN\Object\Entity\Behavior\TimestampableTrait;
+use MCNStdlib\Interfaces\UserEntityInterface;
+use MCNStdlib\Object\Entity\AbstractEntity;
+use MCNStdlib\Object\Entity\Behavior\TimestampableTrait;
 use Doctrine\ORM\Mapping as ORM;
 use MCNUser\Authentication\TokenConsumerInterface;
 use Zend\Form\Annotation;
@@ -57,7 +58,7 @@ use Zend\Form\Annotation;
  * @ORM\HasLifecycleCallbacks
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
-class User extends AbstractEntity implements UserInterface
+class User extends AbstractEntity implements UserEntityInterface
 {
     use TimestampableTrait;
 

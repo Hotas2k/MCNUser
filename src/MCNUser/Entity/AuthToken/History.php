@@ -42,7 +42,7 @@
 namespace MCNUser\Entity\AuthToken;
 
 use DateTime;
-use MCN\Object\Entity\AbstractEntity;
+use MCNStdlib\Object\Entity\AbstractEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**

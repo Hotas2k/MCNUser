@@ -41,7 +41,7 @@
 
 namespace MCNUserTest\Factory;
 
-use MCN\View\Helper\ServiceManager;
+use MCNStdlib\View\Helper\ServiceManager;
 use MCNUser\Factory\AuthenticationServiceFactory;
 use MCNUserTest\Util\ServiceManagerFactory;
 use Zend\Stdlib\ArrayObject;

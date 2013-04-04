@@ -43,8 +43,8 @@ namespace MCNUser\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
-use MCN\Object\Entity\AbstractEntity;
-use MCN\Object\Entity\Behavior\TimestampableTrait;
+use MCNStdlib\Object\Entity\AbstractEntity;
+use MCNStdlib\Object\Entity\Behavior\TimestampableTrait;
 
 /**
  * Class AuthToken

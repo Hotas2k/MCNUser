@@ -41,7 +41,7 @@
 
 namespace MCNUser\Authentication\Plugin;
 
-use MCN\Stdlib\NamingConvention;
+use MCNStdlib\Stdlib\NamingConvention;
 use MCNUser\Authentication\Result;
 use MCNUser\Service\UserInterface;
 use Zend\Crypt\Password\Bcrypt;

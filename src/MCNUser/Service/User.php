@@ -41,23 +41,42 @@
 
 namespace MCNUser\Service;
 
-use MCNUser\Entity\User as UserEntity;
+use DateTime;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Persistence\ObjectManager;
-use MCNUser\Entity\User as User0;
-use MCNUser\Entity\UserInterface as UserEntityInterface;
+use MCNStdlib\Interfaces\Mail\MailServiceInterface;
+use MCNStdlib\Interfaces\SearchServiceInterface;
+use MCNStdlib\Interfaces\UserEntityInterface;
 use MCNUser\Options\UserOptions as Options;
+use Zend\EventManager\EventManagerAwareTrait;
 
 /**
  * Class User
  * @package MCNUser\Service
  */
-class User implements UserInterface
+class User implements UserServiceInterface
 {
+    use EventManagerAwareTrait;
+
+    /**
+     * @var string
+     */
+    protected $eventIdentifier = 'user.service';
+
     /**
      * @var \Doctrine\Common\Persistence\ObjectManager
      */
     protected $objectManager;
+
+    /**
+     * @var \MCNStdlib\Interfaces\Mail\MailServiceInterface
+     */
+    protected $mailService = null;
+
+    /**
+     * @var \MCNStdlib\Interfaces\SearchServiceInterface
+     */
+    protected $searchService = null;
 
     /**
      * @param \Doctrine\Common\Persistence\ObjectManager $manager
@@ -67,6 +86,32 @@ class User implements UserInterface
     {
         $this->options       = ($options === null) ? new Options() : $options;
         $this->objectManager = $manager;
+    }
+
+    /**
+     * Set the mail service provider
+     *
+     * @param MailServiceInterface $mailService
+     *
+     * @return self
+     */
+    public function setMailService(MailServiceInterface $mailService)
+    {
+        $this->mailService = $mailService;
+        return $this;
+    }
+
+    /**
+     * Set the search service provider
+     *
+     * @param SearchServiceInterface $searchService
+     *
+     * @return $this
+     */
+    public function setSearchService(SearchServiceInterface $searchService)
+    {
+        $this->searchService = $searchService;
+        return $this;
     }
 
     /**
@@ -124,7 +169,7 @@ class User implements UserInterface
     /**
      * @param \Doctrine\Common\Collections\Criteria $criteria
      *
-     * @return array|\Zend\Paginator\Paginator
+     * @return \Zend\Paginator\Paginator
      */
     public function search(Criteria $criteria)
     {
@@ -134,7 +179,7 @@ class User implements UserInterface
     /**
      * @param \Doctrine\Common\Collections\Criteria $criteria
      *
-     * @return array|\Zend\Paginator\Paginator
+     * @return \Zend\Paginator\Paginator
      */
     public function fetchAll(Criteria $criteria)
     {
@@ -144,7 +189,7 @@ class User implements UserInterface
     /**
      * Save the user
      *
-     * @param \MCNUser\Entity\User $user
+     * @param \MCNStdlib\Interfaces\UserEntityInterface $user
      *
      * @return void
      */
@@ -152,22 +197,27 @@ class User implements UserInterface
     {
         if (! $this->objectManager->contains($user)) {
 
+            $this->getEventManager()->trigger('persist', $this, array('user' => $user));
             $this->objectManager->persist($user);
         }
 
+        $this->getEventManager()->trigger('flush.pre', $this, array('user' => $user));
         $this->objectManager->flush($user);
+        $this->getEventManager()->trigger('flush.post', $this, array('user' => $user));
     }
 
     /**
      * Remove a user
      *
-     * @param \MCNUser\Entity\User $user
+     * @param \MCNStdlib\Interfaces\UserEntityInterface $user
      *
      * @return void
      */
     public function remove(UserEntityInterface $user)
     {
+        $this->getEventManager()->trigger('delete.pre', $this, array('user' => $user));
         $this->objectManager->remove($user);
         $this->objectManager->flush($user);
+        $this->getEventManager()->trigger('delete.post', $this, array('user' => $user));
     }
 }
