@@ -138,7 +138,7 @@ class User extends AbstractEntity implements UserEntityInterface
      * @link http://docs.php.net/manual/en/jsonserializable.jsonserialize.php
      * @return mixed Returns data which can be serialized by json_encode(), which is a value of any type other than a resource.
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return array(
             'id'            => $this->id,
