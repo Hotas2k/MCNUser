@@ -80,6 +80,8 @@ class AuthenticationOptions extends AbstractOptions
      */
     protected $logout_route = null;
 
+
+
     /**
      * @var string
      */
@@ -94,6 +96,8 @@ class AuthenticationOptions extends AbstractOptions
      * @var array
      */
     protected $listeners = array();
+
+
 
     /**
      * @return string

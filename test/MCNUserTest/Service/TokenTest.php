@@ -91,7 +91,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
         $this->objectManager->expects($this->once())->method('persist');
         $this->objectManager->expects($this->once())->method('flush');
 
-        $token = $this->service->create($this->getEntity());
+        $token = $this->service->create($this->getEntity(), 'default');
 
         $this->assertInstanceOf('MCNUser\Entity\Token', $token);
         $this->assertEquals(1, $token->getOwner());
@@ -104,7 +104,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
 
         $interval = new DateInterval('PT1H');
 
-        $token = $this->service->create($this->getEntity(), $interval);
+        $token = $this->service->create($this->getEntity(), 'default', $interval);
 
         $this->assertInstanceOf('MCNUser\Entity\Token', $token);
 
@@ -119,7 +119,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      */
     public function testUseTokenWithNonExistingToken()
     {
-        $this->service->useToken($this->getEntity(), 'i do not exists');
+        $this->service->useToken($this->getEntity(), 'i do not exists', 'default');
     }
 
     /**
@@ -130,9 +130,9 @@ class TokenTest extends \PHPUnit_Framework_TestCase
         $token = new Token();
         $token->setConsumed(true);
 
-        $this->objectRepository->expects($this->once())->method('getByOwnerAndToken')->will($this->returnValue($token));
+        $this->objectRepository->expects($this->once())->method('get')->will($this->returnValue($token));
 
-        $this->service->useToken($this->getEntity(), 'mock token');
+        $this->service->useToken($this->getEntity(), 'mock token', 'default');
     }
 
     /**
@@ -143,9 +143,9 @@ class TokenTest extends \PHPUnit_Framework_TestCase
         $token = new Token();
         $token->setValidUntil(DateTime::createFromFormat('U', time() - 1));
 
-        $this->objectRepository->expects($this->once())->method('getByOwnerAndToken')->will($this->returnValue($token));
+        $this->objectRepository->expects($this->once())->method('get')->will($this->returnValue($token));
 
-        $this->service->useToken($this->getEntity(), 'mock token');
+        $this->service->useToken($this->getEntity(), 'mock token', 'default');
     }
 
     /**
@@ -157,7 +157,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
 
         $this->objectRepository
             ->expects($this->once())
-            ->method('getByOwnerAndToken')
+            ->method('get')
             ->will($this->returnValue($token));
 
         $this->objectManager
@@ -179,7 +179,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
         $_SERVER['REMOTE_ADDR']     = '127.0.0.1';
         $_SERVER['HTTP_USER_AGENT'] = 'test';
 
-        $result = $this->service->useToken($this->getEntity(), 'mock token');
+        $result = $this->service->useToken($this->getEntity(), 'mock token', 'default');
 
         $this->assertEquals($token, $result);
     }

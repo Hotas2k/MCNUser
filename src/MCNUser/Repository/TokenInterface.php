@@ -56,15 +56,17 @@ interface TokenInterface
     /**
      * @param \MCNUser\Service\Token\ConsumerInterface $owner
      * @param string                                   $token
+     * @param string                                   $namespace
      *
      * @return \MCNUser\Entity\Token|null
      */
-    public function getByOwnerAndToken(ConsumerInterface $owner, $token);
+    public function get(ConsumerInterface $owner, $token, $namespace);
 
     /**
      * @param \MCNUser\Service\Token\ConsumerInterface $owner
+     * @param string|null                              $namespace
      *
      * @return integer
      */
-    public function consumeAllTokensAndReturnCount(ConsumerInterface $owner);
+    public function consumeAllTokensAndReturnCount(ConsumerInterface $owner, $namespace = null);
 }

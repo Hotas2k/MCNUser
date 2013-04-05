@@ -78,9 +78,16 @@ class Token extends AbstractEntity
     /**
      * @var string
      *
-     * @ORM\Column(type="string")
+     * @ORM\Column
      */
     protected $token;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column
+     */
+    protected $namespace;
 
     /**
      * @var \DateTime|null
@@ -102,6 +109,22 @@ class Token extends AbstractEntity
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @param string $namespace
+     */
+    public function setNamespace($namespace)
+    {
+        $this->namespace = $namespace;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNamespace()
+    {
+        return $this->namespace;
     }
 
     /**

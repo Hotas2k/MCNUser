@@ -106,7 +106,7 @@ class RememberMe extends AbstractPlugin
 
         try {
 
-            $this->service->useAndConsume($user, $token);
+            $this->service->useAndConsume($user, $token, $this->options->getTokenNamespace());
 
         } catch (Exception\TokenIsConsumedException $e) {
 
@@ -122,15 +122,14 @@ class RememberMe extends AbstractPlugin
         }
 
         // create a new token to use
-        $token = $this->service->create($user, $this->options->getValidInterval());
+        $token = $this->service->create($user, $this->options->getTokenNamespace(), $this->options->getValidInterval());
 
         if (null !== $validUntil = $this->options->getValidInterval()) {
 
             $validUntil = new DateTime();
             $validUntil->add($this->options->getValidInterval());
+            $validUntil = $validUntil->getTimestamp();
         }
-
-        $validUntil = $token->getValidUntil() !== null ? $token->getValidUntil()->getTimestamp() : null;
 
         $cookie = new SetCookie('remember_me', $identity . '|' . $token->getToken(), $validUntil);
 

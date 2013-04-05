@@ -53,15 +53,17 @@ interface ServiceInterface
      * Create a new authentication token
      *
      * @param \MCNUser\Service\Token\ConsumerInterface $entity
+     * @param string                                   $namespace
      * @param \DateInterval                            $valid_until
      *
      * @return \MCNUser\Entity\Token
      */
-    public function create(ConsumerInterface $entity, DateInterval $valid_until = null);
+    public function create(ConsumerInterface $entity, $namespace, DateInterval $valid_until = null);
 
     /**
      * @param \MCNUser\Service\Token\ConsumerInterface $entity
      * @param string                                   $token
+     * @param string                                   $namespace
      *
      * @throws \MCNUser\Service\Exception\TokenHasExpiredException
      * @throws \MCNUser\Service\Exception\TokenNotFoundException
@@ -69,15 +71,16 @@ interface ServiceInterface
      *
      * @return \MCNUser\Entity\Token
      */
-    public function useToken(ConsumerInterface $entity, $token);
+    public function useToken(ConsumerInterface $entity, $token, $namespace);
 
     /**
      * Uses a token and then consumes it
      *
      * @param \MCNUser\Service\Token\ConsumerInterface $entity
      * @param string                                   $token
+     * @param string                                   $namespace
      *
      * @return void
      */
-    public function useAndConsume(ConsumerInterface $entity, $token);
+    public function useAndConsume(ConsumerInterface $entity, $token, $namespace);
 }

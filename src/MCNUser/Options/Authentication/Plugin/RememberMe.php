@@ -60,6 +60,29 @@ class RememberMe extends AbstractPluginOptions
     protected $valid_interval;
 
     /**
+     * Namespace for token
+     *
+     * @var string
+     */
+    protected $token_namespace = 'mcn.remember.me';
+
+    /**
+     * @param string $token_namespace
+     */
+    public function setTokenNamespace($token_namespace)
+    {
+        $this->token_namespace = $token_namespace;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTokenNamespace()
+    {
+        return $this->token_namespace;
+    }
+
+    /**
      * Class name of representing plugin
      *
      * @return string

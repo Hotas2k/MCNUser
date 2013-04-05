@@ -54,24 +54,31 @@ class Token extends EntityRepository implements TokenInterface
     /**
      * @inheritdoc
      */
-    public function getByOwnerAndToken(ConsumerInterface $owner, $token)
+    public function get(ConsumerInterface $owner, $namespace, $token)
     {
         return $this->findOneBy(array(
-            'token' => $token,
-            'owner' => $owner->getId()
+            'token'     => $token,
+            'owner'     => $owner->getId(),
+            'namespace' => $namespace
         ));
     }
 
     /**
      * @inheritdoc
      */
-    public function consumeAllTokensAndReturnCount(ConsumerInterface $owner)
+    public function consumeAllTokensAndReturnCount(ConsumerInterface $owner, $namespace = null)
     {
         $builder = $this->getEntityManager()->createQueryBuilder();
         $builder->update('MCNUser\Entity\Token', 'token')
                 ->set('consumed', true)
                 ->where('token.owner = :id')
                 ->setParameter('id', $owner->getId());
+
+        if ($namespace) {
+
+            $builder->andWhere('token.namespace = :namespace')
+                    ->setParameters('namespace', $namespace);
+        }
 
         return $builder->getQuery()->execute();
     }
