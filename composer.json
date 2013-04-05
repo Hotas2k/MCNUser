@@ -13,7 +13,7 @@
 
     "require": {
         "mcn/stdlib": "dev-master",
-        "zendframework/zendframework": "2.2.*",
+        "zendframework/zendframework": "dev-master",
         "doctrine/common": "2.3.*"
     }
 }
