@@ -43,22 +43,30 @@ namespace MCNUserTest\Factory;
 
 use MCNUser\Factory\AuthenticationOptionsFactory;
 use MCNUserTest\Bootstrap;
+use MCNUserTest\Util\ServiceManagerFactory;
 
 class AuthenticationOptionsFactoryTest extends \PHPUnit_Framework_TestCase
 {
+    protected function setUp()
+    {
+        $this->sm = ServiceManagerFactory::getServiceManager();
+        $this->sm->setAllowOverride(true);
+
+        $this->factory = new AuthenticationOptionsFactory();
+    }
+
     /**
-     * @expectedException MCNUser\Factory\Exception\RuntimeException
+     * @expectedException \MCNUser\Factory\Exception\RuntimeException
      */
     public function testExceptionThrownOnMissingConfigurationKey()
     {
-        $sm = Bootstrap::getServiceManager();
-        $config = $sm->get('Config');
+        $config = $this->sm->get('Config');
 
         unset($config['MCNUser']);
 
-        $sm->setService('Config', $config);
+        $this->sm->setService('Config', $config);
 
         $factory = new AuthenticationOptionsFactory();
-        $factory->createService(Bootstrap::getServiceManager());
+        $factory->createService($this->sm);
     }
 }

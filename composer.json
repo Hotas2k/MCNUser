@@ -11,9 +11,19 @@
         }
     ],
 
+    "minimum-stability": "dev",
     "require": {
         "mcn/stdlib": "dev-master",
-        "zendframework/zendframework": "dev-master",
+        "zendframework/zendframework": "2.*",
         "doctrine/common": "2.3.*"
+    },
+
+    "autoload": {
+        "psr-0": {
+            "MCNUser": "src/"
+        },
+        "classmap": [
+            "./Module.php"
+        ]
     }
 }
