@@ -41,18 +41,27 @@
 
 namespace MCNUserTest\Factory;
 
-use MCNUser\Factory\AuthenticationOptionsFactory;
-use MCNUserTest\Bootstrap;
+use MCNUser\Factory\UserServiceOptionsFactory;
 use MCNUserTest\Util\ServiceManagerFactory;
 
-class AuthenticationOptionsFactoryTest extends \PHPUnit_Framework_TestCase
+class UserServiceOptionsFactoryTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var \Zend\ServiceManager\ServiceManager
+     */
+    protected $sm;
+
+    /**
+     * @var \MCNUser\Factory\UserServiceOptionsFactory
+     */
+    protected $factory;
+
     protected function setUp()
     {
         $this->sm = ServiceManagerFactory::getServiceManager();
         $this->sm->setAllowOverride(true);
 
-        $this->factory = new AuthenticationOptionsFactory();
+        $this->factory = new UserServiceOptionsFactory();
     }
 
     /**
@@ -62,18 +71,15 @@ class AuthenticationOptionsFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $config = $this->sm->get('Config');
 
-        unset($config['MCNUser']['authentication']);
+        unset($config['MCNUser']['service']);
 
         $this->sm->setService('Config', $config);
-
-        $factory = new AuthenticationOptionsFactory();
-        $factory->createService($this->sm);
+        $this->factory->createService($this->sm);
     }
 
     public function testReturnsValidOptionsClass()
     {
         $class = $this->factory->createService($this->sm);
-
-        $this->assertInstanceOf('MCNUser\Options\Authentication\AuthenticationOptions', $class);
+        $this->assertInstanceOf('MCNUser\Options\UserOptions', $class);
     }
 }

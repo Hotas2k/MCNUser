@@ -64,18 +64,50 @@ class UserOptions extends AbstractOptions
     protected $serviceClass = 'MCNUser\Service\User';
 
     /**
-     * Key in the service locator for the mail service
-     *
-     * @var string|null
-     */
-    protected $mailServiceSlKey = null;
-
-    /**
      * Key in the service locator for the search service
      *
      * @var string|null
      */
     protected $searchServiceSlKey = null;
+
+    /**
+     * Holds a list of listeners to
+     *
+     * @var array<String>
+     */
+    protected $listeners = array();
+
+    /**
+     * @param array $listeners
+     */
+    public function setListeners(array $listeners)
+    {
+        $this->listeners = $listeners;
+    }
+
+    /**
+     * @return array
+     */
+    public function getListeners()
+    {
+        return $this->listeners;
+    }
+
+    /**
+     * @param null|string $searchServiceSlKey
+     */
+    public function setSearchServiceSlKey($searchServiceSlKey)
+    {
+        $this->searchServiceSlKey = $searchServiceSlKey;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getSearchServiceSlKey()
+    {
+        return $this->searchServiceSlKey;
+    }
 
     /**
      * @param string $entityClass

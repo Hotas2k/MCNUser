@@ -68,7 +68,7 @@ class PluginOptionsFactoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @group factory
      */
-    public function testCanCorrectDescendantOfAbstractPluginOptions()
+    public function testCanCreateServiceWithName_CanCorrectDescendantOfAbstractPluginOptions()
     {
         $can = $this->factory->canCreateServiceWithName(
             $this->sl,
@@ -77,5 +77,16 @@ class PluginOptionsFactoryTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertTrue($can);
+    }
+
+    public function testCanCreateServiceWithName_FailsOnNonDescendantOfAbstractPluginOptions()
+    {
+        $can = $this->factory->canCreateServiceWithName(
+            $this->sl,
+            'ArrayObject',
+            'ArrayObject'
+        );
+
+        $this->assertFalse($can);
     }
 }

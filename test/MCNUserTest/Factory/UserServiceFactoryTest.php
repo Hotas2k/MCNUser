@@ -41,39 +41,56 @@
 
 namespace MCNUserTest\Factory;
 
-use MCNUser\Factory\AuthenticationOptionsFactory;
-use MCNUserTest\Bootstrap;
+use MCNUser\Factory\UserServiceFactory;
 use MCNUserTest\Util\ServiceManagerFactory;
 
-class AuthenticationOptionsFactoryTest extends \PHPUnit_Framework_TestCase
+/**
+ * Class UserServiceFactoryTest
+ * @package MCNUserTest\Factory
+ */
+class UserServiceFactoryTest extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
-        $this->sm = ServiceManagerFactory::getServiceManager();
-        $this->sm->setAllowOverride(true);
+        $this->options       = $this->getMock('MCNUser\Options\UserOptions');
+        $this->objectManager = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
 
-        $this->factory = new AuthenticationOptionsFactory();
+        $this->options
+            ->expects($this->any())
+            ->method('getServiceClass')
+            ->will($this->returnValue('MCNUser\Service\User'));
+
+        $this->sl = ServiceManagerFactory::getServiceManager();
+        $this->sl->setAllowOverride(true);
+        $this->sl->setService('mcn.options.user.service', $this->options);
+        $this->sl->setService('doctrine.entitymanager.ormdefault', $this->objectManager);
+
+        $this->factory = new UserServiceFactory();
     }
 
     /**
-     * @expectedException \MCNUser\Factory\Exception\RuntimeException
+     * @expectedException \MCNUser\Factory\Exception\LogicException
      */
-    public function testExceptionThrownOnMissingConfigurationKey()
+    public function testThrowsLogicExceptionOnInvalidListener()
     {
-        $config = $this->sm->get('Config');
+        $this->options
+            ->expects($this->once())
+            ->method('getListeners')
+            ->will($this->returnValue(array('hello world')));
 
-        unset($config['MCNUser']['authentication']);
-
-        $this->sm->setService('Config', $config);
-
-        $factory = new AuthenticationOptionsFactory();
-        $factory->createService($this->sm);
+        $this->factory->createService($this->sl);
     }
 
-    public function testReturnsValidOptionsClass()
+    /**
+     * @expectedException \MCNUser\Factory\Exception\LogicException
+     */
+    public function testThrowsLogincExceptionOnInvalidSearchService()
     {
-        $class = $this->factory->createService($this->sm);
+        $this->options
+            ->expects($this->exactly(3))
+            ->method('getSearchServiceSlKey')
+            ->will($this->returnValue('i do not exist'));
 
-        $this->assertInstanceOf('MCNUser\Options\Authentication\AuthenticationOptions', $class);
+        $this->factory->createService($this->sl);
     }
 }

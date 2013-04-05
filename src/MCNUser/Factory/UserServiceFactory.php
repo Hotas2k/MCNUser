@@ -54,19 +54,51 @@ class UserServiceFactory implements FactoryInterface
     /**
      * Create service
      *
-     * @param ServiceLocatorInterface $serviceLocator
+     * @param \Zend\ServiceManager\ServiceLocatorInterface $sl
      *
-     * @return mixed
+     * @throws Exception\LogicException When a listener does not exist in the service locator
+     * @return \MCNStdlib\Interfaces\UserServiceInterface
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function createService(ServiceLocatorInterface $sl)
     {
-        $config = $serviceLocator->get('Config')['MCNUser']['service'];
-
-        $options = new UserOptions($config);
-
+        $options       = $sl->get('mcn.options.user.service');
         $className     = $options->getServiceClass();
-        $objectManager = $serviceLocator->get('doctrine.entitymanager.ormdefault');
+        $objectManager = $sl->get('doctrine.entitymanager.ormdefault');
 
-        return new $className($objectManager, $options);
+        /**
+         * @var $instance \MCNStdlib\Interfaces\UserServiceInterface
+         */
+        $instance = new $className($objectManager, $options);
+
+        if (method_exists($instance, 'setSearchService') && $options->getSearchServiceSlKey() !== null) {
+
+            if (! $sl->has($options->getSearchServiceSlKey())) {
+
+                throw new Exception\LogicException(
+                    sprintf(
+                        'Invalid service locator key "%s" specified for the search service',
+                        $options->getSearchServiceSlKey()
+                    )
+                );
+            }
+
+            $instance->setSearchService($sl->get($options->getSearchServiceSlKey()));
+        }
+
+        foreach ($options->getListeners() as $alias) {
+
+            if (! $sl->has($alias)) {
+
+                throw new Exception\LogicException(
+                    sprintf('The service locator has no service with the name/alias %s', $alias)
+                );
+            }
+
+            $instance->getEventManager()->attach(
+                $sl->get($alias)
+            );
+        }
+
+        return $instance;
     }
 }

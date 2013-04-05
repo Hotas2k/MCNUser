@@ -39,41 +39,37 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNUserTest\Factory;
+namespace MCNUser\Factory;
 
-use MCNUser\Factory\AuthenticationOptionsFactory;
-use MCNUserTest\Bootstrap;
-use MCNUserTest\Util\ServiceManagerFactory;
+use MCNUser\Options\UserOptions;
+use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
-class AuthenticationOptionsFactoryTest extends \PHPUnit_Framework_TestCase
+/**
+ * Class AuthenticationOptionsFactory
+ * @package MCNUser\Factory
+ */
+class UserServiceOptionsFactory implements FactoryInterface
 {
-    protected function setUp()
-    {
-        $this->sm = ServiceManagerFactory::getServiceManager();
-        $this->sm->setAllowOverride(true);
-
-        $this->factory = new AuthenticationOptionsFactory();
-    }
-
     /**
-     * @expectedException \MCNUser\Factory\Exception\RuntimeException
+     * Create the options
+     *
+     * @param ServiceLocatorInterface $sl
+     *
+     * @throws Exception\RuntimeException If no configuration has been specified
+     *
+     * @return mixed
      */
-    public function testExceptionThrownOnMissingConfigurationKey()
+    public function createService(ServiceLocatorInterface $sl)
     {
-        $config = $this->sm->get('Config');
+        // Make sure configuration has been specified
+        if (! isSet($sl->get('Config')['MCNUser']['service'])) {
 
-        unset($config['MCNUser']['authentication']);
+            throw new Exception\RuntimeException('No configuration specified.');
+        }
 
-        $this->sm->setService('Config', $config);
+        $config = $sl->get('Config')['MCNUser']['service'];
 
-        $factory = new AuthenticationOptionsFactory();
-        $factory->createService($this->sm);
-    }
-
-    public function testReturnsValidOptionsClass()
-    {
-        $class = $this->factory->createService($this->sm);
-
-        $this->assertInstanceOf('MCNUser\Options\Authentication\AuthenticationOptions', $class);
+        return new UserOptions($config);
     }
 }

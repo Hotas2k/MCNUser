@@ -69,6 +69,7 @@ return array(
             'mcn.service.user.authentication' => 'MCNUser\Factory\AuthenticationServiceFactory',
 
             // options
+            'mcn.options.user.user'           => 'MCNUser\Factory\UserServiceOptionsFactory',
             'mcn.options.user.authentication' => 'MCNUser\Factory\AuthenticationOptionsFactory'
         ),
 
