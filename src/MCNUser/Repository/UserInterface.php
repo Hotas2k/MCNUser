@@ -48,7 +48,16 @@ use Doctrine\Common\Persistence\ObjectRepository;
  * Class UserInterface
  * @package MCNUser\Repository
  */
-interface UserInterface extends ObjectRepository, Selectable
+interface UserInterface
 {
-
+    /**
+     *
+     *
+     * @param string $property
+     * @param mixed  $value
+     * @param array  $relations
+     *
+     * @return \MCNUser\Entity\User
+     */
+    public function getOneBy($property, $value, array $relations = array());
 }

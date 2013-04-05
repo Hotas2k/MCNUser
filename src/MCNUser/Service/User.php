@@ -41,10 +41,8 @@
 
 namespace MCNUser\Service;
 
-use DateTime;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Persistence\ObjectManager;
-use MCNStdlib\Interfaces\MailServiceInterface;
 use MCNStdlib\Interfaces\SearchServiceInterface;
 use MCNStdlib\Interfaces\UserEntityInterface;
 use MCNStdlib\Interfaces\UserServiceInterface;
@@ -118,9 +116,7 @@ class User implements UserServiceInterface
      */
     public function getOneBy($property, $value, array $relations = array())
     {
-        return $this->getRepository()->findOneBy(array(
-            $property => $value
-        ));
+        return $this->getRepository()->getOneBy($property, $value, $relations);
     }
 
     /**
@@ -152,11 +148,16 @@ class User implements UserServiceInterface
     /**
      * @param \Doctrine\Common\Collections\Criteria $criteria
      *
+     * @throws Exception\LogicException If no search service has been set.
+     *
      * @return \Zend\Paginator\Paginator
      */
     public function search(Criteria $criteria)
     {
+        if ($this->searchService === null) {
 
+            throw new Exception\LogicException('No search service has been provided');
+        }
     }
 
     /**

@@ -47,7 +47,27 @@ use Doctrine\ORM\EntityRepository;
  * Class User
  * @package MCNUser\Repository
  */
-class User extends EntityRepository
+class User extends EntityRepository implements UserInterface
 {
+    /**
+     * Get a user by a property and load a specified list of relations
+     *
+     * @param string $property
+     * @param mixed  $value
+     * @param array  $relations
+     *
+     * @return \MCNUser\Entity\User
+     */
+    public function getOneBy($property, $value, array $relations = array())
+    {
+        $builder = $this->createQueryBuilder('user');
+        $builder->select('user')
+                ->where(sprintf('%s = :value', $property))
+                ->setParameter('value', $value);
 
+        foreach ($relations as $relation) {
+
+            $builder->leftJoin(sprintf('user.%', $relation), $relation);
+        }
+    }
 }
