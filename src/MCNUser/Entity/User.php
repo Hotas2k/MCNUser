@@ -143,7 +143,7 @@ class User extends AbstractEntity implements UserEntityInterface
         return array(
             'id'            => $this->id,
             'email'         => $this->email,
-            'created_at'    => $this->created_at,
+            'created_at'    => $this->createdAt,
             'last_login_ip' => $this->last_login_ip,
             'last_login_at' => $this->last_login_at
         );

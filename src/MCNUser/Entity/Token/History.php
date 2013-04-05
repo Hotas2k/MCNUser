@@ -44,6 +44,7 @@ namespace MCNUser\Entity\Token;
 use DateTime;
 use MCNStdlib\Object\Entity\AbstractEntity;
 use Doctrine\ORM\Mapping as ORM;
+use MCNStdlib\Object\Entity\Behavior\TimestampableTrait;
 
 /**
  * Class History
@@ -54,6 +55,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class History extends AbstractEntity
 {
+    use TimestampableTrait;
+
     /**
      * @var integer
      *
@@ -82,30 +85,7 @@ class History extends AbstractEntity
      *
      * @ORM\Column(type="string", nullable=true)
      */
-    protected $http_user_agent;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(type="datetime")
-     */
-    protected $created_at;
-
-    /**
-     * @param \DateTime $created_at
-     */
-    public function setCreatedAt(DateTime $created_at)
-    {
-        $this->created_at = $created_at;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getCreatedAt()
-    {
-        return $this->created_at;
-    }
+    protected $httpUserAgent;
 
     /**
      * @param int $id
@@ -160,7 +140,7 @@ class History extends AbstractEntity
      */
     public function setHttpUserAgent($user_agent)
     {
-        $this->http_user_agent = $user_agent;
+        $this->httpUserAgent = $user_agent;
     }
 
     /**
@@ -168,6 +148,6 @@ class History extends AbstractEntity
      */
     public function getHttpUserAgent()
     {
-        return $this->http_user_agent;
+        return $this->httpUserAgent;
     }
 }

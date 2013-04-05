@@ -150,7 +150,7 @@ class Module
                 'mcn.authentication.plugin.remember-me' => function(ServiceLocatorInterface $sm) {
 
                     return new Authentication\Plugin\RememberMe(
-                        $sm->get('mcn.service.user.authentication.token'),
+                        $sm->get('mcn.service.user.token'),
                         $sm->get('response')
                     );
                 },
@@ -165,7 +165,7 @@ class Module
                 'mcn.listener.user.authentication.remember-me-cookie-handler' => function(ServiceLocatorInterface $sm) {
 
                     return new Listener\Authentication\RememberMe\CookieHandler(
-                        $sm->get('mcn.service.user.authentication.token'),
+                        $sm->get('mcn.service.user.token'),
                         $sm->get('response'),
                         $sm->get('MCNUser\Options\Authentication\Plugin\RememberMe')
                     );
@@ -178,9 +178,9 @@ class Module
                     );
                 },
 
-                'mcn.service.user.authentication.token' => function(ServiceLocatorInterface $sm) {
+                'mcn.service.user.token' => function(ServiceLocatorInterface $sm) {
 
-                    return new Authentication\TokenService($sm->get('doctrine.entitymanager.ormdefault'));
+                    return new Service\Token($sm->get('doctrine.entitymanager.ormdefault'));
                 },
 
                 'identity' => function(ServiceLocatorInterface $sm) {

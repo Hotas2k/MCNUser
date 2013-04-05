@@ -183,7 +183,6 @@ class Token implements ServiceInterface
 
         $history = new TokenEntity\History();
         $history->setToken($token);
-        $history->setCreatedAt(new DateTime());
         $history->setIp($remoteAddress->getIpAddress());
 
         if (isSet($_SERVER['HTTP_USER_AGENT'])) {

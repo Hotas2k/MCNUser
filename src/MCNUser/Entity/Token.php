@@ -94,7 +94,7 @@ class Token extends AbstractEntity
      *
      * @ORM\Column(type="datetime", nullable=true)
      */
-    protected $valid_until;
+    protected $validUntil;
 
     /**
      * @var bool
@@ -164,7 +164,7 @@ class Token extends AbstractEntity
      */
     public function setValidUntil(DateTime $valid_until = null)
     {
-        $this->valid_until = $valid_until;
+        $this->validUntil = $valid_until;
     }
 
     /**
@@ -172,7 +172,7 @@ class Token extends AbstractEntity
      */
     public function getValidUntil()
     {
-        return $this->valid_until;
+        return $this->validUntil;
     }
 
     /**
