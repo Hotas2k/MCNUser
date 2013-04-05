@@ -39,20 +39,19 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNUserTest\TestAsset\Authentication;
-
-use MCNUser\Authentication\TokenConsumerInterface;
-use MCNUser\Entity\User;
+namespace MCNUser\Service\Exception;
 
 /**
- * Class AuthTokenOwnerEntity
- *
- * @package MCNUserTest\TestAsset\Authentication
+ * Class TokenHasExpiredException
+ * @package MCNUser\Service\Exception
  */
-class AuthTokenOwnerEntity extends User implements TokenConsumerInterface
+class TokenHasExpiredException extends RuntimeException implements ExceptionInterface
 {
-    public function getId()
+    /**
+     * Call parent with a error message
+     */
+    public function __construct()
     {
-        return 1;
+        parent::__construct('The token has already expired.');
     }
 }

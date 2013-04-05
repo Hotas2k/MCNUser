@@ -41,12 +41,12 @@
 
 namespace MCNUserTest\Authentication\Plugin;
 
-use MCNUser\Authentication\Exception\TokenIsConsumedException;
-use MCNUser\Authentication\Exception\TokenHasExpiredException;
-use MCNUser\Authentication\Exception\TokenNotFoundException;
+use MCNUser\Service\Exception\TokenIsConsumedException;
+use MCNUser\Service\Exception\TokenHasExpiredException;
+use MCNUser\Service\Exception\TokenNotFoundException;
 use MCNUser\Authentication\Plugin\RememberMe;
 use MCNUser\Authentication\Result;
-use MCNUser\Entity\AuthToken;
+use MCNUser\Entity\Token;
 use MCNUser\Entity\User;
 use MCNUser\Options\Authentication\Plugin\RememberMe as RememberMeOptions;
 use MCNUserTest\TestAsset;
@@ -103,14 +103,14 @@ class RememberMeTest extends \PHPUnit_Framework_TestCase
 
         $this->response = new Response();
 
-        $this->service     = $this->getMock('MCNUser\Authentication\TokenServiceInterface');
+        $this->service     = $this->getMock('MCNUser\Service\Token\ServiceInterface');
         $this->userService = $this->getMock('MCNStdlib\Interfaces\UserServiceInterface');
 
         $this->plugin = new RememberMe($this->service, $this->response, $this->options);
     }
 
     /**
-     * @expectedException \MCNUser\Authentication\Exception\DomainException
+     * @expectedException \MCNUser\Service\Exception\DomainException
      */
     public function testThrowExceptionOnNoCookie()
     {
@@ -126,12 +126,12 @@ class RememberMeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($result->getCode(), Result::FAILURE_IDENTITY_NOT_FOUND);
     }
 
-    public function testForUsedAuthToken()
+    public function testForUsedToken()
     {
         $this->userService
              ->expects($this->once())
              ->method('getOneBy')
-             ->will($this->returnValue(new TestAsset\Authentication\AuthTokenOwnerEntity()));
+             ->will($this->returnValue(new TestAsset\Service\TokenOwnerEntity()));
 
         $this->service
              ->expects($this->once())
@@ -149,7 +149,7 @@ class RememberMeTest extends \PHPUnit_Framework_TestCase
         $this->userService
             ->expects($this->once())
             ->method('getOneBy')
-            ->will($this->returnValue(new TestAsset\Authentication\AuthTokenOwnerEntity()));
+            ->will($this->returnValue(new TestAsset\Service\TokenOwnerEntity()));
 
         $this->service
             ->expects($this->once())
@@ -168,7 +168,7 @@ class RememberMeTest extends \PHPUnit_Framework_TestCase
         $this->userService
             ->expects($this->once())
             ->method('getOneBy')
-            ->will($this->returnValue(new TestAsset\Authentication\AuthTokenOwnerEntity()));
+            ->will($this->returnValue(new TestAsset\Service\TokenOwnerEntity()));
 
         $this->service
             ->expects($this->once())
@@ -184,7 +184,7 @@ class RememberMeTest extends \PHPUnit_Framework_TestCase
     public function testSuccessfulLogin()
     {
 
-        $token = new AuthToken();
+        $token = new Token();
         $token->prePersist();
         $token->setToken('hello.world');
         $token->setOwner(1);
@@ -192,7 +192,7 @@ class RememberMeTest extends \PHPUnit_Framework_TestCase
         $this->userService
             ->expects($this->once())
             ->method('getOneBy')
-            ->will($this->returnValue(new TestAsset\Authentication\AuthTokenOwnerEntity()));
+            ->will($this->returnValue(new TestAsset\Service\TokenOwnerEntity()));
 
         $this->service
             ->expects($this->once())

@@ -44,10 +44,10 @@ namespace MCNUserTest\Listener\Authentication;
 use DateInterval;
 use DateTime;
 use MCNUser\Authentication\AuthEvent;
-use MCNUser\Entity\AuthToken;
+use MCNUser\Entity\Token;
 use MCNUser\Entity\User;
 use MCNUser\Listener\Authentication\RememberMe\CookieHandler;
-use MCNUserTest\TestAsset\Authentication\AuthTokenOwnerEntity;
+use MCNUserTest\TestAsset\Service\TokenOwnerEntity;
 use Zend\Http\Request;
 use Zend\Http\Response;
 use MCNUser\Options\Authentication\Plugin\RememberMe as Options;
@@ -65,13 +65,13 @@ class CookieHandlerTest extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
-        $this->entity = new AuthTokenOwnerEntity();
+        $this->entity = new TokenOwnerEntity();
         $this->entity->setEmail('hello@world.com');
 
         $this->request  = new Request();
         $this->response = new Response();
 
-        $this->tokenService = $this->getMock('MCNUser\Authentication\TokenService', array(), array(), '', false);
+        $this->tokenService = $this->getMock('MCNUser\Service\Token\ServiceInterface');
         $this->options      = new Options();
 
 
@@ -98,7 +98,7 @@ class CookieHandlerTest extends \PHPUnit_Framework_TestCase
 
         $this->request->getPost()->set('remember_me', true);
 
-        $token = new AuthToken();
+        $token = new Token();
         $token->fromArray(array(
             'token' => 'hash'
         ));
@@ -128,7 +128,7 @@ class CookieHandlerTest extends \PHPUnit_Framework_TestCase
         $dt = new DateTime();
         $dt->add(new DateInterval('PT1H'));
 
-        $token = new AuthToken();
+        $token = new Token();
         $token->fromArray(array(
             'token'       => 'hash',
             'valid_until' => $dt

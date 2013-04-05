@@ -47,15 +47,15 @@ use MCNStdlib\Object\Entity\AbstractEntity;
 use MCNStdlib\Object\Entity\Behavior\TimestampableTrait;
 
 /**
- * Class AuthToken
+ * Class Token
  * @package MCNUser\Entity\User
  *
  * @ORM\Table(name="mcn_user_auth_tokens")
- * @ORM\Entity(repositoryClass="MCNUser\Repository\AuthToken")
+ * @ORM\Entity(repositoryClass="MCNUser\Repository\Token")
  * @ORM\HasLifecycleCallbacks
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
-class AuthToken extends AbstractEntity
+class Token extends AbstractEntity
 {
     use TimestampableTrait;
 

@@ -39,16 +39,16 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNUser\Authentication\Exception;
+namespace MCNUser\Service\Token;
 
 /**
- * Class TokenNotFoundException
- * @package MCNUser\Authentication\Exception
+ * Class ConsumerInterface
+ * @package MCNUser\Service\Token
  */
-class TokenNotFoundException extends RuntimeException
+interface ConsumerInterface
 {
-    public function __construct()
-    {
-        parent::__construct('Token not found');
-    }
+    /**
+     * @return mixed
+     */
+    public function getId();
 }

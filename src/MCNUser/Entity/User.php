@@ -116,7 +116,7 @@ class User extends AbstractEntity implements UserEntityInterface
      *
      * @Annotation\Exclude
      *
-     * @ORM\ManyToMany(targetEntity="MCNUser\Entity\AuthToken")
+     * @ORM\ManyToMany(targetEntity="MCNUser\Entity\Token")
      * @ORM\JoinTable(name="mcn_user_auth_tokens_reference",
      *  joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
      *  inverseJoinColumns={@ORM\JoinColumn(name="token_id", referencedColumnName="id", unique=true)}
@@ -150,9 +150,9 @@ class User extends AbstractEntity implements UserEntityInterface
     }
 
     /**
-     * @return \Doctrine\Common\Collections\ArrayCollection<\MCNUser\Entity\AuthToken>
+     * @return \Doctrine\Common\Collections\ArrayCollection<\MCNUser\Entity\Token>
      */
-    public function getAuthTokens()
+    public function getTokens()
     {
         return $this->auth_tokens;
     }

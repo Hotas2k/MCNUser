@@ -42,7 +42,7 @@
 namespace MCNUser\Listener\Authentication\RememberMe;
 
 use MCNUser\Authentication\AuthEvent;
-use MCNUser\Authentication\TokenServiceInterface;
+use MCNUser\Service\Token\ServiceInterface as TokenServiceInterface;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ListenerAggregateInterface;
 use Zend\EventManager\ListenerAggregateTrait;
@@ -75,7 +75,7 @@ class CookieHandler implements ListenerAggregateInterface
     protected $options;
 
     /**
-     * @param \MCNUser\Authentication\TokenServiceInterface     $service
+     * @param \MCNUser\Service\Token\ServiceInterface           $service
      * @param \Zend\Stdlib\ResponseInterface                    $response
      * @param \MCNUser\Options\Authentication\Plugin\RememberMe $options
      */

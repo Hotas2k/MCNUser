@@ -39,7 +39,7 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNUser\Entity\AuthToken;
+namespace MCNUser\Entity\Token;
 
 use DateTime;
 use MCNStdlib\Object\Entity\AbstractEntity;
@@ -47,7 +47,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Class History
- * @package MCNUser\Entity\AuthToken
+ * @package MCNUser\Entity\Token
  *
  * @ORM\Entity
  * @ORM\Table(name="mcn_token_history")
@@ -64,9 +64,9 @@ class History extends AbstractEntity
     protected $id;
 
     /**
-     * @var \MCNUser\Entity\AuthToken
+     * @var \MCNUser\Entity\Token
      *
-     * @ORM\ManyToOne(targetEntity="MCNUser\Entity\AuthToken")
+     * @ORM\ManyToOne(targetEntity="MCNUser\Entity\Token")
      */
     protected $token;
 
@@ -140,7 +140,7 @@ class History extends AbstractEntity
     }
 
     /**
-     * @param \MCNUser\Entity\AuthToken $token
+     * @param \MCNUser\Entity\Token $token
      */
     public function setToken($token)
     {
@@ -148,7 +148,7 @@ class History extends AbstractEntity
     }
 
     /**
-     * @return \MCNUser\Entity\AuthToken
+     * @return \MCNUser\Entity\Token
      */
     public function getToken()
     {

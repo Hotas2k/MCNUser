@@ -41,42 +41,30 @@
 
 namespace MCNUser\Repository;
 
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Selectable;
+use Doctrine\Common\Persistence\ObjectRepository;
 use MCNUser\Authentication\TokenConsumerInterface;
+use MCNUser\Service\Token\ConsumerInterface;
 
 /**
- * Class AuthToken
+ * Class TokenInterface
  * @package MCNUser\Repository
  */
-class AuthToken extends EntityRepository implements AuthTokenInterface
+interface TokenInterface
 {
     /**
-     * @param TokenConsumerInterface $owner
-     * @param string                 $token
+     * @param \MCNUser\Service\Token\ConsumerInterface $owner
+     * @param string                                   $token
      *
-     * @return \MCNUser\Entity\AuthToken|null
+     * @return \MCNUser\Entity\Token|null
      */
-    public function getByOwnerAndToken(TokenConsumerInterface $owner, $token)
-    {
-        return $this->findOneBy(array(
-            'token' => $token,
-            'owner' => $owner->getId()
-        ));
-    }
+    public function getByOwnerAndToken(ConsumerInterface $owner, $token);
 
     /**
-     * @param TokenConsumerInterface $owner
+     * @param \MCNUser\Service\Token\ConsumerInterface $owner
      *
      * @return integer
      */
-    public function consumeAllTokensAndReturnCount(TokenConsumerInterface $owner)
-    {
-        $builder = $this->getEntityManager()->createQueryBuilder();
-        $builder->update('MCNUser\Entity\AuthToken', 'token')
-                ->set('consumed', true)
-                ->where('token.owner = :id')
-                ->setParameter('id', $owner->getId());
-
-        return $builder->getQuery()->execute();
-    }
+    public function consumeAllTokensAndReturnCount(ConsumerInterface $owner);
 }

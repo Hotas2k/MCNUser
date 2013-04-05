@@ -39,45 +39,19 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNUser\Authentication;
-
-use DateInterval;
+namespace MCNUser\Service\Exception;
 
 /**
- * Class TokenServiceInterface
- * @package MCNUser\Authentication
+ * Class TokenAlreadyConsumedException
+ * @package MCNUser\Service\Exception
  */
-interface TokenServiceInterface
+class TokenIsConsumedException extends DomainException implements ExceptionInterface
 {
     /**
-     * Create a new authentication token
-     *
-     * @param TokenConsumerInterface $entity
-     * @param \DateInterval          $valid_until
-     *
-     * @return \MCNUser\Entity\AuthToken
+     * Call parent with a error message
      */
-    public function create(TokenConsumerInterface $entity, DateInterval $valid_until = null);
-
-    /**
-     * @param TokenConsumerInterface $entity
-     * @param string                 $token
-     *
-     * @throws Exception\TokenHasExpiredException
-     * @throws Exception\TokenNotFoundException
-     * @throws Exception\TokenIsConsumedException
-     *
-     * @return \MCNUser\Entity\AuthToken
-     */
-    public function useToken(TokenConsumerInterface $entity, $token);
-
-    /**
-     * Uses a token and then consumes it
-     *
-     * @param TokenConsumerInterface $entity
-     * @param string                 $token
-     *
-     * @return void
-     */
-    public function useAndConsume(TokenConsumerInterface $entity, $token);
+    public function __construct()
+    {
+        parent::__construct('The token has been consumed and can no longer be used.');
+    }
 }

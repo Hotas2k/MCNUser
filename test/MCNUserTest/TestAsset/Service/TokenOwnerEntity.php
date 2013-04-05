@@ -39,16 +39,21 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNUser\Authentication;
+namespace MCNUserTest\TestAsset\Service;
+
+use MCNUser\Authentication\TokenConsumerInterface;
+use MCNUser\Entity\User;
+use MCNUser\Service\Token\ConsumerInterface;
 
 /**
- * Class AuthTokenConsumerInterface
- * @package MCNUser\Entity
+ * Class TokenOwnerEntity
+ *
+ * @package MCNUserTest\TestAsset\Authentication
  */
-interface TokenConsumerInterface
+class TokenOwnerEntity extends User implements ConsumerInterface
 {
-    /**
-     * @return mixed
-     */
-    public function getId();
+    public function getId()
+    {
+        return 1;
+    }
 }

@@ -39,16 +39,40 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNUser\Authentication\Exception;
+namespace MCNUser\Repository;
+
+use Doctrine\ORM\EntityRepository;
+use MCNUser\Authentication\TokenConsumerInterface;
+use MCNUser\Service\Token\ConsumerInterface;
 
 /**
- * Class TokenHasExpiredException
- * @package MCNUser\Service\User\Exception
+ * Class Token
+ * @package MCNUser\Repository
  */
-class TokenHasExpiredException extends RuntimeException implements ExceptionInterface
+class Token extends EntityRepository implements TokenInterface
 {
-    public function __construct()
+    /**
+     * @inheritdoc
+     */
+    public function getByOwnerAndToken(ConsumerInterface $owner, $token)
     {
-        parent::__construct('The token has already expired.');
+        return $this->findOneBy(array(
+            'token' => $token,
+            'owner' => $owner->getId()
+        ));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function consumeAllTokensAndReturnCount(ConsumerInterface $owner)
+    {
+        $builder = $this->getEntityManager()->createQueryBuilder();
+        $builder->update('MCNUser\Entity\Token', 'token')
+                ->set('consumed', true)
+                ->where('token.owner = :id')
+                ->setParameter('id', $owner->getId());
+
+        return $builder->getQuery()->execute();
     }
 }

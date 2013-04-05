@@ -39,16 +39,19 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNUserTest\Authentication;
+namespace MCNUserTest\Service;
 
-use ArrayObject;
 use DateInterval;
 use DateTime;
-use MCNUser\Authentication\TokenService;
-use MCNUser\Entity\AuthToken;
-use MCNUserTest\TestAsset\Authentication\AuthTokenOwnerEntity;
+use MCNUser\Service\Token as TokenService;
+use MCNUser\Entity\Token;
+use MCNUserTest\TestAsset\Service\TokenOwnerEntity;
 
-class TokenServiceTest extends \PHPUnit_Framework_TestCase
+/**
+ * Class TokenTest
+ * @package MCNUserTest\Service
+ */
+class TokenTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
@@ -61,14 +64,14 @@ class TokenServiceTest extends \PHPUnit_Framework_TestCase
     protected $objectRepository;
 
     /**
-     * @var \MCNUser\Authentication\TokenService
+     * @var \MCNUser\Service\Token
      */
     protected $service;
 
     protected function setUp()
     {
         $this->objectManager    = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
-        $this->objectRepository = $this->getMock('MCNUser\Repository\AuthTokenInterface');
+        $this->objectRepository = $this->getMock('MCNUser\Repository\TokenInterface');
 
         $this->objectManager
              ->expects($this->any())
@@ -80,7 +83,7 @@ class TokenServiceTest extends \PHPUnit_Framework_TestCase
 
     protected function getEntity()
     {
-        return new AuthTokenOwnerEntity();
+        return new TokenOwnerEntity();
     }
 
     public function testCreateToken()
@@ -90,7 +93,7 @@ class TokenServiceTest extends \PHPUnit_Framework_TestCase
 
         $token = $this->service->create($this->getEntity());
 
-        $this->assertInstanceOf('MCNUser\Entity\AuthToken', $token);
+        $this->assertInstanceOf('MCNUser\Entity\Token', $token);
         $this->assertEquals(1, $token->getOwner());
     }
 
@@ -103,7 +106,7 @@ class TokenServiceTest extends \PHPUnit_Framework_TestCase
 
         $token = $this->service->create($this->getEntity(), $interval);
 
-        $this->assertInstanceOf('MCNUser\Entity\AuthToken', $token);
+        $this->assertInstanceOf('MCNUser\Entity\Token', $token);
 
         $dt = new DateTime();
         $dt->add($interval);
@@ -112,7 +115,7 @@ class TokenServiceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \MCNUser\Authentication\Exception\TokenNotFoundException
+     * @expectedException \MCNUser\Service\Exception\TokenNotFoundException
      */
     public function testUseTokenWithNonExistingToken()
     {
@@ -120,11 +123,11 @@ class TokenServiceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \MCNUser\Authentication\Exception\TokenIsConsumedException
+     * @expectedException \MCNUser\Service\Exception\TokenIsConsumedException
      */
     public function testUseTokenForTokenIsConsumedException()
     {
-        $token = new AuthToken();
+        $token = new Token();
         $token->setConsumed(true);
 
         $this->objectRepository->expects($this->once())->method('getByOwnerAndToken')->will($this->returnValue($token));
@@ -133,11 +136,11 @@ class TokenServiceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \MCNUser\Authentication\Exception\TokenHasExpiredException
+     * @expectedException \MCNUser\Service\Exception\TokenHasExpiredException
      */
     public function testUseTokenForTokenHasExpiredException()
     {
-        $token = new AuthToken();
+        $token = new Token();
         $token->setValidUntil(DateTime::createFromFormat('U', time() - 1));
 
         $this->objectRepository->expects($this->once())->method('getByOwnerAndToken')->will($this->returnValue($token));
@@ -150,7 +153,7 @@ class TokenServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function testUseTokenSuccessfully()
     {
-        $token = new AuthToken();
+        $token = new Token();
 
         $this->objectRepository
             ->expects($this->once())
@@ -166,7 +169,7 @@ class TokenServiceTest extends \PHPUnit_Framework_TestCase
                 $this->assertEquals('127.0.0.1', $entity->getIp());
                 $this->assertEquals($token, $entity->getToken());
 
-                return $entity instanceof AuthToken\History;
+                return $entity instanceof Token\History;
             }));
 
         $this->objectManager

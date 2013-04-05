@@ -45,14 +45,12 @@ use DateTime;
 use MCNStdlib\Interfaces\UserServiceInterface;
 use MCNUser\Authentication\Result;
 use MCNUser\Options\Authentication\Plugin\RememberMe as Options;
-use MCNUser\Authentication\TokenServiceInterface;
-use MCNUser\Service\UserInterface;
+use MCNUser\Service\Token\ServiceInterface as TokenServiceInterface;
 use Zend\Http\Client\Cookies;
 use Zend\Http\Header\SetCookie;
 use Zend\Http\Request as HttpRequest;
-use MCNUser\Authentication\Exception;
 use Zend\Http\Response as HttpResponse;
-
+use MCNUser\Service\Exception;
 /**
  * Class RememberMe
  * @package MCNUser\Authentication\Plugin
@@ -70,8 +68,8 @@ class RememberMe extends AbstractPlugin
     protected $options;
 
     /**
-     * @param \MCNUser\Authentication\TokenServiceInterface $service
-     * @param \Zend\Http\Response $response
+     * @param \MCNUser\Service\Token\ServiceInterface           $service
+     * @param \Zend\Http\Response                               $response
      * @param \MCNUser\Options\Authentication\Plugin\RememberMe $options
      */
     public function __construct(TokenServiceInterface $service, HttpResponse $response, Options $options = null)
@@ -87,7 +85,7 @@ class RememberMe extends AbstractPlugin
      * @param \Zend\Http\Request                         $request
      * @param \MCNStdlib\Interfaces\UserServiceInterface $service
      *
-     * @throws \MCNUser\Authentication\Exception\DomainException
+     * @throws \MCNUser\Service\Exception\DomainException
      * @return \MCNUser\Authentication\Result
      */
     public function authenticate(HttpRequest $request, UserServiceInterface $service)

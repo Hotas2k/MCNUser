@@ -39,31 +39,19 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNUser\Repository;
-
-use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\Selectable;
-use Doctrine\Common\Persistence\ObjectRepository;
-use MCNUser\Authentication\TokenConsumerInterface;
+namespace MCNUser\Service\Exception;
 
 /**
- * Class AuthTokenInterface
- * @package MCNUser\Repository
+ * Class TokenNotFoundException
+ * @package MCNUser\Service\Exception
  */
-interface AuthTokenInterface
+class TokenNotFoundException extends RuntimeException
 {
     /**
-     * @param TokenConsumerInterface $owner
-     * @param string                 $token
-     *
-     * @return \MCNUser\Entity\AuthToken|null
+     * Call parent with a error message
      */
-    public function getByOwnerAndToken(TokenConsumerInterface $owner, $token);
-
-    /**
-     * @param TokenConsumerInterface $owner
-     *
-     * @return mixed
-     */
-    public function consumeAllTokensAndReturnCount(TokenConsumerInterface $owner);
+    public function __construct()
+    {
+        parent::__construct('Token not found');
+    }
 }

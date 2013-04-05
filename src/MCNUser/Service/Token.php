@@ -39,23 +39,23 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNUser\Authentication;
+namespace MCNUser\Service;
 
 use DateInterval;
 use DateTime;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Persistence\ObjectManager;
 use MCNStdlib\Stdlib\ClassUtils;
-use MCNUser\Entity\AuthToken as TokenEntity;
+use MCNUser\Entity\Token as TokenEntity;
 use Zend\Http\Header\UserAgent;
 use Zend\Http\PhpEnvironment\RemoteAddress;
 use Zend\Math;
 
 /**
- * Class TokenService
- * @package MCNUser\Authentication
+ * Class Token
+ * @package MCNUser\Service
  */
-class TokenService implements TokenServiceInterface
+class Token implements Token\ServiceInterface
 {
     /**
      * @var \Doctrine\Common\Persistence\ObjectManager
@@ -71,22 +71,22 @@ class TokenService implements TokenServiceInterface
     }
 
     /**
-     * @return \MCNUser\Repository\AuthTokenInterface
+     * @return \MCNUser\Repository\TokenInterface
      */
     protected function getRepository()
     {
-        return $this->objectManager->getRepository('MCNUser\Entity\AuthToken');
+        return $this->objectManager->getRepository('MCNUser\Entity\Token');
     }
 
     /**
      * Consume the given token of a consumer
      *
-     * @param TokenConsumerInterface $owner
-     * @param string                 $token
+     * @param \MCNUser\Service\Token\ConsumerInterface $owner
+     * @param string                                   $token
      *
      * @throws Exception\TokenNotFoundException
      */
-    public function consumeToken(TokenConsumerInterface $owner, $token)
+    public function consumeToken(Token\ConsumerInterface $owner, $token)
     {
         $token = $this->getRepository()->getByOwnerAndToken($owner, $token);
 
@@ -104,22 +104,22 @@ class TokenService implements TokenServiceInterface
      *
      * Will consume all the tokens of the given Consumer object and returns the number of tokens affected
      *
-     * @param TokenConsumerInterface $owner
+     * @param \MCNUser\Service\Token\ConsumerInterface $owner
      *
      * @return integer The number of tokens affected
      */
-    public function consumeAllTokens(TokenConsumerInterface $owner)
+    public function consumeAllTokens(Token\ConsumerInterface $owner)
     {
         $this->getRepository()->consumeAllTokensAndReturnCount($owner);
     }
 
     /**
-     * @param TokenConsumerInterface $owner
-     * @param DateInterval           $valid_until
+     * @param Token\ConsumerInterface $owner
+     * @param DateInterval            $valid_until
      *
      * @return TokenEntity
      */
-    public function create(TokenConsumerInterface $owner, DateInterval $valid_until = null)
+    public function create(Token\ConsumerInterface $owner, DateInterval $valid_until = null)
     {
         $tokenEntity = new TokenEntity();
         $tokenEntity->setToken(base64_encode(Math\Rand::getBytes(100)));
@@ -140,8 +140,8 @@ class TokenService implements TokenServiceInterface
     }
 
     /**
-     * @param TokenConsumerInterface $owner
-     * @param string                 $token
+     * @param \MCNUser\Service\Token\ConsumerInterface $owner
+     * @param string                                   $token
      *
      * @throws Exception\TokenHasExpiredException
      * @throws Exception\TokenNotFoundException
@@ -149,7 +149,7 @@ class TokenService implements TokenServiceInterface
      *
      * @return TokenEntity
      */
-    public function useToken(TokenConsumerInterface $owner, $token)
+    public function useToken(Token\ConsumerInterface $owner, $token)
     {
         $token = $this->getRepository()->getByOwnerAndToken($owner, $token);
 
@@ -191,12 +191,12 @@ class TokenService implements TokenServiceInterface
      *
      * @uses self::useToken
      *
-     * @param TokenConsumerInterface $owner
-     * @param string                 $token
+     * @param Token\ConsumerInterface $owner
+     * @param string                  $token
      *
      * @return void
      */
-    public function useAndConsume(TokenConsumerInterface $owner, $token)
+    public function useAndConsume(Token\ConsumerInterface $owner, $token)
     {
         $token = $this->useToken($owner, $token);
         $token->setConsumed(true);
