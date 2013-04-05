@@ -46,6 +46,8 @@ use DateTime;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Persistence\ObjectManager;
 use MCNUser\Entity\Token as TokenEntity;
+use MCNUser\Service\Token\ConsumerInterface;
+use MCNUser\Service\Token\ServiceInterface;
 use Zend\Http\PhpEnvironment\RemoteAddress;
 use Zend\Math;
 
@@ -53,7 +55,7 @@ use Zend\Math;
  * Class Token
  * @package MCNUser\Service
  */
-class Token implements Token\ServiceInterface
+class Token implements ServiceInterface
 {
     /**
      * @var \Doctrine\Common\Persistence\ObjectManager
@@ -86,7 +88,7 @@ class Token implements Token\ServiceInterface
      * @throws Exception\TokenIsConsumedException
      * @throws Exception\TokenNotFoundException
      */
-    public function consumeToken(Token\ConsumerInterface $owner, $token, $namespace)
+    public function consumeToken(ConsumerInterface $owner, $token, $namespace)
     {
         $token = $this->getRepository()->get($owner, $token, $namespace);
 
@@ -113,29 +115,30 @@ class Token implements Token\ServiceInterface
      *
      * @return integer The number of tokens affected
      */
-    public function consumeAllTokens(Token\ConsumerInterface $owner)
+    public function consumeAllTokens(ConsumerInterface $owner)
     {
         $this->getRepository()->consumeAllTokensAndReturnCount($owner);
     }
 
     /**
-     * @param Token\ConsumerInterface $owner
-     * @param string                  $namespace
-     * @param DateInterval            $valid_until
+     * @param \MCNUser\Service\Token\ConsumerInterface $owner
+     * @param string                                   $namespace
+     * @param DateInterval                             $validUntil
+     * @param int                                      $byteCount
      *
      * @return \MCNUser\Entity\Token
      */
-    public function create(Token\ConsumerInterface $owner, $namespace, DateInterval $valid_until = null)
+    public function create(ConsumerInterface $owner, $namespace, DateInterval $validUntil = null, $byteCount = 100)
     {
         $entity = new TokenEntity();
-        $entity->setToken(base64_encode(Math\Rand::getBytes(100)));
+        $entity->setToken(base64_encode(Math\Rand::getBytes($byteCount)));
         $entity->setOwner($owner->getId());
         $entity->setNamespace($namespace);
 
-        if ($valid_until) {
+        if ($validUntil) {
 
             $dt = new DateTime();
-            $dt->add($valid_until);
+            $dt->add($validUntil);
 
             $entity->setValidUntil($dt);
         }
@@ -157,7 +160,7 @@ class Token implements Token\ServiceInterface
      *
      * @return TokenEntity
      */
-    public function useToken(Token\ConsumerInterface $owner, $token, $namespace)
+    public function useToken(ConsumerInterface $owner, $token, $namespace)
     {
         $token = $this->getRepository()->get($owner, $token, $namespace);
 
@@ -199,13 +202,13 @@ class Token implements Token\ServiceInterface
      *
      * @uses self::useToken
      *
-     * @param Token\ConsumerInterface $owner
+     * @param ConsumerInterface $owner
      * @param string                  $token
      * @param string                  $namespace
      *
      * @return void
      */
-    public function useAndConsume(Token\ConsumerInterface $owner, $token, $namespace)
+    public function useAndConsume(ConsumerInterface $owner, $token, $namespace)
     {
         $token = $this->useToken($owner, $token, $namespace);
         $token->setConsumed(true);

@@ -183,4 +183,10 @@ class TokenTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($token, $result);
     }
+
+    public function testCreate_UsesTheCorrectAmountOfBytesInToken()
+    {
+        $token = $this->service->create($this->getEntity(), 'default', null, 20);
+        $this->assertEquals(20, strlen(base64_decode($token->getToken())));
+    }
 }

@@ -52,13 +52,14 @@ interface ServiceInterface
     /**
      * Create a new authentication token
      *
-     * @param \MCNUser\Service\Token\ConsumerInterface $entity
-     * @param string                                   $namespace
-     * @param \DateInterval                            $valid_until
+     * @param \MCNUser\Service\Token\ConsumerInterface $entity      An object that consumes the token service
+     * @param string                                   $namespace   Allows for grouping
+     * @param \DateInterval                            $validUntil Interval added to the current datetime
+     * @param integer                                  $byteCount   The number of bytes to use for creating the token
      *
      * @return \MCNUser\Entity\Token
      */
-    public function create(ConsumerInterface $entity, $namespace, DateInterval $valid_until = null);
+    public function create(ConsumerInterface $entity, $namespace, DateInterval $validUntil = null, $byteCount = 100);
 
     /**
      * @param \MCNUser\Service\Token\ConsumerInterface $entity

@@ -25,7 +25,6 @@ if (! is_readable($path . '/autoload.php')) {
 
 $loader = include $path . '/autoload.php';
 
-
 $loader->add('MCNUserTest\\', __DIR__);
 
 $config = @include __DIR__ . '/TestConfig.php';
