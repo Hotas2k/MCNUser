@@ -91,9 +91,10 @@ class UserTest extends \PHPUnit_Framework_TestCase
     public function testSave_TriggerEventAndObjectManagerPersistAndFlushOnNewObject()
     {
         $called = (object) [
-            'persist'   => false,
-            'preFlush'  => false,
-            'postFlush' => false
+            'prePersist'  => false,
+            'postPersist' => false,
+            'preFlush'    => false,
+            'postFlush'   => false
         ];
 
         $this->manager
@@ -111,8 +112,13 @@ class UserTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('flush');
 
-        $this->evm->attach('persist', function(Event $e) use ($called) {
-            $called->persist = true;
+        $this->evm->attach('persist.pre', function(Event $e) use ($called) {
+            $called->prePersist = true;
+            $this->assertEquals($this->user, $e->getParam('user'));
+        });
+
+        $this->evm->attach('persist.post', function(Event $e) use ($called) {
+            $called->postPersist = true;
             $this->assertEquals($this->user, $e->getParam('user'));
         });
 
@@ -128,7 +134,8 @@ class UserTest extends \PHPUnit_Framework_TestCase
 
         $this->service->save($this->user);
 
-        $this->assertTrue($called->persist);
+        $this->assertTrue($called->prePersist);
+        $this->assertTrue($called->postPersist);
         $this->assertTrue($called->preFlush);
         $this->assertTrue($called->postFlush);
     }
@@ -136,7 +143,8 @@ class UserTest extends \PHPUnit_Framework_TestCase
     public function testSave_DoNotTriggerPersistOnExistingObject()
     {
         $called = (object) [
-            'persist'   => false,
+            'prePersist'  => false,
+            'postPersist' => false,
             'preFlush'  => false,
             'postFlush' => false
         ];
@@ -151,8 +159,13 @@ class UserTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('flush');
 
-        $this->evm->attach('persist', function(Event $e) use ($called) {
-            $called->persist = true;
+        $this->evm->attach('persist.pre', function(Event $e) use ($called) {
+            $called->prePersist = true;
+            $this->assertEquals($this->user, $e->getParam('user'));
+        });
+
+        $this->evm->attach('persist.post', function(Event $e) use ($called) {
+            $called->postPersist = true;
             $this->assertEquals($this->user, $e->getParam('user'));
         });
 
@@ -168,7 +181,8 @@ class UserTest extends \PHPUnit_Framework_TestCase
 
         $this->service->save($this->user);
 
-        $this->assertFalse($called->persist);
+        $this->assertFalse($called->prePersist);
+        $this->assertFalse($called->postPersist);
         $this->assertTrue($called->preFlush);
         $this->assertTrue($called->postFlush);
     }

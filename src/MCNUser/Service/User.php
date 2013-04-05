@@ -172,21 +172,38 @@ class User implements UserServiceInterface
     /**
      * Save the user
      *
+     * Persists an object if it does not exist in the objectManager, else it just updates the record.
+     * It will also trigger the proper events as noted below.
+     *
+     * @triggers persist.pre  Before object manager persist
+     * @triggers persist.post After the flush.post
+     * @triggers flush.pre    Before the object manager flush
+     * @triggers flush.post   After the object manager flush
+     *
      * @param \MCNStdlib\Interfaces\UserEntityInterface $user
      *
      * @return void
      */
     public function save(UserEntityInterface $user)
     {
+        $triggerPostPersist = false;
+
         if (! $this->objectManager->contains($user)) {
 
-            $this->getEventManager()->trigger('persist', $this, array('user' => $user));
+            $triggerPostPersist = true;
+
+            $this->getEventManager()->trigger('persist.pre', $this, array('user' => $user));
             $this->objectManager->persist($user);
         }
 
         $this->getEventManager()->trigger('flush.pre', $this, array('user' => $user));
         $this->objectManager->flush($user);
         $this->getEventManager()->trigger('flush.post', $this, array('user' => $user));
+
+        if ($triggerPostPersist) {
+
+            $this->getEventManager()->trigger('persist.post', $this, array('user' => $user));
+        }
     }
 
     /**
