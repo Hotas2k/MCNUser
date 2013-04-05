@@ -50,7 +50,7 @@ use MCNStdlib\Object\Entity\Behavior\TimestampableTrait;
  * Class Token
  * @package MCNUser\Entity\User
  *
- * @ORM\Table(name="mcn_user_auth_tokens")
+ * @ORM\Table(name="mcn_user_tokens")
  * @ORM\Entity(repositoryClass="MCNUser\Repository\Token")
  * @ORM\HasLifecycleCallbacks
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
