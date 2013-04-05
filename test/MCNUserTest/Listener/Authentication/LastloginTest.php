@@ -50,7 +50,7 @@ class LastloginTest extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
-        $this->service  = $this->getMock('MCNUser\Service\UserInterface');
+        $this->service  = $this->getMock('MCNStdlib\Interfaces\UserServiceInterface');
         $this->listener = new LastLogin($this->service);
         $this->event    = $this->getMock('MCNUser\Authentication\AuthEvent');
         $this->user     = new User();

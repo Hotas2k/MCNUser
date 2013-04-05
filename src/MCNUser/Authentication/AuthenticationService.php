@@ -41,13 +41,12 @@
 
 namespace MCNUser\Authentication;
 
-use MCNUser\Service\UserInterface;
+use MCNStdlib\Interfaces\UserServiceInterface;
 use Zend\Authentication\Storage\Session;
 use Zend\EventManager\EventManager;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\EventsCapableInterface;
 use Zend\Http\Request;
-use Zend\Session\Storage\StorageInterface;
 use MCNUser\Options\Authentication\AuthenticationOptions as Options;
 
 /**
@@ -77,11 +76,11 @@ class AuthenticationService implements EventsCapableInterface
     protected $pluginManager;
 
     /**
-     * @param \MCNUser\Service\UserInterface  $service
+     * @param \MCNStdlib\Interfaces\UserServiceInterface            $service
      * @param \MCNUser\Options\Authentication\AuthenticationOptions $options
-     * @param PluginManager                   $pluginManager
+     * @param PluginManager                                         $pluginManager
      */
-    public function __construct(UserInterface $service, Options $options = null, PluginManager $pluginManager = null)
+    public function __construct(UserServiceInterface $service, Options $options = null, PluginManager $pluginManager = null)
     {
         $this->service       = $service;
         $this->storage       = new Session();

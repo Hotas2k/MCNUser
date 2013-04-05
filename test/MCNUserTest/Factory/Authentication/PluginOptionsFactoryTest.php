@@ -41,22 +41,41 @@
 
 namespace MCNUserTest\Factory\Authentication;
 
-use MCNUserTest\Util\ServiceManagerFactory;
+use MCNUser\Factory\Authentication\PluginOptionsFactory;
 
+/**
+ * Class PluginOptionsFactoryTest
+ * @package MCNUserTest\Factory\Authentication
+ */
 class PluginOptionsFactoryTest extends \PHPUnit_Framework_TestCase
 {
-    protected $sm;
+    /**
+     * @var \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    protected $sl;
+
+    /**
+     * @var \MCNUser\Factory\Authentication\PluginOptionsFactory
+     */
+    protected $factory;
 
     public function setUp()
     {
-        $this->sm = ServiceManagerFactory::getServiceManager();
+        $this->sl      = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
+        $this->factory = new PluginOptionsFactory();
     }
 
     /**
      * @group factory
      */
-    public function testFoo()
+    public function testCanCorrectDescendantOfAbstractPluginOptions()
     {
-        $plugin = $this->sm->get('MCNUser\Options\Authentication\Plugin\Standard');
+        $can = $this->factory->canCreateServiceWithName(
+            $this->sl,
+            'MCNUserTest\TestAsset\Options\Authentication\Plugin\DummyOptions',
+            'MCNUserTest\TestAsset\Options\Authentication\Plugin\DummyOptions'
+        );
+
+        $this->assertTrue($can);
     }
 }

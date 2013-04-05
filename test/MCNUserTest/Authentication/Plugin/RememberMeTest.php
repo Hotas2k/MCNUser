@@ -104,7 +104,7 @@ class RememberMeTest extends \PHPUnit_Framework_TestCase
         $this->response = new Response();
 
         $this->service     = $this->getMock('MCNUser\Authentication\TokenServiceInterface');
-        $this->userService = $this->getMock('MCNUser\Service\UserInterface');
+        $this->userService = $this->getMock('MCNStdlib\Interfaces\UserServiceInterface');
 
         $this->plugin = new RememberMe($this->service, $this->response, $this->options);
     }

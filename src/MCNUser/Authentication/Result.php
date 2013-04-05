@@ -41,7 +41,7 @@
 
 namespace MCNUser\Authentication;
 
-use MCNUser\Entity\UserInterface;
+use MCNStdlib\Interfaces\UserEntityInterface;
 use Zend\Stdlib\AbstractOptions;
 
 /**
@@ -77,13 +77,13 @@ class Result extends AbstractOptions
     /**
      * Create a new instance
      *
-     * @param integer $code
-     * @param mixed   $identity
-     * @param string  $message
+     * @param integer                                     $code
+     * @param \MCNStdlib\Interfaces\UserEntityInterface   $identity
+     * @param string                                      $message
      *
      * @return static
      */
-    public static function create($code, UserInterface $identity = null, $message = '')
+    public static function create($code, UserEntityInterface $identity = null, $message = '')
     {
         return new static(array(
             'code'     => $code,

@@ -43,12 +43,16 @@ return array(
     'MCNUser' => array(
         'authentication' => array(
 
-            'plugins' => array(
-
-            )
+            'plugins' => array()
         ),
 
-        'service' => array()
+        'service' => array(
+            'entity_class'  => 'MCNUser\Entity\User',
+            'service_class' => 'MCNUser\Service\User',
+            'listeners'     => array(
+
+            )
+        )
     ),
 
     'service_manager' => array(
@@ -74,7 +78,6 @@ return array(
             'mcn.listener.authentication.activated' => 'MCNUser\Listener\Authentication\Activated'
         )
     ),
-
     'doctrine' => array(
         'driver' => array(
             'mcnuser_annotation_driver' => array(

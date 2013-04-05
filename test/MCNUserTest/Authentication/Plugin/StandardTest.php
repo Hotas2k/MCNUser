@@ -80,7 +80,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->options     = new StandardOptions();
-        $this->userService = $this->getMock('MCNUser\Service\UserInterface');
+        $this->userService = $this->getMock('MCNStdlib\Interfaces\UserServiceInterface');
 
         $this->bcrypt = new Bcrypt(array(
             'salt' => $this->options->getBcryptSalt(),

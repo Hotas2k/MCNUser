@@ -84,6 +84,14 @@ return array(
                 'mcn.listener.user.authentication.update-login',
                 'mcn.listener.user.authentication.remember-me-cookie-handler'
             )
+        ),
+
+        'service' => array(
+            'entity_class'  => 'MCNUser\Entity\User',
+            'service_class' => 'MCNUser\Service\User',
+            'listeners'     => array(
+
+            )
         )
     ),
 

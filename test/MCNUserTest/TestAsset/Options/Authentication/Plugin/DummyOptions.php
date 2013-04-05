@@ -39,54 +39,39 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNUserText\Listener\Authentication;
+namespace MCNUserTest\TestAsset\Options\Authentication\Plugin;
 
-use MCNUser\Authentication\AuthEvent;
-use MCNUser\Entity\User;
-use MCNUser\Listener\Authentication\Activated;
+use MCNUser\Options\Authentication\Plugin\AbstractPluginOptions;
 
-class ActivatedTest extends \PHPUnit_Framework_TestCase
+class DummyOptions extends AbstractPluginOptions
 {
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
+     * Class name of representing plugin
+     *
+     * @return string
      */
-    public $event;
-
-    protected function setUp()
+    public function getClassName()
     {
-        $this->user     = new User();
-        $this->event    = $this->getMock('MCNUser\Authentication\AuthEvent');
-        $this->listener = new Activated();
+        // TODO: Implement getClassName() method.
     }
 
-    public function testFailsOnUnactivatedAccount()
+    /**
+     * Plugin alias
+     *
+     * @return string
+     */
+    public function getPluginManagerAlias()
     {
-        $this->event
-            ->expects($this->once())
-            ->method('getTarget')
-            ->will($this->returnValue($this->user));
-
-        $this->event
-            ->expects($this->once())
-            ->method('stopPropagation')
-            ->with(true);
-
-        $this->user->setActivated(false);
-        $this->listener->isActivated($this->event);
+        // TODO: Implement getPluginManagerAlias() method.
     }
 
-    public function testSuccessOnActivatedAccount()
+    /**
+     * SL alias
+     *
+     * @return string
+     */
+    public function getServiceManagerAlias()
     {
-        $this->event
-            ->expects($this->once())
-            ->method('getTarget')
-            ->will($this->returnValue($this->user));
-
-        $this->event
-            ->expects($this->never())
-            ->method('stopPropagation');
-
-        $this->user->setActivated(true);
-        $this->listener->isActivated($this->event);
+        // TODO: Implement getServiceManagerAlias() method.
     }
 }

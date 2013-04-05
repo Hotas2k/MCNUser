@@ -41,9 +41,9 @@
 
 namespace MCNUser\Authentication\Plugin;
 
+use MCNStdlib\Interfaces\UserServiceInterface;
 use MCNStdlib\Stdlib\NamingConvention;
 use MCNUser\Authentication\Result;
-use MCNUser\Service\UserInterface;
 use Zend\Crypt\Password\Bcrypt;
 use Zend\Http\Request as HttpRequest;
 use MCNUser\Options\Authentication\Plugin\Standard as Options;
@@ -67,12 +67,12 @@ class Standard extends AbstractPlugin
      *
      * Authenticate the user against the current http request
      *
-     * @param \Zend\Http\Request             $request
-     * @param \MCNUser\Service\UserInterface $service
+     * @param \Zend\Http\Request                         $request
+     * @param \MCNStdlib\Interfaces\UserServiceInterface $service
      *
-     * @return \MCNUser\Authentication\Result|void
+     * @return \MCNUser\Authentication\Result
      */
-    public function authenticate(HttpRequest $request, UserInterface $service)
+    public function authenticate(HttpRequest $request, UserServiceInterface $service)
     {
         $identity   = $request->getPost($this->options->getHttpIdentityField());
         $credential = $request->getPost($this->options->getHttpCredentialField());

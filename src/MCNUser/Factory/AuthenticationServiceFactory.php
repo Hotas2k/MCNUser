@@ -41,10 +41,9 @@
 
 namespace MCNUser\Factory;
 
+use MCNStdlib\Interfaces\UserServiceInterface;
 use MCNUser\Authentication\AuthenticationService;
 use MCNUser\Authentication\PluginManager;
-use MCNUser\Options\Authentication\AuthenticationOptions;
-use MCNUser\Service\UserInterface;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -79,7 +78,7 @@ class AuthenticationServiceFactory implements FactoryInterface
 
         $userService = $sl->get($options->getUserServiceSlKey());
 
-        if (! $userService instanceof UserInterface) {
+        if (! $userService instanceof UserServiceInterface) {
 
             throw new Exception\LogicException(
                 sprintf(

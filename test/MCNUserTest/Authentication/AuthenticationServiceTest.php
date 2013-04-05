@@ -49,6 +49,10 @@ use MCNUser\Entity\User;
 use PHPUnit_Framework_TestCase;
 use Zend\Http\Request;
 
+/**
+ * Class AuthenticationServiceTest
+ * @package MCNUserTest\Authentication
+ */
 class AuthenticationServiceTest extends PHPUnit_Framework_TestCase
 {
     /**
@@ -69,7 +73,7 @@ class AuthenticationServiceTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->request     = new Request();
-        $this->userService = $this->getMock('MCNUser\Service\UserInterface');
+        $this->userService = $this->getMock('MCNStdlib\Interfaces\UserServiceInterface');
 
         $this->service = new AuthenticationService($this->userService);
     }

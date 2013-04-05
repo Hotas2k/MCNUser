@@ -96,7 +96,7 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
     {
         $serviceManager = ServiceManagerFactory::getServiceManager();
 
-        $this->userService = $this->getMock('MCNUser\Service\UserInterface');
+        $this->userService = $this->getMock('MCNStdlib\Interfaces\UserServiceInterface');
         $this->authService = $this->getMock(
             'MCNUser\Authentication\AuthenticationService',
             array('authenticate', 'clearIdentity'),
@@ -251,7 +251,7 @@ class AuthenticationControllerTest extends \PHPUnit_Framework_TestCase
 
     public function testReturnOnSuccessfulLogin()
     {
-        $this->routeMatch->setParam('action', 'authenticate');/**/
+        $this->routeMatch->setParam('action', 'authenticate');
         $this->routeMatch->setParam('return', '/hello/world');
 
         $authResult = new Result(array('code' => Result::SUCCESS));

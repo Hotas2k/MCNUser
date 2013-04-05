@@ -43,7 +43,7 @@ namespace MCNUserTest\TestAsset;
 
 use Doctrine\Common\Collections\Criteria;
 use MCNUser\Entity\User;
-use MCNUser\Service\UserInterface;
+use MCNStdlib\Interfaces\UserServiceInterface;
 
 class UserService implements UserInterface
 {

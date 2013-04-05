@@ -90,15 +90,6 @@ class User extends AbstractEntity implements UserEntityInterface
     protected $password;
 
     /**
-     * @var boolean
-     *
-     * @Annotation\Type("Checkbox")
-     *
-     * @ORM\Column(type="boolean")
-     */
-    protected $activated = false;
-
-    /**
      * Last known ip-address
      *
      * @var string
@@ -164,22 +155,6 @@ class User extends AbstractEntity implements UserEntityInterface
     public function getAuthTokens()
     {
         return $this->auth_tokens;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isActivated()
-    {
-        return $this->activated;
-    }
-
-    /**
-     * @param bool $activated
-     */
-    public function setActivated($activated)
-    {
-        $this->activated = (bool) $activated;
     }
 
     /**

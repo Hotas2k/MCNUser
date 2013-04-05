@@ -42,6 +42,7 @@
 namespace MCNUser\Authentication\Plugin;
 
 use DateTime;
+use MCNStdlib\Interfaces\UserServiceInterface;
 use MCNUser\Authentication\Result;
 use MCNUser\Options\Authentication\Plugin\RememberMe as Options;
 use MCNUser\Authentication\TokenServiceInterface;
@@ -83,14 +84,13 @@ class RememberMe extends AbstractPlugin
     /**
      * Uses a stored token to renew
      *
-     * @param \Zend\Http\Request             $request
-     * @param \MCNUser\Service\UserInterface $service
+     * @param \Zend\Http\Request                         $request
+     * @param \MCNStdlib\Interfaces\UserServiceInterface $service
      *
      * @throws \MCNUser\Authentication\Exception\DomainException
-     *
      * @return \MCNUser\Authentication\Result
      */
-    public function authenticate(HttpRequest $request, UserInterface $service)
+    public function authenticate(HttpRequest $request, UserServiceInterface $service)
     {
         if (! $request->getCookie() || !isSet($request->getCookie()->remember_me)) {
 
@@ -122,7 +122,6 @@ class RememberMe extends AbstractPlugin
 
             return Result::create(Result::FAILURE_UNCATEGORIZED, $user, 'Token was not found.');
         }
-
 
         // create a new token to use
         $token = $this->service->create($user, $this->options->getValidInterval());

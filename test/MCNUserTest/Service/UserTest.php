@@ -43,6 +43,8 @@ namespace MCNuserTest\Service;
 
 use MCNUser\Options\UserOptions;
 use MCNUser\Service\User;
+use Zend\EventManager\Event;
+use Zend\EventManager\EventManager;
 
 /**
  * Class UserTest
@@ -71,22 +73,29 @@ class UserTest extends \PHPUnit_Framework_TestCase
     protected $user;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
+     * @var \Zend\EventManager\EventManager
      */
     protected $evm;
 
     protected function setUp()
     {
-        $this->evm     = $this->getMock('Zend\EventManager\EventManagerInterface');
+        $this->evm     = new EventManager();
         $this->user    = $this->getMock('MCNUser\Entity\User');
-        $this->manager = $this->getMock('Doctrine\Common\Persistence\ObjectManagerInterface');
+        $this->manager = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
         $this->options = new UserOptions();
 
         $this->service = new User($this->manager, $this->options);
+        $this->service->setEventManager($this->evm);
     }
 
-    public function testSave_TriggerEventAndObjectManagerPersistOnNewObject()
+    public function testSave_TriggerEventAndObjectManagerPersistAndFlushOnNewObject()
     {
+        $called = (object) [
+            'persist'   => false,
+            'preFlush'  => false,
+            'postFlush' => false
+        ];
+
         $this->manager
             ->expects($this->once())
             ->method('contains')
@@ -98,12 +107,70 @@ class UserTest extends \PHPUnit_Framework_TestCase
             ->method('persist')
             ->with($this->user);
 
-       $this->evm
-           ->expects($this->once())
-           ->method('trigger')
-           ->with('persist', $this->service, array('user' => $this->user));
+        $this->manager
+            ->expects($this->once())
+            ->method('flush');
+
+        $this->evm->attach('persist', function(Event $e) use ($called) {
+            $called->persist = true;
+            $this->assertEquals($this->user, $e->getParam('user'));
+        });
+
+        $this->evm->attach('flush.pre', function(Event $e) use ($called) {
+            $called->preFlush = true;
+            $this->assertEquals($this->user, $e->getParam('user'));
+        });
+
+        $this->evm->attach('flush.post', function(Event $e) use ($called) {
+            $called->postFlush = true;
+            $this->assertEquals($this->user, $e->getParam('user'));
+        });
 
         $this->service->save($this->user);
+
+        $this->assertTrue($called->persist);
+        $this->assertTrue($called->preFlush);
+        $this->assertTrue($called->postFlush);
+    }
+
+    public function testSave_DoNotTriggerPersistOnExistingObject()
+    {
+        $called = (object) [
+            'persist'   => false,
+            'preFlush'  => false,
+            'postFlush' => false
+        ];
+
+        $this->manager
+            ->expects($this->once())
+            ->method('contains')
+            ->with($this->user)
+            ->will($this->returnValue(true));
+
+        $this->manager
+            ->expects($this->once())
+            ->method('flush');
+
+        $this->evm->attach('persist', function(Event $e) use ($called) {
+            $called->persist = true;
+            $this->assertEquals($this->user, $e->getParam('user'));
+        });
+
+        $this->evm->attach('flush.pre', function(Event $e) use ($called) {
+            $called->preFlush = true;
+            $this->assertEquals($this->user, $e->getParam('user'));
+        });
+
+        $this->evm->attach('flush.post', function(Event $e) use ($called) {
+            $called->postFlush = true;
+            $this->assertEquals($this->user, $e->getParam('user'));
+        });
+
+        $this->service->save($this->user);
+
+        $this->assertFalse($called->persist);
+        $this->assertTrue($called->preFlush);
+        $this->assertTrue($called->postFlush);
     }
 }
 

@@ -42,6 +42,7 @@
 namespace MCNUser\Listener\Authentication;
 
 use DateTime;
+use MCNStdlib\Interfaces\UserServiceInterface;
 use MCNUser\Authentication\AuthEvent;
 use MCNUser\Service\UserInterface;
 use Zend\EventManager\EventManagerInterface;
@@ -58,14 +59,14 @@ class LastLogin implements ListenerAggregateInterface
     use ListenerAggregateTrait;
 
     /**
-     * @var \MCNUser\Service\UserInterface
+     * @var \MCNStdlib\Interfaces\UserServiceInterface
      */
     protected $service;
 
     /**
-     * @param \MCNUser\Service\UserInterface $service
+     * @param UserServiceInterface $service
      */
-    public function __construct(UserInterface $service)
+    public function __construct(UserServiceInterface $service)
     {
         $this->service = $service;
     }

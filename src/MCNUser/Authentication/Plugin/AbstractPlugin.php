@@ -41,11 +41,11 @@
 
 namespace MCNUser\Authentication\Plugin;
 
-use InvalidArgumentException;
+use MCNStdlib\Interfaces\UserServiceInterface;
 use MCNUser\Options\Authentication\Plugin\AbstractPluginOptions;
 use Zend\Http\Request as HttpRequest;
-use MCNUser\Service\UserInterface;
 use MCNUser\Authentication\Exception;
+
 /**
  * Interface AbstractPlugin
  * @package MCNUser\Authentication\Plugin
@@ -97,5 +97,5 @@ abstract class AbstractPlugin
      * @param \MCNUser\Service\UserInterface $service
      * @return \MCNUser\Authentication\Result
      */
-    abstract public function authenticate(HttpRequest $request, UserInterface $service);
+    abstract public function authenticate(HttpRequest $request, UserServiceInterface $service);
 }

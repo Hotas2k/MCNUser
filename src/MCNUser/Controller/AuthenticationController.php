@@ -84,8 +84,10 @@ class AuthenticationController extends AbstractActionController
 
         $result = $this->service->authenticate($this->getRequest(), $plugin);
 
+        $viewModel = $this->acceptableViewModelSelector(array('Zend\View\Model\JsonModel' => array('application/json')));
+
         // short circuit on ajax request
-        if ($this->http()->acceptsMimeType('application/json') && $this->getRequest()->isXmlHttpRequest()) {
+        if ($viewModel instanceof JsonModel) {
 
             $data = $result->toArray();
 

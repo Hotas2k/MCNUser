@@ -44,9 +44,10 @@ namespace MCNUser\Service;
 use DateTime;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Persistence\ObjectManager;
-use MCNStdlib\Interfaces\Mail\MailServiceInterface;
+use MCNStdlib\Interfaces\MailServiceInterface;
 use MCNStdlib\Interfaces\SearchServiceInterface;
 use MCNStdlib\Interfaces\UserEntityInterface;
+use MCNStdlib\Interfaces\UserServiceInterface;
 use MCNUser\Options\UserOptions as Options;
 use Zend\EventManager\EventManagerAwareTrait;
 
@@ -69,11 +70,6 @@ class User implements UserServiceInterface
     protected $objectManager;
 
     /**
-     * @var \MCNStdlib\Interfaces\Mail\MailServiceInterface
-     */
-    protected $mailService = null;
-
-    /**
      * @var \MCNStdlib\Interfaces\SearchServiceInterface
      */
     protected $searchService = null;
@@ -86,19 +82,6 @@ class User implements UserServiceInterface
     {
         $this->options       = ($options === null) ? new Options() : $options;
         $this->objectManager = $manager;
-    }
-
-    /**
-     * Set the mail service provider
-     *
-     * @param MailServiceInterface $mailService
-     *
-     * @return self
-     */
-    public function setMailService(MailServiceInterface $mailService)
-    {
-        $this->mailService = $mailService;
-        return $this;
     }
 
     /**
