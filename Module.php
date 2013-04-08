@@ -42,10 +42,12 @@
 namespace MCNUser;
 
 use Zend\Mvc\Controller\ControllerManager;
+use Zend\Mvc\Controller\PluginManager;
 use Zend\Mvc\MvcEvent;
 use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Http\Request as HttpRequest;
+use Zend\View\HelperPluginManager;
 
 /**
  * Class Module
@@ -114,11 +116,9 @@ class Module
         return array(
             'factories' => array(
 
-                'auth' => function($sm) {
+                'identity' => function(PluginManager $sm) {
 
-                    return new Controller\Plugin\Auth(
-                        $sm->getServiceLocator()->get('mcn.service.user.authentication')
-                    );
+                    return new Controller\Plugin\Identity($sm->getServiceLocator()->get('identity'));
                 }
             )
         );
@@ -131,10 +131,12 @@ class Module
     {
         return array(
             'factories' => array(
-                'isAuth' => function ($sm) {
-                    return new View\Helper\IsAuth($sm->getServiceLocator()->get('mcn.service.user.authentication'));
-                },
-            ),
+
+                'identity' => function(HelperPluginManager $sm) {
+
+                    return new View\Plugin\Identity($sm->getServiceLocator()->get('identity'));
+                }
+            )
         );
 
     }

@@ -41,6 +41,7 @@
 
 namespace MCNuserTest\Service;
 
+use Doctrine\Common\Collections\Criteria;
 use MCNUser\Options\UserOptions;
 use MCNUser\Service\User;
 use Zend\EventManager\Event;
@@ -185,6 +186,47 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($called->postPersist);
         $this->assertTrue($called->preFlush);
         $this->assertTrue($called->postFlush);
+    }
+
+    public function testRemove_TriggerPreAndPostEvent()
+    {
+        $called = (object) [
+            'pre'  => false,
+            'post' => false,
+        ];
+
+        $this->manager
+            ->expects($this->once())
+            ->method('remove')
+            ->with($this->user);
+
+        $this->manager
+            ->expects($this->once())
+            ->method('flush');
+
+        $this->evm->attach('remove.pre', function(Event $e) use ($called) {
+            $called->pre = true;
+            $this->assertEquals($this->user, $e->getParam('user'));
+        });
+
+        $this->evm->attach('remove.post', function(Event $e) use ($called) {
+            $called->post = true;
+            $this->assertEquals($this->user, $e->getParam('user'));
+        });
+
+        $this->service->remove($this->user);
+
+        $this->assertTrue($called->pre);
+        $this->assertTrue($called->post);
+    }
+
+    /**
+     * @expectedException        \MCNUser\Service\Exception\logicException
+     * @expectedExceptionMessage No search service has been provided
+     */
+    public function testSearch_ThrowsExceptionOnNoSearchService()
+    {
+        $this->service->search(Criteria::create());
     }
 }
 

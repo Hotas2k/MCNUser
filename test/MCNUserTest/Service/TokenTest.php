@@ -189,4 +189,65 @@ class TokenTest extends \PHPUnit_Framework_TestCase
         $token = $this->service->create($this->getEntity(), 'default', null, 20);
         $this->assertEquals(20, strlen(base64_decode($token->getToken())));
     }
+
+    public function testUseAndConsume_MarksTokenAsConsumed()
+    {
+        $token   = $this->getMock('MCNUser\Entity\Token');
+        $service = $this->getMock('MCNUser\Service\Token', array('useToken'), array($this->objectManager));
+
+        $service->expects($this->once())
+                ->method('useToken')
+                ->will($this->returnValue($token));
+
+        $token->expects($this->once())
+                ->method('setConsumed')
+                ->with(true);
+
+        $this->objectManager
+            ->expects($this->once())
+            ->method('flush');
+
+        $service->useAndConsume($this->getEntity(), 'hello world', 'default');
+    }
+
+    /**
+     * @expectedException \MCNUser\Service\Exception\TokenNotFoundException
+     */
+    public function testConsumeToken_ThrowsExceptionOnNotFound()
+    {
+        $this->service->consumeToken($this->getEntity(), 'hello world', 'default');
+    }
+
+    /**
+     * @expectedException \MCNUser\Service\Exception\TokenIsConsumedException
+     */
+    public function testConsumeToken_ThrowsExceptionOnAlreadyBeingConsumed()
+    {
+        $token = new Token();
+        $token->setConsumed(true);
+
+        $this->objectRepository
+            ->expects($this->once())
+            ->method('get')
+            ->will($this->returnValue($token));
+
+        $this->service->consumeToken($this->getEntity(), 'hello world', 'default');
+    }
+
+    public function testConsumeToken_MarksAsConsumedAndSaves()
+    {
+        $token = new Token();
+
+        $this->objectRepository
+            ->expects($this->once())
+            ->method('get')
+            ->will($this->returnValue($token));
+
+        $this->objectManager
+            ->expects($this->once())
+            ->method('flush');
+
+        $this->service->consumeToken($this->getEntity(), 'hello world', 'default');
+        $this->assertTrue($token->isConsumed());
+    }
 }

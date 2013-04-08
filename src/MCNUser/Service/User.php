@@ -216,9 +216,9 @@ class User implements UserServiceInterface
      */
     public function remove(UserEntityInterface $user)
     {
-        $this->getEventManager()->trigger('delete.pre', $this, array('user' => $user));
+        $this->getEventManager()->trigger('remove.pre', $this, array('user' => $user));
         $this->objectManager->remove($user);
         $this->objectManager->flush($user);
-        $this->getEventManager()->trigger('delete.post', $this, array('user' => $user));
+        $this->getEventManager()->trigger('remove.post', $this, array('user' => $user));
     }
 }
